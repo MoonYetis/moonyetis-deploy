@@ -1,0 +1,22 @@
+{
+  "name": "moonyetis-hd-wallet",
+  "version": "1.0.0",
+  "description": "HD Wallet server for MoonYetis Casino - Production",
+  "main": "hd-wallet-server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node hd-wallet-server.js",
+    "dev": "nodemon hd-wallet-server.js",
+    "production": "./start-production.sh"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["bitcoin", "hd-wallet", "casino", "fractal"]
+}
