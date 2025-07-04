@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonYetis Slots - NUEVA VERSIÓN BETTING 10K-1M MY</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94A3B8;
+            font-size: 1.2rem;
+        }
+
+        .wallet-status {
+            background: rgba(255, 107, 53, 0.1);
+            border: 2px solid #FF6B35;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            color: #0A0E1A;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .balance {
+            color: #4ECDC4;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .slot-machine {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #FF6B35;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .reels-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .reel {
+            background: #1E293B;
+            border: 2px solid #374151;
+            border-radius: 10px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .symbol {
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border-bottom: 1px solid #374151;
+            transition: all 0.3s ease;
+        }
+
+        .symbol.winning {
+            background: rgba(255, 230, 109, 0.3);
+            border: 2px solid #FFE66D;
+            box-shadow: 0 0 15px #FFE66D;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            align-items: center;
+        }
+
+        .control-group {
+            text-align: center;
+        }
+
+        .control-label {
+            color: #94A3B8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .control-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFE66D;
+            margin-bottom: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .control-btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #E55A2B;
+            transform: scale(1.1);
+        }
+
+        .control-hint {
+            color: #94A3B8;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+
+        .total-bet-group {
+            background: rgba(255, 107, 53, 0.1);
+            border: 2px solid #FF6B35;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .total-bet-value {
+            font-size: 1.5rem;
+            color: #FFE66D;
+            text-shadow: 0 0 10px rgba(255, 230, 109, 0.5);
+        }
+
+        .spin-btn {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            color: #0A0E1A;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .spin-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .message.win {
+            background: rgba(78, 205, 196, 0.2);
+            border: 2px solid #4ECDC4;
+            color: #4ECDC4;
+        }
+
+        .message.lose {
+            background: rgba(255, 107, 53, 0.2);
+            border: 2px solid #FF6B35;
+            color: #FF9F7A;
+        }
+
+        .message.neutral {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #94A3B8;
+            color: #94A3B8;
+        }
+
+        .reel-strip {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.1s ease-out;
+        }
+
+        .reel-spinning .reel-strip {
+            animation: reelSpin 0.1s linear infinite;
+        }
+
+        @keyframes reelSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-66px); }
+        }
+
+        /* Realistic slot machine animation */
+        .realistic-spin {
+            animation: none !important;
+        }
+
+        .realistic-spin .reel-strip {
+            transition: transform 0.05s linear;
+        }
+
+        /* Wallet Modal Styles */
+        .wallet-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .wallet-selector-content {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .wallet-selector-content h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .wallet-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .wallet-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .wallet-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .wallet-status {
+            font-size: 12px;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(45deg, #ff4757, #c44569);
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .reels-container {
+                gap: 5px;
+            }
+            
+            .reel {
+                height: 150px;
+            }
+            
+            .symbol {
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">🌙 MOON YETIS SLOTS 🚀</h1>
+        <p class="subtitle">¡El casino crypto del futuro!</p>
+        <div style="background: rgba(255, 107, 53, 0.2); border: 1px solid #FF6B35; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 0.9rem;">
+            🎰 <strong>Nueva versión betting:</strong> 10K-1M MY | Supply: 100B MY
+        </div>
+    </div>
+
+    <div class="wallet-status">
+        <div id="walletInfo">
+            <div id="devModeIndicator" style="display: none; color: #ffd700; font-size: 0.9rem; margin-bottom: 10px; text-align: center;">
+                🚧 MODO DESARROLLO - Wallets Simuladas (No requiere extensiones reales)
+            </div>
+            <button id="connectWallet" class="connect-btn">
+                <span id="walletBtnText">🔗 Conectar Wallet</span>
+            </button>
+        </div>
+        <div class="balance" id="balanceDisplay" style="display: none;">
+            Balance: <span id="balance">0</span> sats
+        </div>
+    </div>
+
+    <div class="slot-machine">
+        <div class="reels-container" id="reelsContainer">
+            <!-- Los rodillos se generarán aquí -->
+        </div>
+
+        <div class="controls">
+            <!-- Betting Section -->
+            <div class="control-group">
+                <div class="control-label">Apuesta por Línea</div>
+                <div class="control-value" id="betAmount">10,000 MY</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustBet(-5000)">-5K</button>
+                    <button class="control-btn" onclick="adjustBet(5000)">+5K</button>
+                </div>
+                <div class="control-hint">Rango: 10K - 1M MY</div>
+            </div>
+
+            <!-- Lines Section -->
+            <div class="control-group">
+                <div class="control-label">Líneas Activas</div>
+                <div class="control-value" id="activeLines">25</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustLines(-5)">-5</button>
+                    <button class="control-btn" onclick="adjustLines(5)">+5</button>
+                </div>
+                <div class="control-hint">Rango: 1-25 líneas</div>
+            </div>
+
+            <!-- Total Bet Display -->
+            <div class="control-group total-bet-group">
+                <div class="control-label">Apuesta Total</div>
+                <div class="control-value total-bet-value" id="totalBet">250,000 MY</div>
+                <div class="control-hint">
+                    <span id="betCalculation">10,000 MY × 25 líneas</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button class="spin-btn" id="spinBtn" onclick="spin()">
+                    🎰 GIRAR
+                </button>
+                <button class="spin-btn" onclick="testRealisticAnimation()" style="margin-top: 10px; font-size: 0.9rem; padding: 10px 20px;">
+                    🎬 Test Animación
+                </button>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Última Ganancia</div>
+                <div class="control-value" id="lastWin">0 MY</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+
+    <!-- Mock game state for testing -->
+    <script>
+        // Create mock gameState for testing
+        window.gameState = {
+            connectedWallet: false,
+            walletAddress: null,
+            walletType: null,
+            balance: 0,
+            currentBet: 10000, // 10K MY minimum
+            activeLines: 25,
+            isSpinning: false,
+            totalSpins: 0,
+            totalWagered: 0,
+            totalWon: 0,
+            biggestWin: 0
+        };
+
+        // Create mock slotMachine for testing
+        window.slotMachine = {
+            showMessage: function(message, type) {
+                console.log(`📢 SlotMachine Message [${type}]: ${message}`);
+                
+                const messageEl = document.getElementById('message');
+                messageEl.textContent = message;
+                messageEl.className = `message ${type}`;
+                messageEl.style.display = 'block';
+                
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 4000);
+            },
+            
+            updateUI: function() {
+                console.log('🎮 SlotMachine UI Updated');
+                updateUI();
+            },
+
+            createReels: function() {
+                console.log('🎲 Creating reels...');
+                createReels();
+            }
+        };
+
+        // Enhanced slot machine with PNG images
+        const SYMBOLS = [
+            { id: 'moonyeti', emoji: '🏔️', png: 'assets/symbols/moonyeti.png' },
+            { id: 'rocket', emoji: '🚀', png: 'assets/symbols/rocket.png' },
+            { id: 'moon', emoji: '🌙', png: 'assets/symbols/moon.png' },
+            { id: 'coin', emoji: '🪙', png: 'assets/symbols/coin.png' },
+            { id: 'star', emoji: '⭐', png: 'assets/symbols/star.png' },
+            { id: 'planet', emoji: '🪐', png: 'assets/symbols/planet.png' },
+            { id: 'alien', emoji: '👽', png: 'assets/symbols/alien.png' },
+            { id: 'ufo', emoji: '🛸', png: 'assets/symbols/ufo.png' }
+        ];
+
+        function createReels() {
+            console.log('🎲 Creating realistic reels with reel strips...');
+            const container = document.getElementById('reelsContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) {
+                const reel = document.createElement('div');
+                reel.className = 'reel';
+                reel.id = `reel-${i}`;
+
+                // Create reel strip for continuous scrolling
+                const reelStrip = document.createElement('div');
+                reelStrip.className = 'reel-strip';
+
+                // Create enough symbols for smooth scrolling (25 symbols)
+                for (let j = 0; j < 25; j++) {
+                    const symbol = document.createElement('div');
+                    symbol.className = 'symbol';
+                    
+                    const randomSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                    
+                    // Try to load PNG image, fallback to emoji
+                    const img = document.createElement('img');
+                    img.src = randomSymbol.png;
+                    img.alt = randomSymbol.id;
+                    img.style.width = '40px';
+                    img.style.height = '40px';
+                    img.style.objectFit = 'contain';
+                    
+                    img.onerror = function() {
+                        symbol.innerHTML = '';
+                        symbol.textContent = randomSymbol.emoji;
+                        symbol.style.fontSize = '2rem';
+                    };
+                    
+                    img.onload = function() {
+                        symbol.innerHTML = '';
+                        symbol.appendChild(img);
+                    };
+                    
+                    // Set emoji as initial content while image loads
+                    symbol.textContent = randomSymbol.emoji;
+                    symbol.appendChild(img);
+                    
+                    reelStrip.appendChild(symbol);
+                }
+
+                reel.appendChild(reelStrip);
+                container.appendChild(reel);
+            }
+
+            // Set initial visible symbols (positions 1, 2, 3 of the strip)
+            updateVisibleSymbols();
+        }
+
+        function updateVisibleSymbols() {
+            for (let i = 0; i < 5; i++) {
+                const reel = document.getElementById(`reel-${i}`);
+                const reelStrip = reel.querySelector('.reel-strip');
+                if (reelStrip) {
+                    // Position to show symbols 1, 2, 3 (starting from 0)
+                    reelStrip.style.transform = 'translateY(-66px)';
+                }
+            }
+        }
+
+        function adjustBet(change) {
+            const newBet = gameState.currentBet + change;
+            if (newBet >= 10000 && newBet <= 1000000) { // 10K - 1M MY
+                gameState.currentBet = newBet;
+                updateUI();
+            }
+        }
+
+        function formatMY(amount) {
+            return amount.toLocaleString() + ' MY';
+        }
+
+
+        function adjustLines(change) {
+            const newLines = gameState.activeLines + change;
+            if (newLines >= 1 && newLines <= 25) {
+                gameState.activeLines = newLines;
+                updateUI();
+            }
+        }
+
+        async function spin() {
+            if (!gameState.connectedWallet) {
+                slotMachine.showMessage('⚠️ ¡Conecta tu wallet primero!', 'lose');
+                return;
+            }
+
+            if (gameState.isSpinning) return;
+
+            const totalBet = gameState.currentBet * gameState.activeLines;
+            
+            if (gameState.balance < totalBet) {
+                slotMachine.showMessage('💸 ¡Saldo insuficiente!', 'lose');
+                return;
+            }
+
+            gameState.isSpinning = true;
+            gameState.balance -= totalBet;
+            gameState.totalSpins++;
+            gameState.totalWagered += totalBet;
+            
+            updateUI();
+
+            // Start realistic reel spinning
+            startRealisticSpin();
+        }
+
+        function startRealisticSpin() {
+            console.log('🎰 Starting realistic reel spinning animation...');
+            
+            const reels = document.querySelectorAll('.reel');
+            const spinDurations = [2000, 2300, 2600, 2900, 3200]; // Staggered stopping
+            
+            // Start all reels spinning
+            reels.forEach((reel, index) => {
+                reel.classList.add('realistic-spin');
+                startReelSpinning(reel, index);
+            });
+
+            // Stop reels one by one with staggered timing
+            reels.forEach((reel, index) => {
+                setTimeout(() => {
+                    stopReelSpinning(reel, index);
+                    
+                    // When last reel stops, calculate results
+                    if (index === 4) {
+                        setTimeout(() => {
+                            calculateSpinResults();
+                        }, 500);
+                    }
+                }, spinDurations[index]);
+            });
+        }
+
+        function startReelSpinning(reel, reelIndex) {
+            const reelStrip = reel.querySelector('.reel-strip');
+            if (!reelStrip) return;
+
+            let position = -66; // Start position to show symbols 1,2,3
+            let speed = 5; // symbols per frame
+            
+            function animate() {
+                if (!reel.classList.contains('realistic-spin')) return;
+                
+                position -= speed * 66; // Move by symbol height * speed
+                
+                // Reset position when we've scrolled through all symbols
+                if (position <= -25 * 66) {
+                    position = -66;
+                }
+                
+                reelStrip.style.transform = `translateY(${position}px)`;
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        function stopReelSpinning(reel, reelIndex) {
+            console.log(`🛑 Stopping reel ${reelIndex}...`);
+            reel.classList.remove('realistic-spin');
+            
+            const reelStrip = reel.querySelector('.reel-strip');
+            if (!reelStrip) return;
+
+            // Generate final symbols for this reel
+            const finalSymbols = [];
+            for (let i = 0; i < 3; i++) {
+                finalSymbols.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+            }
+
+            // Update the visible symbols (positions 1, 2, 3)
+            const symbols = reelStrip.querySelectorAll('.symbol');
+            for (let i = 1; i <= 3; i++) {
+                if (symbols[i]) {
+                    const symbolData = finalSymbols[i-1];
+                    
+                    // Clear previous content
+                    symbols[i].innerHTML = '';
+                    symbols[i].classList.remove('winning');
+                    
+                    // Try to load PNG image, fallback to emoji
+                    const img = document.createElement('img');
+                    img.src = symbolData.png;
+                    img.alt = symbolData.id;
+                    img.style.width = '40px';
+                    img.style.height = '40px';
+                    img.style.objectFit = 'contain';
+                    
+                    img.onerror = function() {
+                        symbols[i].innerHTML = '';
+                        symbols[i].textContent = symbolData.emoji;
+                        symbols[i].style.fontSize = '2rem';
+                    };
+                    
+                    img.onload = function() {
+                        symbols[i].innerHTML = '';
+                        symbols[i].appendChild(img);
+                    };
+                    
+                    // Set emoji as fallback
+                    symbols[i].textContent = symbolData.emoji;
+                    symbols[i].appendChild(img);
+                }
+            }
+
+            // Position reel strip to show the final symbols
+            reelStrip.style.transform = 'translateY(-66px)';
+            reelStrip.style.transition = 'transform 0.5s ease-out';
+            
+            // Store final symbols for result calculation
+            reel.dataset.finalSymbols = JSON.stringify(finalSymbols.map(s => s.emoji));
+        }
+
+        function calculateSpinResults() {
+            console.log('🎲 Calculating spin results...');
+            
+            // Get results from each reel
+            const reelResults = [];
+            for (let i = 0; i < 5; i++) {
+                const reel = document.getElementById(`reel-${i}`);
+                const finalSymbols = JSON.parse(reel.dataset.finalSymbols || '[]');
+                reelResults.push(finalSymbols);
+            }
+            
+            // Calculate win on center line
+            const centerLine = reelResults.map(reel => reel[1]); // Middle symbol of each reel
+            let consecutiveCount = 1;
+            let symbol = centerLine[0];
+            
+            for (let i = 1; i < centerLine.length; i++) {
+                if (centerLine[i] === symbol || symbol === '🏔️') {
+                    consecutiveCount++;
+                } else {
+                    break;
+                }
+            }
+
+            let multiplier = 0;
+            if (consecutiveCount >= 5) multiplier = 50;
+            else if (consecutiveCount >= 4) multiplier = 20;
+            else if (consecutiveCount >= 3) multiplier = 5;
+
+            if (symbol === '🏔️') multiplier *= 2;
+            if (symbol === '🚀') multiplier *= 1.5;
+
+            const winAmount = Math.floor(gameState.currentBet * multiplier);
+            
+            if (winAmount > 0) {
+                gameState.balance += winAmount;
+                gameState.totalWon += winAmount;
+                
+                if (winAmount > gameState.biggestWin) {
+                    gameState.biggestWin = winAmount;
+                }
+                
+                slotMachine.showMessage(`🎉 ¡GANASTE ${winAmount} MY!`, 'win');
+                
+                // Highlight winning symbols
+                const reels = document.querySelectorAll('.reel');
+                reels.forEach((reel) => {
+                    const reelStrip = reel.querySelector('.reel-strip');
+                    const centerSymbol = reelStrip.children[1]; // Middle symbol
+                    if (centerSymbol) {
+                        centerSymbol.classList.add('winning');
+                    }
+                });
+
+                setTimeout(() => {
+                    document.querySelectorAll('.symbol.winning').forEach(symbol => {
+                        symbol.classList.remove('winning');
+                    });
+                }, 3000);
+            } else {
+                slotMachine.showMessage('😔 Sin suerte esta vez...', 'lose');
+            }
+
+            gameState.isSpinning = false;
+            updateUI();
+        }
+
+        function testRealisticAnimation() {
+            console.log('🎬 Testing realistic animation without wallet requirement...');
+            
+            if (gameState.isSpinning) {
+                console.log('⚠️ Already spinning, ignoring test request');
+                return;
+            }
+
+            // Set mock connected wallet for testing
+            const originalWalletState = gameState.connectedWallet;
+            const originalBalance = gameState.balance;
+            
+            gameState.connectedWallet = true;
+            gameState.balance = 1000; // Mock balance for testing
+            
+            slotMachine.showMessage('🎬 ¡Probando animación realista de rodillos!', 'neutral');
+            
+            // Start the realistic spin animation
+            startRealisticSpin();
+            
+            // Restore original state after animation completes
+            setTimeout(() => {
+                gameState.connectedWallet = originalWalletState;
+                gameState.balance = originalBalance;
+                updateUI();
+            }, 4000);
+        }
+
+        function updateUI() {
+            // Update bet amounts with proper formatting
+            document.getElementById('betAmount').textContent = formatMY(gameState.currentBet);
+            document.getElementById('activeLines').textContent = gameState.activeLines;
+            
+            const totalBet = gameState.currentBet * gameState.activeLines;
+            document.getElementById('totalBet').textContent = formatMY(totalBet);
+            
+            // Update calculation display
+            document.getElementById('betCalculation').textContent = `${formatMY(gameState.currentBet)} × ${gameState.activeLines} líneas`;
+            
+            // Update balance if wallet connected
+            if (gameState.connectedWallet) {
+                document.getElementById('balance').textContent = formatMY(gameState.balance);
+                
+                // Show balance warning if insufficient funds
+                const balanceDisplay = document.getElementById('balanceDisplay');
+                if (gameState.balance < totalBet) {
+                    balanceDisplay.style.color = '#ff4757';
+                    balanceDisplay.style.fontWeight = 'bold';
+                } else {
+                    balanceDisplay.style.color = '#4ECDC4';
+                    balanceDisplay.style.fontWeight = 'bold';
+                }
+            }
+
+            // Update spin button
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = gameState.isSpinning || (gameState.connectedWallet && gameState.balance < totalBet);
+            
+            if (gameState.isSpinning) {
+                spinBtn.textContent = '🔄 GIRANDO...';
+            } else if (gameState.connectedWallet && gameState.balance < totalBet) {
+                spinBtn.textContent = '💸 SALDO INSUFICIENTE';
+            } else {
+                spinBtn.textContent = `🎰 GIRAR (${formatMY(totalBet)})`;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎰 Inicializando MoonYetis Slots Test...');
+            createReels();
+            updateUI();
+            
+            // Check for development mode after a short delay
+            setTimeout(() => {
+                checkForDevelopmentMode();
+            }, 1500);
+            
+            console.log('✅ Juego inicializado correctamente');
+        });
+
+        // Check if we're in development mode and show indicator
+        function checkForDevelopmentMode() {
+            // Check if simulated wallets exist
+            const hasSimulatedUnisat = window.unisat && typeof window.unisat.requestAccounts === 'function';
+            const hasSimulatedOKX = window.okxwallet && typeof window.okxwallet.bitcoin === 'object';
+            
+            // Check if we can find development mode indicators in console
+            const isDevelopmentEnvironment = window.location.protocol === 'file:' || 
+                                           window.location.hostname === 'localhost' ||
+                                           window.location.hostname === '127.0.0.1' ||
+                                           window.location.hostname === '';
+            
+            if (isDevelopmentEnvironment && (hasSimulatedUnisat || hasSimulatedOKX)) {
+                console.log('🚧 Development mode detected - showing indicator');
+                const indicator = document.getElementById('devModeIndicator');
+                if (indicator) {
+                    indicator.style.display = 'block';
+                }
+            }
+        }
+    </script>
+
+    <!-- Load the v3.0 wallet modules -->
+
+    <script>
+        console.log('🚀 MoonYetis Slots Test v3.0 Script Cargado');
+        
+        // Override betting functions after wallet modules load
+        function initializeBettingControls() {
+            console.log('🎰 Initializing betting controls...');
+            
+            // Ensure gameState exists and has correct initial values
+            if (!window.gameState) {
+                window.gameState = {
+                    connectedWallet: false,
+                    walletAddress: null,
+                    walletType: null,
+                    balance: 0,
+                    currentBet: 10000, // 10K MY minimum
+                    activeLines: 25,
+                    isSpinning: false,
+                    totalSpins: 0,
+                    totalWagered: 0,
+                    totalWon: 0,
+                    biggestWin: 0
+                };
+            }
+            
+            // Force correct initial values
+            window.gameState.currentBet = 10000; // 10K MY
+            window.gameState.activeLines = 25;
+            
+            // Override any conflicting functions
+            window.adjustBet = function(change) {
+                console.log(`🎰 Adjusting bet by ${change}, current: ${window.gameState.currentBet}`);
+                const newBet = window.gameState.currentBet + change;
+                if (newBet >= 10000 && newBet <= 1000000) { // 10K - 1M MY
+                    window.gameState.currentBet = newBet;
+                    updateUI();
+                    console.log(`✅ New bet: ${window.gameState.currentBet}`);
+                } else {
+                    console.log(`❌ Bet ${newBet} out of range (10K-1M MY)`);
+                }
+            };
+            
+            window.adjustLines = function(change) {
+                console.log(`🎰 Adjusting lines by ${change}, current: ${window.gameState.activeLines}`);
+                const newLines = window.gameState.activeLines + change;
+                if (newLines >= 1 && newLines <= 25) {
+                    window.gameState.activeLines = newLines;
+                    updateUI();
+                    console.log(`✅ New lines: ${window.gameState.activeLines}`);
+                } else {
+                    console.log(`❌ Lines ${newLines} out of range (1-25)`);
+                }
+            };
+            
+            // Update UI immediately
+            if (window.updateUI) {
+                updateUI();
+            }
+            
+            console.log('✅ Betting controls initialized');
+        }
+        
+        // Initialize betting controls after a short delay to ensure modules are loaded
+        setTimeout(initializeBettingControls, 100);
+    </script>
+</body>
+</html>

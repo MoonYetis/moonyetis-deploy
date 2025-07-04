@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Analizar estructura completa del proyecto MoonYetis",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Documentar funcionalidades del backend",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Documentar funcionalidades del frontend",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Documentar integración blockchain",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Crear ayuda memoria completa",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

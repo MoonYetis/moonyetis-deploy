@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Create moonyetis-mcp directory and structure",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Configure package.json with MCP SDK dependencies",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Install MCP server code",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Configure environment variables (.env)",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Update claude_desktop_config.json with new MCP",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Make files executable and test installation",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "content": "Stop all PM2 processes",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Stop Nginx service",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Remove project directories",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Clean Nginx configurations",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Drop database and user",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Clean temporary files and logs",
+    "status": "completed",
+    "priority": "low",
+    "id": "6"
+  },
+  {
+    "content": "Verify cleanup completed",
+    "status": "completed",
+    "priority": "low",
+    "id": "7"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "content": "Copy updated index.html to Nginx directory",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Verify new function was copied",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Verify test function was copied",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Set correct file permissions",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Compare file sizes",
+    "status": "completed",
+    "priority": "low",
+    "id": "5"
+  },
+  {
+    "content": "Reload Nginx",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Verify site serves new version",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  }
+]

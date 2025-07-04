@@ -1,0 +1,41 @@
+27:        async function connectWalletFunc() {
+28-            console.log('🚀 Connect function called!');
+29-            updateStatus('Connecting...');
+30-
+31-            if (window.unisat) {
+32-                try {
+33-                    console.log('🦄 Trying UniSat...');
+34-                    const accounts = await window.unisat.requestAccounts();
+35-                    console.log('✅ Success:', accounts);
+36-                    updateStatus('✅ Connected: ' + accounts[0]);
+37-                    alert('Connected: ' + accounts[0]);
+38-                    return true;
+39-                } catch(e) {
+40-                    console.log('❌ Error:', e);
+41-                }
+42-            }
+43-
+44-            updateStatus('❌ No wallet found');
+45-            alert('No wallet found - install UniSat or OKX');
+46-            return false;
+47-        }
+48-
+49-        // Assign click handler
+50-        document.addEventListener('DOMContentLoaded', function() {
+51-            console.log('🔧 DOM loaded, setting up button...');
+52-            const btn = document.getElementById('connectBtn');
+53-            if (btn) {
+54:                btn.addEventListener('click', connectWalletFunc);
+55-                console.log('✅ Button handler set');
+56-            } else {
+57-                console.log('❌ Button not found');
+58-            }
+59-        });
+60-
+61-        // Also make it globally available
+62:        window.connectWallet = connectWalletFunc;
+63-
+64-        console.log('🎰 Script loaded successfully');
+65-    </script>
+66-</body>
+67-</html>

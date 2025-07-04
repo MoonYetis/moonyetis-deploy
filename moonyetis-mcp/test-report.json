@@ -1,0 +1,234 @@
+{
+  "timestamp": "2025-06-24T20:14:54.102Z",
+  "total": 45,
+  "passed": 44,
+  "failed": 1,
+  "percentage": 98,
+  "tests": [
+    {
+      "description": "Node.js version >= 18",
+      "condition": true,
+      "details": "Current: v22.16.0"
+    },
+    {
+      "description": "Directory exists: src",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Directory exists: config",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Directory exists: tools",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Directory exists: logs",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "File exists: package.json",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "File exists: .env",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "File exists: src/index.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "File exists: start.sh",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "File exists: README.md",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "package.json has name",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "package.json has version",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "package.json has dependencies",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Dependency: @modelcontextprotocol/sdk",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Dependency: axios",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Dependency: pg",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Dependency: dotenv",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Dependency: winston",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "node_modules directory exists",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: DB_HOST",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: DB_PORT",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: DB_NAME",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: DB_USER",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: JWT_SECRET",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Environment variable: SESSION_SECRET",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": ".env has configuration lines",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/index.js",
+      "condition": false,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/index.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/casino-stats.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/casino-stats.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/wallet-monitor.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/wallet-monitor.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/fractal-network.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/fractal-network.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/player-analytics.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/player-analytics.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/system-health.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/system-health.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module syntax: src/tools/security-monitor.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Module imports: src/tools/security-monitor.js",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Database SQL file exists",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "SQL contains table creation",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "SQL contains security_alerts table",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "SQL contains wallet_transactions table",
+      "condition": true,
+      "details": ""
+    },
+    {
+      "description": "Database connection configuration",
+      "condition": true,
+      "details": "Ready for connection"
+    }
+  ]
+}

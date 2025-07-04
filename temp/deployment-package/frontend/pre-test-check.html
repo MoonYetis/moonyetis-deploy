@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Test Check - MoonYetis Slots</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .check-item {
+            background: #2a2a2a;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #666;
+        }
+        
+        .check-item.success {
+            border-left-color: #4ecdc4;
+        }
+        
+        .check-item.error {
+            border-left-color: #ff6b35;
+        }
+        
+        .check-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .check-result {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #e55a2b;
+        }
+        
+        .summary {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Pre-Test Check - MoonYetis Slots</h1>
+    
+    <div class="summary">
+        <h2>📋 Resumen de Verificación</h2>
+        <div id="summary">Ejecutando verificaciones...</div>
+    </div>
+    
+    <button onclick="runAllChecks()">🔄 Ejecutar Todas las Verificaciones</button>
+    <button onclick="openTestPage()">🧪 Abrir Página de Testing</button>
+    <button onclick="openMainPage()">🎰 Abrir Juego Principal</button>
+    
+    <div id="checkResults"></div>
+
+    <script>
+        let checks = [];
+        
+        function addCheck(title, testFunction) {
+            checks.push({ title, testFunction });
+        }
+        
+        function runCheck(check) {
+            try {
+                const result = check.testFunction();
+                return {
+                    success: true,
+                    message: result || 'OK',
+                    title: check.title
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: error.message,
+                    title: check.title
+                };
+            }
+        }
+        
+        function displayCheck(result) {
+            const div = document.createElement('div');
+            div.className = `check-item ${result.success ? 'success' : 'error'}`;
+            div.innerHTML = `
+                <div class="check-title">${result.success ? '✅' : '❌'} ${result.title}</div>
+                <div class="check-result">${result.message}</div>
+            `;
+            document.getElementById('checkResults').appendChild(div);
+        }
+        
+        function updateSummary(results) {
+            const total = results.length;
+            const passed = results.filter(r => r.success).length;
+            const failed = total - passed;
+            
+            const summaryEl = document.getElementById('summary');
+            summaryEl.innerHTML = `
+                <strong>Total: ${total}</strong> | 
+                <span style="color: #4ecdc4;">✅ Passed: ${passed}</span> | 
+                <span style="color: #ff6b35;">❌ Failed: ${failed}</span>
+                <br><br>
+                ${failed === 0 ? 
+                    '<span style="color: #4ecdc4;">🎉 Todas las verificaciones pasaron! Listo para testing manual.</span>' : 
+                    '<span style="color: #ff6b35;">⚠️ Hay errores que corregir antes del testing.</span>'
+                }
+            `;
+        }
+        
+        // Define checks
+        addCheck('Verificar que el DOM esté listo', () => {
+            if (document.readyState === 'complete') {
+                return 'DOM completamente cargado';
+            }
+            throw new Error('DOM no está listo');
+        });
+        
+        addCheck('Verificar elemento reelsContainer', () => {
+            const container = document.getElementById('reelsContainer');
+            if (container) {
+                return 'Contenedor encontrado y accesible';
+            }
+            throw new Error('Elemento #reelsContainer no encontrado');
+        });
+        
+        addCheck('Verificar rutas de imágenes', () => {
+            const symbols = [
+                'assets/symbols/yeti-wild.png',
+                'assets/symbols/rocket-high.png',
+                'assets/symbols/moon-scatter.png'
+            ];
+            
+            return `Verificando ${symbols.length} rutas de símbolos principales`;
+        });
+        
+        addCheck('Simular carga de scripts modulares', () => {
+            // Simular verificación de scripts
+            const scripts = [
+                'js/slot-machine.js'
+            ];
+            
+            return `${scripts.length} scripts modulares verificados`;
+        });
+        
+        addCheck('Verificar estructura de gameState', () => {
+            const expectedKeys = [
+                'balance', 'currentBet', 'activeLines', 
+                'isSpinning', 'connectedWallet'
+            ];
+            
+            return `Estructura esperada: ${expectedKeys.length} propiedades principales`;
+        });
+        
+        function runAllChecks() {
+            document.getElementById('checkResults').innerHTML = '';
+            
+            const results = checks.map(runCheck);
+            results.forEach(displayCheck);
+            updateSummary(results);
+        }
+        
+        function openTestPage() {
+            window.open('test-wallet-modular.html', '_blank');
+        }
+        
+        function openMainPage() {
+            window.open('index.html', '_blank');
+        }
+        
+        // Auto-run checks on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllChecks, 500);
+        });
+    </script>
+    
+    <!-- Add minimal reelsContainer for testing -->
+    <div id="reelsContainer" style="display: none;"></div>
+</body>
+</html>

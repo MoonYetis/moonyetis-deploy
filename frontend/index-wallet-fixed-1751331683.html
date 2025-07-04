@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MoonYetis Slots - Test</title>
+    <style>
+        body { font-family: Arial; background: #1a1a2e; color: white; 
+padding: 20px; text-align: center; }
+        .btn { background: #00ff88; color: black; padding: 15px 30px; 
+border: none; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        .status { margin: 20px; padding: 15px; background: #333; 
+border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🎰 MoonYetis Slots</h1>
+    <div class="status" id="status">No wallet connected</div>
+    <button class="btn" id="connectBtn">Connect Wallet</button>
+
+    <script>
+        console.log('🎰 Script loading...');
+
+        function updateStatus(msg) {
+            document.getElementById('status').innerHTML = msg;
+        }
+
+        async function connectWalletFunc() {
+            console.log('🚀 Connect function called!');
+            updateStatus('Connecting...');
+
+            if (window.unisat) {
+                try {
+                    console.log('🦄 Trying UniSat...');
+                    const accounts = await window.unisat.requestAccounts();
+                    console.log('✅ Success:', accounts);
+                    updateStatus('✅ Connected: ' + accounts[0]);
+                    alert('Connected: ' + accounts[0]);
+                    return true;
+                } catch(e) {
+                    console.log('❌ Error:', e);
+                }
+            }
+
+            updateStatus('❌ No wallet found');
+            alert('No wallet found - install UniSat or OKX');
+            return false;
+        }
+
+        // Assign click handler
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 DOM loaded, setting up button...');
+            const btn = document.getElementById('connectBtn');
+            if (btn) {
+                btn.addEventListener('click', connectWalletFunc);
+                console.log('✅ Button handler set');
+            } else {
+                console.log('❌ Button not found');
+            }
+        });
+
+        // Also make it globally available
+        window.connectWallet = connectWalletFunc;
+
+        console.log('🎰 Script loaded successfully');
+    </script>
+</body>
+</html>

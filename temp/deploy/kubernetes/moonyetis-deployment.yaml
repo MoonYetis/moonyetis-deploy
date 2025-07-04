@@ -1,0 +1,490 @@
+# MoonYetis Kubernetes Deployment
+# Production-ready Kubernetes configuration with high availability
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: moonyetis
+  labels:
+    name: moonyetis
+    environment: production
+
+---
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moonyetis-config
+  namespace: moonyetis
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  FRACTAL_NETWORK: "mainnet"
+  FRACTAL_API_URL: "https://fractal-api.unisat.io"
+  FRACTAL_INDEXER_URL: "https://fractal-indexer.unisat.io"
+  RATE_LIMIT_GENERAL: "1000"
+  RATE_LIMIT_API: "300"
+  RATE_LIMIT_TRANSACTIONS: "50"
+  RATE_LIMIT_GAMES: "200"
+  MIN_BET: "1"
+  MAX_BET: "1000"
+  HOUSE_EDGE: "0.02"
+  JACKPOT_ENABLED: "true"
+
+---
+# Secret for sensitive data
+apiVersion: v1
+kind: Secret
+metadata:
+  name: moonyetis-secrets
+  namespace: moonyetis
+type: Opaque
+data:
+  # Base64 encoded secrets - replace with actual values
+  DB_PASSWORD: <BASE64_ENCODED_DB_PASSWORD>
+  REDIS_PASSWORD: <BASE64_ENCODED_REDIS_PASSWORD>
+  JWT_SECRET: <BASE64_ENCODED_JWT_SECRET>
+  SESSION_SECRET: <BASE64_ENCODED_SESSION_SECRET>
+  FRACTAL_API_KEY: <BASE64_ENCODED_API_KEY>
+  DATADOG_API_KEY: <BASE64_ENCODED_DATADOG_KEY>
+  SENTRY_DSN: <BASE64_ENCODED_SENTRY_DSN>
+
+---
+# PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: moonyetis
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: moonyetis_slots
+        - name: POSTGRES_USER
+          value: moonyetis_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: DB_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - moonyetis_user
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - moonyetis_user
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 50Gi
+      storageClassName: fast-ssd
+
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: moonyetis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: REDIS_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# MoonYetis Application Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moonyetis-app
+  namespace: moonyetis
+  labels:
+    app: moonyetis
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: moonyetis
+  template:
+    metadata:
+      labels:
+        app: moonyetis
+        version: v1
+    spec:
+      containers:
+      - name: moonyetis
+        image: ghcr.io/your-org/moonyetis-backend:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: DB_HOST
+          value: postgres
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: moonyetis_slots
+        - name: DB_USER
+          value: moonyetis_user
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: DB_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: REDIS_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: JWT_SECRET
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: SESSION_SECRET
+        - name: FRACTAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: FRACTAL_API_KEY
+        - name: DATADOG_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: DATADOG_API_KEY
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: moonyetis-secrets
+              key: SENTRY_DSN
+        envFrom:
+        - configMapRef:
+            name: moonyetis-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/monitoring/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/monitoring/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: app-logs
+          mountPath: /app/logs
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}
+      restartPolicy: Always
+
+---
+# Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: moonyetis
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: moonyetis
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moonyetis-service
+  namespace: moonyetis
+  labels:
+    app: moonyetis
+spec:
+  selector:
+    app: moonyetis
+  ports:
+  - port: 80
+    targetPort: 3000
+    name: http
+  type: ClusterIP
+
+---
+# Ingress for external access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: moonyetis-ingress
+  namespace: moonyetis
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "5"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+spec:
+  tls:
+  - hosts:
+    - moonyetis.com
+    - www.moonyetis.com
+    secretName: moonyetis-tls
+  rules:
+  - host: moonyetis.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: moonyetis-service
+            port:
+              number: 80
+  - host: www.moonyetis.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: moonyetis-service
+            port:
+              number: 80
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: moonyetis-hpa
+  namespace: moonyetis
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: moonyetis-app
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: moonyetis-pdb
+  namespace: moonyetis
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: moonyetis
+
+---
+# Network Policy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: moonyetis-network-policy
+  namespace: moonyetis
+spec:
+  podSelector:
+    matchLabels:
+      app: moonyetis
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: UDP
+      port: 53

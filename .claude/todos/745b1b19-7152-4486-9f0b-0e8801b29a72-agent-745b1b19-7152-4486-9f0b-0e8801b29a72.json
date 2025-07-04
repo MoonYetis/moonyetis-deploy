@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Check frontend directory and verify auto-spin/turbo button presence in HTML",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Check file dates and modification times of frontend files",
+    "status": "pending",
+    "priority": "medium",
+    "id": "2"
+  },
+  {
+    "content": "Search for multiple frontend versions across the system",
+    "status": "pending",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Force update frontend from GitHub production-deploy branch",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  }
+]

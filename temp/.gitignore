@@ -1,0 +1,17 @@
+node_modules/
+logs/
+*.log
+.env.local
+.env.development
+coverage/
+.DS_Store
+temp/
+*.tmp
+.nyc_output
+dist/
+.secure/
+*.key
+*.pem
+test-*
+debug-*
+simple-*

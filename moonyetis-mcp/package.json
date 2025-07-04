@@ -1,0 +1,91 @@
+{
+  "name": "moonyetis-mcp",
+  "version": "1.0.0",
+  "description": "MoonYetis Casino Crypto MCP Server - Fractal Bitcoin Integration",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test src/test/*.js",
+    "build": "echo 'Building MCP server...' && npm install",
+    "casino:stats": "node src/tools/casino-stats.js",
+    "wallet:monitor": "node src/tools/wallet-monitor.js",
+    "fractal:sync": "node src/tools/fractal-sync.js"
+  },
+  "keywords": [
+    "mcp",
+    "casino",
+    "crypto",
+    "fractal-bitcoin",
+    "brc20",
+    "moonyetis",
+    "blockchain",
+    "gambling"
+  ],
+  "author": "MoonYetis Casino Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "axios": "^1.6.2",
+    "ws": "^8.14.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "redis": "^4.6.10",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.1",
+    "moment": "^2.29.4",
+    "big.js": "^6.2.1",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "@types/node": "^20.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moonyetis/moonyetis-casino-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moonyetis/moonyetis-casino-mcp/issues"
+  },
+  "homepage": "https://moonyetis.com",
+  "mcp": {
+    "server": {
+      "name": "moonyetis-casino",
+      "description": "MoonYetis Casino MCP Server for Fractal Bitcoin Integration",
+      "version": "1.0.0",
+      "capabilities": [
+        "tools",
+        "resources",
+        "prompts",
+        "logging"
+      ],
+      "tools": [
+        "get_casino_stats",
+        "monitor_wallet_activity",
+        "check_fractal_network",
+        "get_token_balance",
+        "get_player_stats",
+        "get_game_history",
+        "monitor_deposits",
+        "check_withdrawals",
+        "get_leaderboard",
+        "alert_system",
+        "backup_database",
+        "system_health"
+      ]
+    }
+  }
+}

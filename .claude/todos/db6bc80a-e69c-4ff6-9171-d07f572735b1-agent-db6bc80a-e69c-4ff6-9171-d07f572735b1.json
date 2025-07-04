@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Navigate to ~/moonyetis-slots-ultra-accessible directory",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Pull latest changes from GitHub (git pull origin main)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Restart PM2 service (pm2 restart moonyetis-slots)",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Check PM2 status",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Test health endpoint (curl -I http://localhost:3000/health)",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Verify moonyetis.io is updated and Test Backend button is removed",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Search for and remove all demo mode messages",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Remove specific demo mode messages from HTML files",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Find and modify function showing demo dialog",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Check current wallet detection logic",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Fix wallet detection in wallet-manager-v3.js",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Create backup of wallet-manager-v3.js",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  }
+]

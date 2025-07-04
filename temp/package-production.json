@@ -1,0 +1,28 @@
+{
+  "name": "moonyetis-slots-production",
+  "version": "1.0.0",
+  "description": "MoonYetis Slots Casino - Production Ready",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "production": "NODE_ENV=production node start-production.js",
+    "install-deps": "npm install --production",
+    "setup": "chmod +x install-server.sh && ./install-server.sh"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "compression": "^1.8.0",
+    "helmet": "^7.2.0",
+    "express-rate-limit": "^7.5.1",
+    "ws": "^8.18.2",
+    "dotenv": "^16.5.0",
+    "pg": "^8.16.2",
+    "axios": "^1.6.2",
+    "winston": "^3.11.0"
+  }
+}

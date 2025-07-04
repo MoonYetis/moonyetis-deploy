@@ -1,0 +1,56 @@
+[
+  {
+    "content": "Navigate to ~/moonyetis-slots-ultra-accessible directory",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Pull latest changes from origin main",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Restart pm2 moonyetis-slots service",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Wait 3 seconds for service restart",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Check pm2 logs for last 5 lines",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Verify slot machine symbols are visible",
+    "status": "pending",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Verify Connect Wallet button is clickable",
+    "status": "pending",
+    "priority": "medium",
+    "id": "7"
+  },
+  {
+    "content": "Verify wallet modal opens when clicked",
+    "status": "pending",
+    "priority": "medium",
+    "id": "8"
+  },
+  {
+    "content": "Check for console errors blocking script execution",
+    "status": "pending",
+    "priority": "medium",
+    "id": "9"
+  }
+]

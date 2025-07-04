@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Agregar imports de los nuevos módulos de wallet al HTML principal",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Buscar y reemplazar todas las referencias antiguas de wallet en los archivos JS",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Actualizar los botones/triggers de UI para usar el nuevo flujo",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Eliminar imports y referencias obsoletas de wallet-integration-v3.js",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Verificar que no hay duplicidad de lógica ni referencias rotas",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

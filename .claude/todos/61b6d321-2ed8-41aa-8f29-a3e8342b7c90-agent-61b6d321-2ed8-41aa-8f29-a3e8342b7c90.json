@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Disable automatic deployment scripts in /var/www/moonyetis-slots",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Disable deployment scripts in /root",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Install inotify-tools for file monitoring",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Apply wallet function fix to index.html",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Set up real-time file monitoring",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Verify the fix is applied correctly",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  }
+]

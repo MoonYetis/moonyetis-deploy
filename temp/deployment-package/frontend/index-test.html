@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonYetis Slots - Test Principal v3.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94A3B8;
+            font-size: 1.2rem;
+        }
+
+        .wallet-status {
+            background: rgba(255, 107, 53, 0.1);
+            border: 2px solid #FF6B35;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            color: #0A0E1A;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .balance {
+            color: #4ECDC4;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .slot-machine {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #FF6B35;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .reels-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .reel {
+            background: #1E293B;
+            border: 2px solid #374151;
+            border-radius: 10px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .symbol {
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border-bottom: 1px solid #374151;
+            transition: all 0.3s ease;
+        }
+
+        .symbol.winning {
+            background: rgba(255, 230, 109, 0.3);
+            border: 2px solid #FFE66D;
+            box-shadow: 0 0 15px #FFE66D;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            align-items: center;
+        }
+
+        .control-group {
+            text-align: center;
+        }
+
+        .control-label {
+            color: #94A3B8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .control-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFE66D;
+            margin-bottom: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .control-btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #E55A2B;
+            transform: scale(1.1);
+        }
+
+        .spin-btn {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFE66D 100%);
+            color: #0A0E1A;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .spin-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .message.win {
+            background: rgba(78, 205, 196, 0.2);
+            border: 2px solid #4ECDC4;
+            color: #4ECDC4;
+        }
+
+        .message.lose {
+            background: rgba(255, 107, 53, 0.2);
+            border: 2px solid #FF6B35;
+            color: #FF9F7A;
+        }
+
+        .message.neutral {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #94A3B8;
+            color: #94A3B8;
+        }
+
+        .spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-66px); }
+        }
+
+        /* Wallet Modal Styles */
+        .wallet-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .wallet-selector-content {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .wallet-selector-content h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .wallet-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .wallet-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .wallet-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .wallet-status {
+            font-size: 12px;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(45deg, #ff4757, #c44569);
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .reels-container {
+                gap: 5px;
+            }
+            
+            .reel {
+                height: 150px;
+            }
+            
+            .symbol {
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">🌙 MOON YETIS SLOTS 🚀</h1>
+        <p class="subtitle">¡El casino crypto del futuro!</p>
+    </div>
+
+    <div class="wallet-status">
+        <div id="walletInfo">
+            <div id="devModeIndicator" style="display: none; color: #ffd700; font-size: 0.9rem; margin-bottom: 10px; text-align: center;">
+                🚧 MODO DESARROLLO - Wallets Simuladas (No requiere extensiones reales)
+            </div>
+            <button id="connectWallet" class="connect-btn">
+                <span id="walletBtnText">🔗 Conectar Wallet</span>
+            </button>
+        </div>
+        <div class="balance" id="balanceDisplay" style="display: none;">
+            Balance: <span id="balance">0</span> sats
+        </div>
+    </div>
+
+    <div class="slot-machine">
+        <div class="reels-container" id="reelsContainer">
+            <!-- Los rodillos se generarán aquí -->
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">Apuesta</div>
+                <div class="control-value" id="betAmount">10 MY</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustBet(-5)">-</button>
+                    <button class="control-btn" onclick="adjustBet(5)">+</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Líneas</div>
+                <div class="control-value" id="activeLines">25</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustLines(-5)">-</button>
+                    <button class="control-btn" onclick="adjustLines(5)">+</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Total</div>
+                <div class="control-value" id="totalBet">250 MY</div>
+            </div>
+
+            <div class="control-group">
+                <button class="spin-btn" id="spinBtn" onclick="spin()">
+                    🎰 GIRAR
+                </button>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Última Ganancia</div>
+                <div class="control-value" id="lastWin">0 MY</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+
+    <!-- Mock game state for testing -->
+    <script>
+        // Create mock gameState for testing
+        window.gameState = {
+            connectedWallet: false,
+            walletAddress: null,
+            walletType: null,
+            balance: 0,
+            currentBet: 10,
+            activeLines: 25,
+            isSpinning: false,
+            totalSpins: 0,
+            totalWagered: 0,
+            totalWon: 0,
+            biggestWin: 0
+        };
+
+        // Create mock slotMachine for testing
+        window.slotMachine = {
+            showMessage: function(message, type) {
+                console.log(`📢 SlotMachine Message [${type}]: ${message}`);
+                
+                const messageEl = document.getElementById('message');
+                messageEl.textContent = message;
+                messageEl.className = `message ${type}`;
+                messageEl.style.display = 'block';
+                
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 4000);
+            },
+            
+            updateUI: function() {
+                console.log('🎮 SlotMachine UI Updated');
+                updateUI();
+            },
+
+            createReels: function() {
+                console.log('🎲 Creating reels...');
+                createReels();
+            }
+        };
+
+        // Simple slot machine functions
+        const SYMBOLS = ['🏔️', '🚀', '🌙', '🪙', '⭐', '🪐', '👽', '🛸'];
+
+        function createReels() {
+            const container = document.getElementById('reelsContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) {
+                const reel = document.createElement('div');
+                reel.className = 'reel';
+                reel.id = `reel-${i}`;
+
+                for (let j = 0; j < 3; j++) {
+                    const symbol = document.createElement('div');
+                    symbol.className = 'symbol';
+                    symbol.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                    reel.appendChild(symbol);
+                }
+
+                container.appendChild(reel);
+            }
+        }
+
+        function adjustBet(change) {
+            const newBet = gameState.currentBet + change;
+            if (newBet >= 5 && newBet <= 100) {
+                gameState.currentBet = newBet;
+                updateUI();
+            }
+        }
+
+        function adjustLines(change) {
+            const newLines = gameState.activeLines + change;
+            if (newLines >= 1 && newLines <= 25) {
+                gameState.activeLines = newLines;
+                updateUI();
+            }
+        }
+
+        async function spin() {
+            if (!gameState.connectedWallet) {
+                slotMachine.showMessage('⚠️ ¡Conecta tu wallet primero!', 'lose');
+                return;
+            }
+
+            if (gameState.isSpinning) return;
+
+            const totalBet = gameState.currentBet * gameState.activeLines;
+            
+            if (gameState.balance < totalBet) {
+                slotMachine.showMessage('💸 ¡Saldo insuficiente!', 'lose');
+                return;
+            }
+
+            gameState.isSpinning = true;
+            gameState.balance -= totalBet;
+            gameState.totalSpins++;
+            gameState.totalWagered += totalBet;
+            
+            updateUI();
+
+            // Simulate spinning
+            const reels = document.querySelectorAll('.reel');
+            reels.forEach(reel => reel.classList.add('spinning'));
+
+            setTimeout(() => {
+                reels.forEach(reel => reel.classList.remove('spinning'));
+                
+                // Generate new results
+                const results = [];
+                for (let i = 0; i < 5; i++) {
+                    const reel = document.getElementById(`reel-${i}`);
+                    const symbols = reel.querySelectorAll('.symbol');
+                    const reelResult = [];
+                    
+                    for (let j = 0; j < 3; j++) {
+                        const newSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                        symbols[j].textContent = newSymbol;
+                        symbols[j].classList.remove('winning');
+                        reelResult.push(newSymbol);
+                    }
+                    results.push(reelResult);
+                }
+                
+                // Simple win calculation
+                const centerLine = [results[0][1], results[1][1], results[2][1], results[3][1], results[4][1]];
+                let consecutiveCount = 1;
+                let symbol = centerLine[0];
+                
+                for (let i = 1; i < centerLine.length; i++) {
+                    if (centerLine[i] === symbol || symbol === '🏔️') {
+                        consecutiveCount++;
+                    } else {
+                        break;
+                    }
+                }
+
+                let multiplier = 0;
+                if (consecutiveCount >= 5) multiplier = 50;
+                else if (consecutiveCount >= 4) multiplier = 20;
+                else if (consecutiveCount >= 3) multiplier = 5;
+
+                if (symbol === '🏔️') multiplier *= 2;
+                if (symbol === '🚀') multiplier *= 1.5;
+
+                const winAmount = Math.floor(gameState.currentBet * multiplier);
+                
+                if (winAmount > 0) {
+                    gameState.balance += winAmount;
+                    gameState.totalWon += winAmount;
+                    
+                    if (winAmount > gameState.biggestWin) {
+                        gameState.biggestWin = winAmount;
+                    }
+                    
+                    slotMachine.showMessage(`🎉 ¡GANASTE ${winAmount} MY!`, 'win');
+                    
+                    // Highlight winning symbols
+                    const reels = document.querySelectorAll('.reel');
+                    reels.forEach((reel) => {
+                        const centerSymbol = reel.children[1];
+                        centerSymbol.classList.add('winning');
+                    });
+
+                    setTimeout(() => {
+                        document.querySelectorAll('.symbol.winning').forEach(symbol => {
+                            symbol.classList.remove('winning');
+                        });
+                    }, 3000);
+                } else {
+                    slotMachine.showMessage('😔 Sin suerte esta vez...', 'lose');
+                }
+
+                gameState.isSpinning = false;
+                updateUI();
+                
+            }, 2000);
+        }
+
+        function updateUI() {
+            document.getElementById('betAmount').textContent = `${gameState.currentBet} MY`;
+            document.getElementById('activeLines').textContent = gameState.activeLines;
+            document.getElementById('totalBet').textContent = `${gameState.currentBet * gameState.activeLines} MY`;
+            
+            if (gameState.connectedWallet) {
+                document.getElementById('balance').textContent = gameState.balance;
+            }
+
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = gameState.isSpinning;
+            spinBtn.textContent = gameState.isSpinning ? '🔄 GIRANDO...' : '🎰 GIRAR';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎰 Inicializando MoonYetis Slots Test...');
+            createReels();
+            updateUI();
+            
+            // Check for development mode after a short delay
+            setTimeout(() => {
+                checkForDevelopmentMode();
+            }, 1500);
+            
+            console.log('✅ Juego inicializado correctamente');
+        });
+
+        // Check if we're in development mode and show indicator
+        function checkForDevelopmentMode() {
+            // Check if simulated wallets exist
+            const hasSimulatedUnisat = window.unisat && typeof window.unisat.requestAccounts === 'function';
+            const hasSimulatedOKX = window.okxwallet && typeof window.okxwallet.bitcoin === 'object';
+            
+            // Check if we can find development mode indicators in console
+            const isDevelopmentEnvironment = window.location.protocol === 'file:' || 
+                                           window.location.hostname === 'localhost' ||
+                                           window.location.hostname === '127.0.0.1' ||
+                                           window.location.hostname === '';
+            
+            if (isDevelopmentEnvironment && (hasSimulatedUnisat || hasSimulatedOKX)) {
+                console.log('🚧 Development mode detected - showing indicator');
+                const indicator = document.getElementById('devModeIndicator');
+                if (indicator) {
+                    indicator.style.display = 'block';
+                }
+            }
+        }
+    </script>
+
+    <!-- Load the v3.0 wallet modules -->
+
+    <script>
+        console.log('🚀 MoonYetis Slots Test v3.0 Script Cargado');
+    </script>
+</body>
+</html>

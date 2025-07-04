@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Check current nginx configuration and site status",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Verify which application is being served",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Check PM2 processes and localhost:3000 status",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Remove old nginx configuration and clean up old files",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  }
+]

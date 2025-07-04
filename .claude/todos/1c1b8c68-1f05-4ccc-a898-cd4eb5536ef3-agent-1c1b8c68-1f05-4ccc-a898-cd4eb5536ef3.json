@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Create deployment script for MoonYetis update process",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Add error handling and validation to deployment script",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Test the deployment script syntax",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  }
+]

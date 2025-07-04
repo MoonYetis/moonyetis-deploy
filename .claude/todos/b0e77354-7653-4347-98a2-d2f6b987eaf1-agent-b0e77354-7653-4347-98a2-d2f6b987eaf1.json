@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Configure SSL certificate for moonyetis.io and www.moonyetis.io using certbot",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Verify domain DNS resolution",
+    "status": "completed",
+    "priority": "medium",
+    "id": "2"
+  },
+  {
+    "content": "Reload nginx service after SSL configuration",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Verify SSL configuration and nginx status",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  }
+]

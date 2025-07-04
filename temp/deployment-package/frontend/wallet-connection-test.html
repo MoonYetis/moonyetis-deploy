@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Connection Test - v3.0</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-section h3 {
+            color: #00ff88;
+            margin-top: 0;
+            border-bottom: 2px solid #00ff88;
+            padding-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .connect-button {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            font-size: 16px;
+            padding: 15px 30px;
+        }
+
+        .disconnect-button {
+            background: linear-gradient(45deg, #ff4757, #c44569);
+        }
+
+        .test-button {
+            background: linear-gradient(45deg, #3742fa, #2f3542);
+        }
+
+        .log-area {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-card {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-card h4 {
+            margin: 0 0 10px 0;
+            color: #ffd700;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .error-message {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #ff4757;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #00ff88;
+            margin: 10px 0;
+        }
+
+        .info-message {
+            color: #3742fa;
+            background: rgba(55, 66, 250, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #3742fa;
+            margin: 10px 0;
+        }
+
+        .wallet-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .wallet-selector-content {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .wallet-selector-content h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .wallet-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .wallet-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .wallet-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .wallet-status {
+            font-size: 12px;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(45deg, #ff4757, #c44569);
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #ffd700);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .blinking {
+            animation: blink 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MoonYetis Wallet Connection Test v3.0</h1>
+        
+        <div class="test-section">
+            <h3>🔗 Wallet Connection Controls</h3>
+            <div class="button-group">
+                <button id="connectWallet" class="connect-button">
+                    <span id="walletBtnText">Connect Wallet</span>
+                </button>
+                <button id="disconnectBtn" class="disconnect-button" onclick="disconnectWallet()" disabled>
+                    Disconnect Wallet
+                </button>
+                <button class="test-button" onclick="detectWallets()">
+                    🔍 Detect Wallets
+                </button>
+                <button class="test-button" onclick="refreshStatus()">
+                    🔄 Refresh Status
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Connection Status</h3>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h4>Connection Status</h4>
+                    <div id="connectionStatus" class="status-indicator disconnected">
+                        <span id="statusText">Not Connected</span>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <h4>Wallet Type</h4>
+                    <div id="walletType" class="status-value">None</div>
+                </div>
+                <div class="status-card">
+                    <h4>Wallet Address</h4>
+                    <div id="walletAddress" class="status-value">Not connected</div>
+                </div>
+                <div class="status-card" id="balanceDisplay" style="display: none;">
+                    <h4>Balance</h4>
+                    <div id="balance" class="status-value">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Advanced Tests</h3>
+            <div class="button-group">
+                <button class="test-button" onclick="testWalletDetection()">
+                    Test Wallet Detection
+                </button>
+                <button class="test-button" onclick="testConnectionFlow()">
+                    Test Full Connection Flow
+                </button>
+                <button class="test-button" onclick="testErrorHandling()">
+                    Test Error Handling
+                </button>
+                <button class="test-button" onclick="testEventListeners()">
+                    Test Event Listeners
+                </button>
+                <button class="test-button" onclick="simulateWalletChange()">
+                    Simulate Wallet Change
+                </button>
+                <button class="test-button" onclick="testBackendVerification()">
+                    Test Backend Verification
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Test Log</h3>
+            <div class="button-group">
+                <button class="test-button" onclick="clearLog()">Clear Log</button>
+                <button class="test-button" onclick="exportLog()">Export Log</button>
+            </div>
+            <div id="testLog" class="log-area">
+                <div>🚀 Wallet Connection Test v3.0 initialized</div>
+                <div>📋 Ready for testing...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Debug Information</h3>
+            <div id="debugInfo" class="log-area">
+                <div>Loading debug information...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mock game state for testing -->
+    <script>
+        // Create mock gameState for testing
+        window.gameState = {
+            connectedWallet: false,
+            walletAddress: null,
+            walletType: null,
+            balance: 0
+        };
+
+        // Create mock slotMachine for testing
+        window.slotMachine = {
+            showMessage: function(message, type) {
+                logToTest(`📢 SlotMachine Message [${type}]: ${message}`);
+                
+                // Show visual feedback based on type
+                const messageDiv = document.createElement('div');
+                messageDiv.className = type === 'win' ? 'success-message' : 
+                                    type === 'lose' ? 'error-message' : 'info-message';
+                messageDiv.textContent = message;
+                
+                const container = document.querySelector('.container');
+                container.insertBefore(messageDiv, container.firstChild);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 5000);
+            },
+            
+            updateUI: function() {
+                logToTest('🎮 SlotMachine UI Updated');
+                updateConnectionDisplay();
+            }
+        };
+    </script>
+
+    <!-- Load the v3.0 wallet modules -->
+
+    <script>
+        // Test logging functionality
+        function logToTest(message) {
+            const logArea = document.getElementById('testLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #666;">[${timestamp}]</span> ${message}`;
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('testLog').innerHTML = '';
+            logToTest('📋 Log cleared');
+        }
+
+        function exportLog() {
+            const logContent = document.getElementById('testLog').innerText;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wallet-test-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            logToTest('📥 Log exported');
+        }
+
+        // Status update functions
+        function updateConnectionDisplay() {
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            const walletType = document.getElementById('walletType');
+            const walletAddress = document.getElementById('walletAddress');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            const balance = document.getElementById('balance');
+            const connectBtn = document.getElementById('connectWallet');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const walletBtnText = document.getElementById('walletBtnText');
+
+            if (gameState.connectedWallet) {
+                statusElement.className = 'status-indicator connected';
+                statusElement.style.color = '#00ff88';
+                statusText.textContent = `Connected (${gameState.walletType ? gameState.walletType.toUpperCase() : 'Unknown'})`;
+                walletType.textContent = gameState.walletType ? gameState.walletType.toUpperCase() : 'Unknown';
+                walletAddress.textContent = gameState.walletAddress ? 
+                    `${gameState.walletAddress.substring(0, 8)}...${gameState.walletAddress.substring(-6)}` : 
+                    'No address';
+                balanceDisplay.style.display = 'block';
+                balance.textContent = `${gameState.balance} sats`;
+                
+                const walletIcon = gameState.walletType === 'unisat' ? '🦄' : '🟠';
+                walletBtnText.textContent = `${walletIcon} ${gameState.walletAddress ? gameState.walletAddress.substring(0, 6) + '...' + gameState.walletAddress.substring(-4) : 'Connected'}`;
+                connectBtn.className = 'disconnect-button';
+                disconnectBtn.disabled = false;
+            } else {
+                statusElement.className = 'status-indicator disconnected';
+                statusElement.style.color = '#ff4757';
+                statusText.textContent = 'Not Connected';
+                walletType.textContent = 'None';
+                walletAddress.textContent = 'Not connected';
+                balanceDisplay.style.display = 'none';
+                
+                walletBtnText.textContent = 'Connect Wallet';
+                connectBtn.className = 'connect-button';
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        function refreshStatus() {
+            logToTest('🔄 Refreshing status...');
+            updateConnectionDisplay();
+            updateDebugInfo();
+            logToTest('✅ Status refreshed');
+        }
+
+        function updateDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            const info = `
+Environment Information:
+- Hostname: ${window.location.hostname}
+- Protocol: ${window.location.protocol}
+- User Agent: ${navigator.userAgent.substring(0, 100)}...
+
+Wallet Manager Status:
+- Current Wallet: ${walletManager.currentWallet || 'None'}
+- Is Connected: ${walletManager.isConnected}
+
+Available Window Objects:
+- window.unisat: ${typeof window.unisat}
+- window.okxwallet: ${typeof window.okxwallet}
+- window.okx: ${typeof window.okx}
+- window.bitcoin: ${typeof window.bitcoin}
+
+Game State:
+- Connected Wallet: ${gameState.connectedWallet}
+- Wallet Address: ${gameState.walletAddress || 'None'}
+- Wallet Type: ${gameState.walletType || 'None'}
+- Balance: ${gameState.balance} sats
+
+Module Status:
+            `.trim();
+            
+            debugInfo.textContent = info;
+        }
+
+        // Test functions
+        async function detectWallets() {
+            logToTest('🔍 Starting wallet detection test...');
+            try {
+                const wallets = await walletManager.detectAvailableWallets();
+                logToTest('✅ Wallet detection completed:');
+                logToTest(`   UniSat: ${wallets.unisat.available ? '✅ Available' : '❌ Not available'} (Installed: ${wallets.unisat.installed})`);
+                logToTest(`   OKX: ${wallets.okx.available ? '✅ Available' : '❌ Not available'} (Installed: ${wallets.okx.installed})`);
+                
+                // Check for development mode
+                const isDev = window.location.hostname === '' || 
+                            window.location.hostname === 'localhost' || 
+                            window.location.protocol === 'file:';
+                if (isDev && (wallets.unisat.available || wallets.okx.available)) {
+                    logToTest('🚧 Development mode detected - simulated wallets created');
+                }
+                
+                return wallets;
+            } catch (error) {
+                logToTest(`❌ Wallet detection failed: ${error.message}`);
+                throw error;
+            }
+        }
+
+        async function testWalletDetection() {
+            logToTest('🧪 Testing wallet detection...');
+            try {
+                await detectWallets();
+                logToTest('✅ Wallet detection test passed');
+            } catch (error) {
+                logToTest(`❌ Wallet detection test failed: ${error.message}`);
+            }
+        }
+
+        async function testConnectionFlow() {
+            logToTest('🧪 Testing full connection flow...');
+            try {
+                // First detect wallets
+                const wallets = await detectWallets();
+                
+                if (!wallets.unisat.available && !wallets.okx.available) {
+                    logToTest('⚠️ No wallets available for connection test');
+                    return;
+                }
+                
+                // Test connection
+                logToTest('🔄 Attempting wallet connection...');
+                await connectWallet();
+                
+                logToTest('✅ Connection flow test completed');
+            } catch (error) {
+                logToTest(`❌ Connection flow test failed: ${error.message}`);
+            }
+        }
+
+        async function testErrorHandling() {
+            logToTest('🧪 Testing error handling...');
+            
+            // Test with invalid wallet manager state
+            const originalWalletManager = window.walletManager;
+            window.walletManager = null;
+            
+            try {
+                await connectWallet();
+                logToTest('❌ Error handling test failed - should have thrown error');
+            } catch (error) {
+                logToTest('✅ Error correctly caught: ' + error.message);
+            }
+            
+            // Restore wallet manager
+            window.walletManager = originalWalletManager;
+            logToTest('✅ Error handling test completed');
+        }
+
+        function testEventListeners() {
+            logToTest('🧪 Testing event listeners...');
+            
+            if (walletManager.isConnected) {
+                // Test account change simulation
+                logToTest('🔄 Simulating account change...');
+                if (walletManager.onAccountChanged) {
+                    walletManager.onAccountChanged('bc1qtest123456789abcdef');
+                    logToTest('✅ Account change event fired');
+                }
+                
+                // Test network change simulation
+                logToTest('🔄 Simulating network change...');
+                if (walletManager.onNetworkChanged) {
+                    walletManager.onNetworkChanged('testnet');
+                    logToTest('✅ Network change event fired');
+                }
+            } else {
+                logToTest('⚠️ Wallet not connected - cannot test event listeners');
+            }
+            
+            logToTest('✅ Event listener test completed');
+        }
+
+        function simulateWalletChange() {
+            logToTest('🧪 Simulating wallet account change...');
+            
+            if (walletManager.isConnected && walletManager.onAccountChanged) {
+                const testAccounts = ['bc1qtest111111111111111', 'bc1qtest222222222222222'];
+                const randomAccount = testAccounts[Math.floor(Math.random() * testAccounts.length)];
+                
+                logToTest(`🔄 Simulating change to: ${randomAccount}`);
+                walletManager.onAccountChanged(randomAccount);
+                logToTest('✅ Wallet change simulation completed');
+            } else {
+                logToTest('⚠️ No wallet connected or no account change handler available');
+            }
+        }
+
+        async function testBackendVerification() {
+            logToTest('🧪 Testing backend verification...');
+            
+            // Create test connection data
+            const testData = {
+                address: 'bc1qtest123456789abcdef',
+                signature: {
+                    message: 'Test message',
+                    signature: 'fake_signature_for_development_testing_only',
+                    timestamp: Date.now()
+                },
+                walletType: 'unisat',
+                balance: { total: 100000 }
+            };
+            
+            try {
+                // This should trigger development mode verification
+                const result = await window.verifyWalletWithBackend ? 
+                    window.verifyWalletWithBackend(testData) : 
+                    { success: true, developmentMode: true };
+                
+                if (result.success) {
+                    logToTest('✅ Backend verification test passed');
+                    if (result.developmentMode) {
+                        logToTest('🚧 Development mode verification used');
+                    }
+                } else {
+                    logToTest(`❌ Backend verification failed: ${result.error}`);
+                }
+            } catch (error) {
+                logToTest(`❌ Backend verification test failed: ${error.message}`);
+            }
+        }
+
+        // Initialize the test page
+        document.addEventListener('DOMContentLoaded', function() {
+            logToTest('🚀 Test page DOM loaded');
+            logToTest('🔄 Initializing test environment...');
+            
+            // Initial status update
+            updateConnectionDisplay();
+            updateDebugInfo();
+            
+            // Check module loading
+            if (typeof walletManager !== 'undefined') {
+            } else {
+            }
+            
+            if (typeof connectWallet === 'function') {
+            } else {
+            }
+            
+            // Set up periodic status updates
+            setInterval(updateDebugInfo, 10000); // Update debug info every 10 seconds
+            
+            logToTest('✅ Test environment initialized');
+            logToTest('📋 Ready for wallet connection testing');
+            
+            // Auto-detect wallets on load
+            setTimeout(() => {
+                detectWallets().then(() => {
+                    logToTest('🔍 Initial wallet detection completed');
+                }).catch(error => {
+                    logToTest(`⚠️ Initial wallet detection error: ${error.message}`);
+                });
+            }, 1000);
+        });
+
+        // Add some additional helper functions for testing
+        window.testHelpers = {
+            logToTest,
+            updateConnectionDisplay,
+            refreshStatus,
+            detectWallets,
+            testWalletDetection,
+            testConnectionFlow,
+            testErrorHandling,
+            testEventListeners,
+            simulateWalletChange,
+            testBackendVerification
+        };
+
+        // Override console.log to also log to our test area
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            
+            // Only log wallet-related messages to avoid spam
+            const message = args.join(' ');
+            if (message.includes('🔗') || message.includes('🦄') || message.includes('🟠') || 
+                message.includes('Wallet') || message.includes('wallet') ||
+                message.includes('UniSat') || message.includes('OKX')) {
+                logToTest(`📝 Console: ${message}`);
+            }
+        };
+
+        logToTest('🔧 Test environment setup completed');
+    </script>
+</body>
+</html>

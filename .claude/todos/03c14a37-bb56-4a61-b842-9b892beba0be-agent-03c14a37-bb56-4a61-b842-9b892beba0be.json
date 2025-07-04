@@ -1,0 +1,44 @@
+[
+  {
+    "content": "Move project to correct location /var/www/moonyetis-slots",
+    "status": "completed",
+    "priority": "high",
+    "id": "move-project"
+  },
+  {
+    "content": "Install Node.js dependencies",
+    "status": "completed",
+    "priority": "high",
+    "id": "install-deps"
+  },
+  {
+    "content": "Configure PostgreSQL (new database)",
+    "status": "completed",
+    "priority": "high",
+    "id": "config-postgres"
+  },
+  {
+    "content": "Set up environment variables (.env.production)",
+    "status": "completed",
+    "priority": "high",
+    "id": "env-vars"
+  },
+  {
+    "content": "Configure PM2",
+    "status": "completed",
+    "priority": "medium",
+    "id": "config-pm2"
+  },
+  {
+    "content": "Configure Nginx",
+    "status": "pending",
+    "priority": "medium",
+    "id": "config-nginx"
+  },
+  {
+    "content": "Verify complete functionality",
+    "status": "pending",
+    "priority": "high",
+    "id": "verify-function"
+  }
+]

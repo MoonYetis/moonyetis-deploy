@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Create new wallet-fixed HTML file with timestamp",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Configure Nginx for new version",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Activate new configuration and reload Nginx",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Verify new version is working",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  }
+]

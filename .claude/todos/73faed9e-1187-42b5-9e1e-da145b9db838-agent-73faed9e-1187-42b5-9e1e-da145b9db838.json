@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Investigate wallet connection issues in moonyetis.io",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Fix reel images not displaying properly",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Test wallet connection functionality",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Verify reel image loading and display",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  }
+]

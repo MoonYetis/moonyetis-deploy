@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Configure SSL Certificate with Let's Encrypt for moonyetis.io",
+    "status": "completed",
+    "priority": "high",
+    "id": "ssl-setup"
+  },
+  {
+    "content": "Fix Redis authentication with secure password",
+    "status": "completed",
+    "priority": "high",
+    "id": "redis-auth"
+  },
+  {
+    "content": "Fix database credentials with secure user and password",
+    "status": "completed",
+    "priority": "high",
+    "id": "db-credentials"
+  },
+  {
+    "content": "Verify final system configuration and test HTTPS",
+    "status": "completed",
+    "priority": "medium",
+    "id": "verification"
+  }
+]

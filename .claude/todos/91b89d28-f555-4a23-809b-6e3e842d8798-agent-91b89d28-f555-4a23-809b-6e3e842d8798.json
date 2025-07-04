@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Check current wallet connection code in the HTML file",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Create improved HTML with explicit wallet connection function",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Replace the existing file with the corrected version",
+    "status": "pending",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Verify the function is properly added to the file",
+    "status": "pending",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Reload nginx to serve the updated file",
+    "status": "pending",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Test that the function is accessible via the website",
+    "status": "pending",
+    "priority": "low",
+    "id": "6"
+  }
+]

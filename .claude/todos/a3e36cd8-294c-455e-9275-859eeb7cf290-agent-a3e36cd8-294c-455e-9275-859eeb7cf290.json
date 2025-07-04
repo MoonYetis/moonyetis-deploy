@@ -1,0 +1,56 @@
+[
+  {
+    "content": "Navigate to /var/www and verify location",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Clone MoonYetis repository (production-deploy branch)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Verify cloned files and check package.json",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Install Node.js dependencies",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Configure PostgreSQL database and user",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Setup production environment variables (.env.production)",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Configure Nginx as reverse proxy",
+    "status": "pending",
+    "priority": "medium",
+    "id": "7"
+  },
+  {
+    "content": "Start application with PM2",
+    "status": "pending",
+    "priority": "high",
+    "id": "8"
+  },
+  {
+    "content": "Verify deployment and test functionality",
+    "status": "pending",
+    "priority": "high",
+    "id": "9"
+  }
+]

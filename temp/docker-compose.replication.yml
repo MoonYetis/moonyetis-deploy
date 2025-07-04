@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  postgres-primary:
+    image: postgres:15
+    container_name: moonyetis-postgres-primary
+    environment:
+      POSTGRES_DB: moonyetis_slots
+      POSTGRES_USER: moonyetis_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD_FILE: /run/secrets/replication_password
+    volumes:
+      - postgres_primary_data:/var/lib/postgresql/data
+      - ./postgresql.primary.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.primary.conf:/etc/postgresql/pg_hba.conf
+      - ./init_replication.sql:/docker-entrypoint-initdb.d/init_replication.sql
+    ports:
+      - "5432:5432"
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - moonyetis-network
+    secrets:
+      - db_password
+      - replication_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moonyetis_user -d moonyetis_slots"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-replica:
+    image: postgres:15
+    container_name: moonyetis-postgres-replica
+    environment:
+      POSTGRES_DB: moonyetis_slots
+      POSTGRES_USER: moonyetis_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PGUSER: postgres
+    volumes:
+      - postgres_replica_data:/var/lib/postgresql/data
+      - ./postgresql.replica.conf:/etc/postgresql/postgresql.conf
+      - ./recovery.conf:/var/lib/postgresql/data/recovery.conf
+    ports:
+      - "5433:5432"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    command: |
+      bash -c "
+        if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo 'Initializing replica from primary...'
+          PGPASSWORD=$$(cat /run/secrets/replication_password) pg_basebackup -h postgres-primary -D /var/lib/postgresql/data -U replicator -W -v -P -R
+          chown -R postgres:postgres /var/lib/postgresql/data
+        fi
+        postgres -c config_file=/etc/postgresql/postgresql.conf
+      "
+    networks:
+      - moonyetis-network
+    secrets:
+      - db_password
+      - replication_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moonyetis_user -d moonyetis_slots"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: moonyetis-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - moonyetis-network
+    command: redis-server --appendonly yes --requirepass redis_password
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: moonyetis-pgbouncer
+    environment:
+      DATABASES_HOST: postgres-primary
+      DATABASES_PORT: 5432
+      DATABASES_USER: moonyetis_user
+      DATABASES_PASSWORD_FILE: /run/secrets/db_password
+      DATABASES_DBNAME: moonyetis_slots
+      POOL_MODE: transaction
+      SERVER_RESET_QUERY: DISCARD ALL
+      MAX_CLIENT_CONN: 100
+      DEFAULT_POOL_SIZE: 25
+    ports:
+      - "6432:5432"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    networks:
+      - moonyetis-network
+    secrets:
+      - db_password
+
+volumes:
+  postgres_primary_data:
+    driver: local
+  postgres_replica_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  moonyetis-network:
+    driver: bridge
+
+secrets:
+  db_password:
+    file: ./.secrets/db_password
+  replication_password:
+    file: ./.secrets/replication_password

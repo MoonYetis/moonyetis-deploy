@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Initialize git repository",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Add all files to git",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Create initial commit",
+    "status": "pending",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Set up GitHub remote",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Push to GitHub",
+    "status": "pending",
+    "priority": "high",
+    "id": "5"
+  }
+]

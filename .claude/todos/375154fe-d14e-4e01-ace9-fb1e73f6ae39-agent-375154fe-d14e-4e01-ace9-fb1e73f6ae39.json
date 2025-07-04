@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Investigate and fix the syntax error: Unexpected token '||' at (index):2560:37",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Fix roller images not displaying properly",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Fix wallet button functionality",
+    "status": "pending",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Fix malformed comment block in script section (lines 1754-5064)",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "4"
+  }
+]

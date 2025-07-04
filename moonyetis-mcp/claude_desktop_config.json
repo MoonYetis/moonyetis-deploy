@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "moonyetis-casino": {
+      "command": "node",
+      "args": ["/root/moonyetis-mcp/src/index.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+    
+    # Ramp-up phase
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: "Ramp-up to 50 users/sec"
+    
+    # Sustained load
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load - 50 users/sec"
+    
+    # Peak load
+    - duration: 180
+      arrivalRate: 50
+      rampTo: 200
+      name: "Peak load - up to 200 users/sec"
+    
+    # Stress test
+    - duration: 120
+      arrivalRate: 200
+      rampTo: 500
+      name: "Stress test - up to 500 users/sec"
+    
+    # Cool-down
+    - duration: 60
+      arrivalRate: 500
+      rampTo: 0
+      name: "Cool-down"
+
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery Load Test'
+
+  plugins:
+    metrics-by-endpoint: {}
+    expect: {}
+
+scenarios:
+  # Basic health checks
+  - name: "Health Check Flow"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/monitoring/health"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+
+  # Wallet operations
+  - name: "Wallet Operations Flow"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/blockchain/balance"
+          expect:
+            - statusCode: [200, 429] # Accept rate limiting
+      
+      - think: 2
+      
+      - post:
+          url: "/api/blockchain/generate-address"
+          json:
+            network: "fractal-testnet"
+          expect:
+            - statusCode: [200, 429]
+
+  # Game operations
+  - name: "Game Operations Flow"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/leaderboard"
+          expect:
+            - statusCode: 200
+      
+      - think: 1
+      
+      - post:
+          url: "/api/game/spin"
+          json:
+            bet: 10
+            lines: 5
+          expect:
+            - statusCode: [200, 400, 429] # Accept various responses
+
+  # Monitoring endpoints
+  - name: "Monitoring Flow"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/monitoring/metrics"
+          expect:
+            - statusCode: [200, 429]
+      
+      - get:
+          url: "/api/monitoring/circuit-breakers"
+          expect:
+            - statusCode: [200, 429]
+
+  # Static content
+  - name: "Static Content Flow"
+    weight: 10
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/frontend/css/style.css"
+          expect:
+            - statusCode: [200, 404] # May not exist
+      
+      - get:
+          url: "/frontend/js/moonyetis-slots.js"
+          expect:
+            - statusCode: [200, 404]
+
+# Custom functions for dynamic data
+processor: "./load-test-processor.js"

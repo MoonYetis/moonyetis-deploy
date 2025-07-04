@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Extensiones de Wallet</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .installed {
+            color: #00ff88;
+        }
+        .not-installed {
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Detector de Extensiones de Wallet</h1>
+        
+        <button onclick="checkExtensions()">🔄 Verificar Extensiones</button>
+        <button onclick="clearLog()">🧹 Limpiar</button>
+        <button onclick="startAutoCheck()">⏰ Auto-verificar (cada 5s)</button>
+        <button onclick="stopAutoCheck()">⏹️ Detener Auto-verificar</button>
+        
+        <div id="status" class="status">
+Iniciando detector de extensiones...
+Haz clic en "Verificar Extensiones" para comenzar.
+        </div>
+    </div>
+
+    <script>
+        let autoCheckInterval = null;
+        
+        function log(message) {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            statusDiv.textContent += `\n[${timestamp}] ${message}`;
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('status').textContent = 'Log limpiado.\n';
+        }
+        
+        function checkExtensions() {
+            log('🔍 Verificando extensiones de wallet...');
+            
+            // Check UniSat
+            const unisatInstalled = typeof window.unisat !== 'undefined';
+            if (unisatInstalled) {
+                log('✅ UniSat: INSTALADA');
+                log(`   - Tipo: ${typeof window.unisat}`);
+                log(`   - Métodos disponibles: ${Object.keys(window.unisat).join(', ')}`);
+                
+                // Try to detect if it's the real extension or simulated
+                if (window.unisat.requestAccounts) {
+                    log('   - requestAccounts: ✅ Disponible');
+                }
+                if (window.unisat.getBalance) {
+                    log('   - getBalance: ✅ Disponible');
+                }
+                if (window.unisat.signMessage) {
+                    log('   - signMessage: ✅ Disponible');
+                }
+                
+                // Check if it looks like a real extension
+                const isRealExtension = window.unisat.toString && !window.unisat.toString().includes('SIMULADO');
+                log(`   - Es extensión real: ${isRealExtension ? '✅ SÍ' : '❌ NO (simulada)'}`);
+            } else {
+                log('❌ UniSat: NO INSTALADA');
+            }
+            
+            // Check OKX
+            const okxInstalled = typeof window.okxwallet !== 'undefined';
+            if (okxInstalled) {
+                log('✅ OKX: INSTALADA');
+                log(`   - Tipo: ${typeof window.okxwallet}`);
+                log(`   - Estructura: ${Object.keys(window.okxwallet).join(', ')}`);
+                
+                if (window.okxwallet.bitcoin) {
+                    log('   - bitcoin API: ✅ Disponible');
+                    log(`   - bitcoin métodos: ${Object.keys(window.okxwallet.bitcoin).join(', ')}`);
+                }
+                
+                // Check if it looks like a real extension
+                const isRealExtension = window.okxwallet.toString && !window.okxwallet.toString().includes('SIMULADO');
+                log(`   - Es extensión real: ${isRealExtension ? '✅ SÍ' : '❌ NO (simulada)'}`);
+            } else {
+                log('❌ OKX: NO INSTALADA');
+            }
+            
+            // Overall status
+            const totalInstalled = (unisatInstalled ? 1 : 0) + (okxInstalled ? 1 : 0);
+            log(`📊 Total extensiones detectadas: ${totalInstalled}/2`);
+            
+            // Environment check
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            log(`🌐 Entorno: ${protocol}//${hostname}`);
+            
+            const isDevelopment = hostname === 'localhost' || 
+                                 hostname === '127.0.0.1' || 
+                                 hostname.includes('local') ||
+                                 protocol === 'file:' ||
+                                 hostname === '';
+            log(`🚧 Modo desarrollo detectado: ${isDevelopment ? 'SÍ' : 'NO'}`);
+            
+            log('─'.repeat(50));
+        }
+        
+        function startAutoCheck() {
+            if (autoCheckInterval) {
+                clearInterval(autoCheckInterval);
+            }
+            
+            log('⏰ Iniciando verificación automática cada 5 segundos...');
+            autoCheckInterval = setInterval(() => {
+                log('🔄 Auto-verificación...');
+                checkExtensions();
+            }, 5000);
+        }
+        
+        function stopAutoCheck() {
+            if (autoCheckInterval) {
+                clearInterval(autoCheckInterval);
+                autoCheckInterval = null;
+                log('⏹️ Verificación automática detenida');
+            }
+        }
+        
+        // Initial check
+        setTimeout(() => {
+            log('🚀 Realizando verificación inicial...');
+            checkExtensions();
+        }, 1000);
+        
+        // Listen for extension installations (some extensions fire events)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('🔄 Verificación post-carga...');
+                checkExtensions();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

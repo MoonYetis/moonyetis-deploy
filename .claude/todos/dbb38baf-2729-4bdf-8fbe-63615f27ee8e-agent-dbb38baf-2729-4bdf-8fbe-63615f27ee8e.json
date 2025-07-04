@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Navigate to project directory and check existing Nginx config",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Create Nginx configuration file for moonyetis",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Enable the configuration and disable default",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Test and restart Nginx service",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Perform final connectivity test",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "content": "Navigate to /var/www directory and clone repository",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Switch to production-deploy branch and verify files",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Install Node.js dependencies",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Configure PostgreSQL database and user",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Set up environment variables (.env.production)",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Configure Nginx reverse proxy",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Start application with PM2",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Verify complete deployment functionality",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  }
+]

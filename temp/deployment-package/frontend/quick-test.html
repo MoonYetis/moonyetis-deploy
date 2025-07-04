@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Wallet Test - MoonYetis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        button {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover { background: #E55A2B; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        #status {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            min-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 20px 0;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+        .info { color: #0ff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Quick Wallet Test - MoonYetis</h1>
+    
+    <div class="container">
+        <h2>🎯 Test Rápido de Wallets</h2>
+        <p>Prueba directa de detección y conexión de wallets:</p>
+        <button id="test-js" onclick="testJS()">🧪 Test JavaScript</button>
+        <button id="test-detection" onclick="testDetection()">🔍 Detectar Wallets</button>
+        <button id="test-unisat" onclick="testUniSat()">🦄 Test UniSat</button>
+        <button id="test-okx" onclick="testOKX()">🟠 Test OKX</button>
+        <button id="clear-status" onclick="clearStatus()">🧹 Limpiar</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 Resultado del Test</h2>
+        <div id="status">Listo para test...
+</div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const status = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                success: '#0f0',
+                error: '#f00', 
+                warning: '#ff0',
+                info: '#0ff'
+            };
+            
+            const coloredMessage = `<span style="color: ${colors[type]}">[${timestamp}] ${message}</span>\n`;
+            status.innerHTML += coloredMessage;
+            status.scrollTop = status.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Test function to verify JavaScript is working
+        function testJS() {
+            log('✅ JavaScript funcionando correctamente', 'success');
+        }
+
+        function clearStatus() {
+            document.getElementById('status').innerHTML = 'Status limpiado...\n';
+        }
+
+        async function testDetection() {
+            log('🔍 Iniciando detección de wallets...', 'info');
+            
+            // Check UniSat
+            const unisatAvailable = typeof window.unisat !== 'undefined';
+            log(`UniSat: ${unisatAvailable ? '✅ Detectada' : '❌ No detectada'}`, unisatAvailable ? 'success' : 'error');
+            if (unisatAvailable) {
+                log(`  - Métodos disponibles: ${Object.keys(window.unisat).slice(0, 5).join(', ')}...`, 'info');
+            }
+            
+            // Check OKX
+            const okxAvailable = typeof window.okxwallet !== 'undefined';
+            log(`OKX: ${okxAvailable ? '✅ Detectada' : '❌ No detectada'}`, okxAvailable ? 'success' : 'error');
+            if (okxAvailable) {
+                const fractalSupport = !!window.okxwallet.fractal;
+                const bitcoinSupport = !!window.okxwallet.bitcoin;
+                log(`  - Fractal API: ${fractalSupport ? '✅' : '❌'}`, fractalSupport ? 'success' : 'warning');
+                log(`  - Bitcoin API: ${bitcoinSupport ? '✅' : '❌'}`, bitcoinSupport ? 'success' : 'warning');
+                log(`  - APIs disponibles: ${Object.keys(window.okxwallet).join(', ')}`, 'info');
+            }
+        }
+
+        async function testUniSat() {
+            log('🦄 Testing UniSat...', 'info');
+            
+            try {
+                if (typeof window.unisat === 'undefined') {
+                    throw new Error('UniSat no detectada');
+                }
+                
+                log('📞 Llamando unisat.requestAccounts()...', 'info');
+                const accounts = await window.unisat.requestAccounts();
+                log(`✅ Cuentas: ${JSON.stringify(accounts)}`, 'success');
+                
+                if (accounts.length > 0) {
+                    const address = accounts[0];
+                    log(`🏠 Dirección: ${address}`, 'info');
+                    
+                    // Test balance
+                    try {
+                        const balance = await window.unisat.getBalance();
+                        log(`💰 Balance: ${JSON.stringify(balance)}`, 'success');
+                    } catch (balanceError) {
+                        log(`⚠️ Error balance: ${balanceError.message}`, 'warning');
+                    }
+                    
+                    // Test signature
+                    try {
+                        const message = `Test message from MoonYetis
+Time: ${new Date().toISOString()}
+Address: ${address}`;
+                        log(`📝 Solicitando firma...`, 'info');
+                        const signature = await window.unisat.signMessage(message);
+                        log(`✅ Firma obtenida: ${signature.substring(0, 20)}...`, 'success');
+                        
+                        // Test backend connection (if available)
+                        try {
+                            const response = await fetch('/api/wallet/connect', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    address,
+                                    signature,
+                                    message,
+                                    walletType: 'unisat',
+                                    timestamp: Date.now()
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const result = await response.json();
+                                log(`🎉 Backend connection OK: ${JSON.stringify(result.success)}`, 'success');
+                            } else {
+                                const error = await response.text();
+                                log(`⚠️ Backend error: ${error}`, 'warning');
+                            }
+                        } catch (backendError) {
+                            log(`⚠️ Backend no disponible: ${backendError.message}`, 'warning');
+                        }
+                        
+                    } catch (signError) {
+                        log(`❌ Error firma: ${signError.message}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log(`❌ Error UniSat: ${error.message}`, 'error');
+            }
+        }
+
+        async function testOKX() {
+            log('🟠 Testing OKX...', 'info');
+            
+            try {
+                if (typeof window.okxwallet === 'undefined') {
+                    throw new Error('OKX no detectada');
+                }
+                
+                let result, address;
+                
+                // Try different connection methods
+                if (window.okxwallet.fractal) {
+                    log('📞 Llamando okxwallet.fractal.connect()...', 'info');
+                    result = await window.okxwallet.fractal.connect();
+                    address = result.address;
+                } else if (window.okxwallet.bitcoin) {
+                    log('📞 Llamando okxwallet.bitcoin.connect()...', 'info');
+                    result = await window.okxwallet.bitcoin.connect();
+                    address = result.address;
+                } else if (window.okxwallet.connect) {
+                    log('📞 Llamando okxwallet.connect()...', 'info');
+                    result = await window.okxwallet.connect();
+                    address = result.address || result;
+                } else {
+                    throw new Error('No hay métodos de conexión disponibles');
+                }
+                
+                log(`✅ Conexión OKX: ${JSON.stringify(result)}`, 'success');
+                
+                if (address) {
+                    log(`🏠 Dirección: ${address}`, 'info');
+                    
+                    // Test signature
+                    try {
+                        const message = `Test message from MoonYetis
+Time: ${new Date().toISOString()}
+Address: ${address}`;
+                        log(`📝 Solicitando firma OKX...`, 'info');
+                        
+                        let signature;
+                        if (window.okxwallet.fractal?.signMessage) {
+                            signature = await window.okxwallet.fractal.signMessage(message);
+                        } else if (window.okxwallet.bitcoin?.signMessage) {
+                            signature = await window.okxwallet.bitcoin.signMessage(message);
+                        } else if (window.okxwallet.signMessage) {
+                            signature = await window.okxwallet.signMessage(message);
+                        } else {
+                            throw new Error('No hay métodos de firma disponibles');
+                        }
+                        
+                        log(`✅ Firma OKX obtenida: ${signature.substring(0, 20)}...`, 'success');
+                        
+                        // Test backend connection (if available)
+                        try {
+                            const response = await fetch('/api/wallet/connect', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    address,
+                                    signature,
+                                    message,
+                                    walletType: 'okx',
+                                    timestamp: Date.now()
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const result = await response.json();
+                                log(`🎉 Backend connection OK: ${JSON.stringify(result.success)}`, 'success');
+                            } else {
+                                const error = await response.text();
+                                log(`⚠️ Backend error: ${error}`, 'warning');
+                            }
+                        } catch (backendError) {
+                            log(`⚠️ Backend no disponible: ${backendError.message}`, 'warning');
+                        }
+                        
+                    } catch (signError) {
+                        log(`❌ Error firma OKX: ${signError.message}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log(`❌ Error OKX: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📄 Página cargada. JavaScript funcionando. Haz click en cualquier botón para comenzar.', 'info');
+            log('🔍 Verificando disponibilidad básica de wallets...', 'info');
+            
+            // Quick check
+            const unisatDetected = typeof window.unisat !== 'undefined';
+            const okxDetected = typeof window.okxwallet !== 'undefined';
+            
+            log(`UniSat: ${unisatDetected ? '✅ Detectada' : '❌ No detectada'}`, unisatDetected ? 'success' : 'warning');
+            log(`OKX: ${okxDetected ? '✅ Detectada' : '❌ No detectada'}`, okxDetected ? 'success' : 'warning');
+            
+            if (!unisatDetected && !okxDetected) {
+                log('⚠️ Ninguna wallet detectada. Asegúrate de tener UniSat o OKX instaladas y desbloqueadas.', 'warning');
+            }
+        });
+    </script>
+</body>
+</html>

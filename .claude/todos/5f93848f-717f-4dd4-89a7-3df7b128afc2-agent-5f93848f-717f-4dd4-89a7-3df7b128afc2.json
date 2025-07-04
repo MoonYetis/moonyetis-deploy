@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Create backup of current working file",
+    "status": "completed",
+    "priority": "high",
+    "id": "backup-current"
+  },
+  {
+    "content": "Apply all Spanish to English translations in single operation",
+    "status": "completed",
+    "priority": "high",
+    "id": "apply-translations"
+  },
+  {
+    "content": "Create timestamped version to prevent reversions",
+    "status": "completed",
+    "priority": "high",
+    "id": "create-timestamped"
+  },
+  {
+    "content": "Update Nginx configuration to serve new version",
+    "status": "completed",
+    "priority": "high",
+    "id": "update-nginx"
+  },
+  {
+    "content": "Verify new English version is being served",
+    "status": "completed",
+    "priority": "medium",
+    "id": "verify-deployment"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Create backup of working production version",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "List all moonyetis versions to confirm deletion targets",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Delete old versions except working moonyetis-slots",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Verify cleanup completed",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Confirm working version still intact",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Verify backup was created successfully",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  }
+]

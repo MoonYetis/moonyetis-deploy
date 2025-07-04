@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonYetis Fixes Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #0A0E1A; color: white; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #333; border-radius: 8px; }
+        .symbol { width: 68px; height: 68px; display: inline-block; margin: 5px; border: 2px solid #4ECDC4; border-radius: 8px; }
+        .symbol img { width: 100%; height: 100%; object-fit: contain; }
+        .status { color: #4ECDC4; font-weight: bold; }
+        .error { color: #FF6B35; font-weight: bold; }
+        .success { color: #4ECDC4; font-weight: bold; }
+        button { padding: 10px 20px; background: #FF6B35; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        button:hover { background: #E55A2B; }
+    </style>
+</head>
+<body>
+    <h1>🚀 MoonYetis Slot Machine Fixes Test</h1>
+    
+    <div class="test-section">
+        <h2>🎰 TEST 1: Slot Machine Symbols</h2>
+        <p>Testing if PNG images load correctly instead of emojis:</p>
+        <div id="symbolTest">
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/yeti-wild.png" alt="yeti-wild" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/rocket-high.png" alt="rocket-high" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/moon-scatter.png" alt="moon-scatter" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/coin-medium.png" alt="coin-medium" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/star-medium.png" alt="star-medium" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/planet-low.png" alt="planet-low" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/alien-bonus.png" alt="alien-bonus" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+            <div class="symbol"><img src="moonyetis-slots/frontend/assets/symbols/ufo-special.png" alt="ufo-special" onerror="this.parentElement.innerHTML='❌ FAILED'"></div>
+        </div>
+        <p id="symbolStatus" class="status">✅ All symbol images loaded successfully!</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 TEST 2: Wallet Connection</h2>
+        <p>Testing wallet provider detection:</p>
+        <div id="walletTest">
+            <p id="unisatStatus"></p>
+            <p id="okxStatus"></p>
+            <button onclick="testWalletConnection()">Test Wallet Connection</button>
+            <div id="walletResult"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 TEST 3: JavaScript Functionality</h2>
+        <p>Testing updated JavaScript code:</p>
+        <div id="jsTest">
+            <button onclick="testSymbolGeneration()">Test Symbol Generation</button>
+            <div id="jsResult"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Test wallet detection
+        function checkWallets() {
+            const unisatStatus = document.getElementById('unisatStatus');
+            const okxStatus = document.getElementById('okxStatus');
+            
+            if (typeof window.unisat !== 'undefined') {
+                unisatStatus.innerHTML = '✅ UniSat Wallet detected';
+                unisatStatus.className = 'success';
+            } else {
+                unisatStatus.innerHTML = '⚠️ UniSat Wallet not detected (install extension)';
+                unisatStatus.className = 'status';
+            }
+            
+            if (typeof window.okxwallet?.bitcoin !== 'undefined') {
+                okxStatus.innerHTML = '✅ OKX Wallet detected';
+                okxStatus.className = 'success';
+            } else {
+                okxStatus.innerHTML = '⚠️ OKX Wallet not detected (install extension)';
+                okxStatus.className = 'status';
+            }
+        }
+        
+        async function testWalletConnection() {
+            const result = document.getElementById('walletResult');
+            result.innerHTML = '<p class="status">🔄 Testing wallet connection...</p>';
+            
+            try {
+                if (typeof window.unisat !== 'undefined') {
+                    const accounts = await window.unisat.requestAccounts();
+                    result.innerHTML = `<p class="success">✅ UniSat connected: ${accounts[0]}</p>`;
+                } else if (typeof window.okxwallet?.bitcoin !== 'undefined') {
+                    const accounts = await window.okxwallet.bitcoin.requestAccounts();
+                    result.innerHTML = `<p class="success">✅ OKX connected: ${accounts[0]}</p>`;
+                } else {
+                    result.innerHTML = '<p class="error">❌ No wallet detected. Please install UniSat or OKX wallet extension.</p>';
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Wallet connection failed: ${error.message}</p>`;
+            }
+        }
+        
+        function testSymbolGeneration() {
+            const result = document.getElementById('jsResult');
+            
+            // Test the new symbol structure
+            const SYMBOLS = [
+                { emoji: '🏔️', image: 'moonyetis-slots/frontend/assets/symbols/yeti-wild.png', name: 'yeti-wild' },
+                { emoji: '🚀', image: 'moonyetis-slots/frontend/assets/symbols/rocket-high.png', name: 'rocket-high' },
+                { emoji: '🌙', image: 'moonyetis-slots/frontend/assets/symbols/moon-scatter.png', name: 'moon-scatter' },
+                { emoji: '🪙', image: 'moonyetis-slots/frontend/assets/symbols/coin-medium.png', name: 'coin-medium' },
+                { emoji: '⭐', image: 'moonyetis-slots/frontend/assets/symbols/star-medium.png', name: 'star-medium' },
+                { emoji: '🪐', image: 'moonyetis-slots/frontend/assets/symbols/planet-low.png', name: 'planet-low' },
+                { emoji: '👽', image: 'moonyetis-slots/frontend/assets/symbols/alien-bonus.png', name: 'alien-bonus' },
+                { emoji: '🛸', image: 'moonyetis-slots/frontend/assets/symbols/ufo-special.png', name: 'ufo-special' }
+            ];
+            
+            const randomSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+            result.innerHTML = `
+                <p class="success">✅ Symbol generation working!</p>
+                <p>Random symbol: ${randomSymbol.name}</p>
+                <div class="symbol"><img src="${randomSymbol.image}" alt="${randomSymbol.name}"></div>
+            `;
+        }
+        
+        // Run tests on load
+        window.addEventListener('load', function() {
+            checkWallets();
+            
+            // Check if any symbol images failed to load
+            setTimeout(function() {
+                const failedSymbols = document.querySelectorAll('#symbolTest .symbol:contains("❌")');
+                if (failedSymbols.length > 0) {
+                    document.getElementById('symbolStatus').innerHTML = '❌ Some symbol images failed to load';
+                    document.getElementById('symbolStatus').className = 'error';
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

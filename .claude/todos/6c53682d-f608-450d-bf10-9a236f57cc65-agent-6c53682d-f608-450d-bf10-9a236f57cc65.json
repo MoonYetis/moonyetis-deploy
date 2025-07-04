@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Search for and identify all wallet-related files and components",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Check for any remaining references to old wallet modules/functions",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Verify the new modular wallet system implementation",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Test wallet connection, selection and disconnection flow",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Review code cleanliness and documentation",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

@@ -1,0 +1,6 @@
+{
+    "window.commandCenter": true,
+    "remote.SSH.remotePlatform": {
+        "ssh root@168.231.124.18": "linux"
+    }
+}

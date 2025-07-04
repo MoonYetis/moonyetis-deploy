@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Crear una solución simple y directa - cambiar a emojis como el repositorio de referencia",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Eliminar completamente la dependencia de imágenes PNG problemáticas",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Implementar solución que funcione inmediatamente",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  }
+]

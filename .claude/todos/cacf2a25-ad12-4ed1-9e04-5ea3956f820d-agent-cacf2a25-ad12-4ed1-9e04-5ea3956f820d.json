@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Create backup files before modifying",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Remove demo mode button from HTML",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Remove demo functions from JavaScript",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Update message for when no wallets are available",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Verify changes and remove all demo references",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Restart PM2 to apply changes",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  }
+]

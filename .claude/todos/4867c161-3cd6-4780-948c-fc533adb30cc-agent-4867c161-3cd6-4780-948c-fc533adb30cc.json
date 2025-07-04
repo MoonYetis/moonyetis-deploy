@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Check PostgreSQL service status",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Create database and user in PostgreSQL",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Review init_database.sql content",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Initialize database with SQL script",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Verify database creation and tables",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

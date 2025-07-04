@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Create backup of wallet-integration.js",
+    "status": "completed",
+    "priority": "high",
+    "id": "backup_frontend"
+  },
+  {
+    "content": "Change gameState.balance to use accountInfo.gameChips",
+    "status": "completed",
+    "priority": "high",
+    "id": "fix_gamestate_balance"
+  },
+  {
+    "content": "Change API calls from external wallet to internal account info",
+    "status": "completed",
+    "priority": "high",
+    "id": "change_api_calls"
+  },
+  {
+    "content": "Update refresh function to use internal balance",
+    "status": "completed",
+    "priority": "high",
+    "id": "update_refresh_function"
+  },
+  {
+    "content": "Verify all changes were applied correctly",
+    "status": "completed",
+    "priority": "medium",
+    "id": "verify_changes"
+  },
+  {
+    "content": "Restart PM2 service to apply changes",
+    "status": "completed",
+    "priority": "medium",
+    "id": "restart_service"
+  }
+]

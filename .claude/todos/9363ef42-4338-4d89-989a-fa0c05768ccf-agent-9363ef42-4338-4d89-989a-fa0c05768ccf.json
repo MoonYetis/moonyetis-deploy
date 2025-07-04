@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Get correct frontend version without buttons from commit 6f954e9",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Verify the file no longer contains auto-spin or turbo buttons",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Restart PM2 to apply changes",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Verify website no longer shows buttons",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Verify website is functioning correctly",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

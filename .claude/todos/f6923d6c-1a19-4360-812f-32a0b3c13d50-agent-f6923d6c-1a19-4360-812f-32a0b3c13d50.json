@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Create frontend/js/wallets.js with wallet detection and connection methods",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Implement detectAvailableWallets method",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Implement connectUniSat method",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Implement connectOKX method",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Implement disconnect method",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Implement getCurrent method",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  }
+]

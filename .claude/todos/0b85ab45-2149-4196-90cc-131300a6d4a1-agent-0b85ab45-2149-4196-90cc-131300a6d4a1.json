@@ -1,0 +1,50 @@
+[
+  {
+    "content": "Crear directorio /var/www y clonar repositorio desde branch production-deploy",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Verificar estructura del proyecto clonado",
+    "status": "pending",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Instalar dependencias de Node.js production y específicas",
+    "status": "pending",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Configurar PostgreSQL: crear database, usuario y ejecutar migraciones",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Configurar Nginx con nginx-hostinger.conf",
+    "status": "pending",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Crear directorio de logs /var/log/moonyetis-slots/",
+    "status": "pending",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Iniciar aplicación con PM2 usando ecosystem.config.js",
+    "status": "pending",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Verificar funcionamiento: health checks y PM2 status",
+    "status": "pending",
+    "priority": "high",
+    "id": "8"
+  }
+]

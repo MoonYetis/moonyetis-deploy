@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Navigate to project directory and backup current index.html",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Download correct version from GitHub repository",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Create and run verification script according to specifications",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Restart moonyetis-slots service if verification passes",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Perform final verification check",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

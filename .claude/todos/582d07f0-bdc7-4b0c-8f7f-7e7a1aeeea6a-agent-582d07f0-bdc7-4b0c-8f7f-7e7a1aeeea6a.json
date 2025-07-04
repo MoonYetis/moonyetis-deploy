@@ -1,0 +1,14 @@
+[
+  {
+    "content": "Open deploy.sh file for editing",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Add nginx reload commands to the end of deploy script",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  }
+]

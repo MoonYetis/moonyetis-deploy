@@ -1,0 +1,44 @@
+[
+  {
+    "content": "Navigate to moonyetis-slots-ultra-accessible directory",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Pull latest changes from origin main",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Restart moonyetis-slots PM2 process",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Check PM2 logs for any errors",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Test moonyetis.io loads without console errors",
+    "status": "pending",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Test wallet connection works after signing",
+    "status": "pending",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Test UI updates properly when wallets connect",
+    "status": "pending",
+    "priority": "medium",
+    "id": "7"
+  }
+]

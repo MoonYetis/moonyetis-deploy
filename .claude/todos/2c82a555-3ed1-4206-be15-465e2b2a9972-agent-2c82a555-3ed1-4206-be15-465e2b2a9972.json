@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Verify that the moonyetis-real-wallet tar.gz file arrived in /tmp",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Create backup of current frontend/index.html",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Extract new version from tar.gz file",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Verify changes were applied correctly",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Restart moonyetis-production with pm2",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Perform functional test with curl",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "6"
+  }
+]

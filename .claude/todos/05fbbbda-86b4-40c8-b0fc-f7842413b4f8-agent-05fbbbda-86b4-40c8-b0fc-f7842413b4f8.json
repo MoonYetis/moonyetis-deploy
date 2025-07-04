@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Remove BTC balance display from success message",
+    "status": "completed",
+    "priority": "high",
+    "id": "11"
+  },
+  {
+    "content": "Fix gameState.balance assignment to 1M tokens after connection",
+    "status": "completed",
+    "priority": "high",
+    "id": "12"
+  },
+  {
+    "content": "Remove BTC equivalent from balance display in updateWalletUI",
+    "status": "completed",
+    "priority": "high",
+    "id": "13"
+  },
+  {
+    "content": "Force all gameState.balance assignments to 0",
+    "status": "completed",
+    "priority": "medium",
+    "id": "14"
+  }
+]

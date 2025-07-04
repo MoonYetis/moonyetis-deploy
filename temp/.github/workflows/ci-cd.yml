@@ -1,0 +1,401 @@
+# MoonYetis CI/CD Pipeline
+# Automated testing, security scanning, and deployment for production
+
+name: MoonYetis CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  NODE_VERSION: '18.x'
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: moonyetis-backend
+
+jobs:
+  # Code Quality and Security Checks
+  quality-check:
+    name: Quality & Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: npm run lint
+      continue-on-error: false
+      
+    - name: Run Prettier check
+      run: npm run format:check
+      continue-on-error: false
+      
+    - name: Security audit
+      run: npm audit --audit-level=high
+      continue-on-error: false
+      
+    - name: Run custom security audit
+      run: node tests/security/security-audit.js
+      continue-on-error: false
+      
+    - name: Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  # Unit and Integration Tests
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: moonyetis_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Setup test environment
+      run: |
+        cp .env.test.example .env.test
+        npm run db:migrate:test
+        npm run db:seed:test
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: moonyetis_test
+        DB_USER: test_user
+        DB_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        
+    - name: Run unit tests
+      run: npm run test:unit
+      env:
+        NODE_ENV: test
+        
+    - name: Run integration tests
+      run: npm run test:integration
+      env:
+        NODE_ENV: test
+        
+    - name: Generate test coverage
+      run: npm run test:coverage
+      env:
+        NODE_ENV: test
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  # Performance and Load Testing
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Artillery
+      run: npm install -g artillery@latest
+      
+    - name: Start application
+      run: |
+        npm run build
+        npm start &
+        sleep 30
+      env:
+        NODE_ENV: test
+        PORT: 3000
+        
+    - name: Run load tests
+      run: |
+        artillery run tests/load-testing/artillery-config.yml
+        
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: tests/load-testing/results/
+
+  # Docker Build and Security Scan
+  docker-build:
+    name: Docker Build & Scan
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: false
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ steps.meta.outputs.tags }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Staging Deployment
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [performance-test, docker-build]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        npm run deploy:staging
+      env:
+        STAGING_SERVER: ${{ secrets.STAGING_SERVER }}
+        STAGING_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+        STAGING_USER: ${{ secrets.STAGING_USER }}
+        
+    - name: Run smoke tests
+      run: |
+        npm run test:smoke -- --url=${{ secrets.STAGING_URL }}
+        
+    - name: Notify deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Production Deployment
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [performance-test, docker-build]
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # This would trigger your production deployment
+      env:
+        PRODUCTION_SERVER: ${{ secrets.PRODUCTION_SERVER }}
+        PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        
+    - name: Run production health checks
+      run: |
+        sleep 60  # Wait for deployment
+        curl -f ${{ secrets.PRODUCTION_URL }}/api/monitoring/health
+        
+    - name: Create deployment record
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha,
+            environment: 'production',
+            auto_merge: false,
+            required_contexts: []
+          });
+          
+    - name: Notify production deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#production'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        
+    - name: Create Sentry release
+      uses: getsentry/action-release@v1
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      with:
+        environment: production
+        version: ${{ github.ref_name }}
+
+  # Security Monitoring
+  security-monitoring:
+    name: Security Monitoring
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run security hardening check
+      run: node security/security-hardening.js
+      
+    - name: Check for new vulnerabilities
+      run: |
+        npm audit --audit-level=high --json > audit-results.json
+        
+    - name: Upload security results
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-results
+        path: |
+          SECURITY_HARDENING_REPORT.md
+          security-report.json
+          audit-results.json
+
+  # Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: Clean up old Docker images
+      run: |
+        # This would clean up old images from the registry
+        echo "Cleaning up old Docker images..."
+        
+    - name: Archive logs
+      run: |
+        # Archive deployment logs for audit purposes
+        echo "Archiving deployment logs..."
