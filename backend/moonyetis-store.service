@@ -1,0 +1,24 @@
+[Unit]
+Description=MoonYetis Store Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/moonyetis-deploy/backend
+Environment="NODE_ENV=production"
+Environment="PATH=/usr/bin:/usr/local/bin"
+ExecStart=/usr/bin/node /root/moonyetis-deploy/backend/store-server-v2.js
+Restart=on-failure
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=append:/var/log/moonyetis/store.log
+StandardError=append:/var/log/moonyetis/store-error.log
+
+[Install]
+WantedBy=multi-user.target

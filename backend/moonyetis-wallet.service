@@ -1,0 +1,24 @@
+[Unit]
+Description=MoonYetis HD Wallet Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/moonyetis-deploy/backend
+Environment="NODE_ENV=production"
+Environment="PATH=/usr/bin:/usr/local/bin"
+ExecStart=/usr/bin/node /root/moonyetis-deploy/backend/hd-wallet-server.js
+Restart=on-failure
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=append:/var/log/moonyetis/wallet.log
+StandardError=append:/var/log/moonyetis/wallet-error.log
+
+[Install]
+WantedBy=multi-user.target
