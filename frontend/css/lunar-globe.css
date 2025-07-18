@@ -1,0 +1,318 @@
+/* Lunar Globe Styles - Advanced 3D Implementation */
+/* MoonYetis: The People's Cryptocurrency */
+
+/* === LUNAR THEME HERO === */
+.ecosystem-hero.lunar-theme {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stars background effect */
+.ecosystem-hero.lunar-theme::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+        radial-gradient(2px 2px at 160px 30px, #fff, transparent),
+        radial-gradient(1px 1px at 200px 90px, #fff, transparent),
+        radial-gradient(1px 1px at 240px 50px, #fff, transparent),
+        radial-gradient(2px 2px at 280px 110px, #fff, transparent),
+        radial-gradient(1px 1px at 320px 70px, #fff, transparent),
+        radial-gradient(1px 1px at 360px 40px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 400px 200px;
+    animation: twinkle 10s linear infinite;
+    opacity: 0.6;
+    z-index: 1;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* === LUNAR GLOBE CONTAINER === */
+.lunar-globe-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#lunar-globe {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#lunar-globe:active {
+    cursor: grabbing;
+}
+
+/* === LOADING ANIMATION === */
+.globe-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffd700;
+    font-family: 'Inter', sans-serif;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 215, 0, 0.2);
+    border-top: 4px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.globe-loading p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* === HERO CONTENT === */
+.ecosystem-hero.lunar-theme .ecosystem-hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.ecosystem-hero.lunar-theme .ecosystem-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffd700;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.ecosystem-hero.lunar-theme .ecosystem-hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, #ffd700 0%, #ffed4a 25%, #f7b733 50%, #ffd700 75%, #ffed4a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    animation: titlePulse 4s ease-in-out infinite alternate;
+    line-height: 1.2;
+}
+
+@keyframes titlePulse {
+    0% { 
+        text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+        filter: brightness(1);
+    }
+    100% { 
+        text-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2);
+        filter: brightness(1.1);
+    }
+}
+
+/* === GLOBE CONTROLS === */
+.globe-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.globe-control-btn {
+    padding: 0.75rem 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 25px;
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-family: 'Inter', sans-serif;
+}
+
+.globe-control-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.globe-control-btn:active {
+    transform: translateY(0);
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .ecosystem-hero.lunar-theme .ecosystem-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .ecosystem-hero.lunar-theme .ecosystem-hero-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .globe-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .globe-control-btn {
+        width: 200px;
+        font-size: 0.8rem;
+    }
+    
+    .lunar-globe-container {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ecosystem-hero.lunar-theme .ecosystem-hero-title {
+        font-size: 2rem;
+    }
+    
+    .ecosystem-hero.lunar-theme .ecosystem-hero-content {
+        padding: 1rem;
+    }
+    
+    .globe-loading {
+        padding: 1.5rem;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .globe-loading p {
+        font-size: 1rem;
+    }
+}
+
+/* === GLOBE TOOLTIP === */
+.globe-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: #ffd700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 1000;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* === MOON COIN GLOW EFFECT === */
+.moon-coin {
+    animation: coinGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes coinGlow {
+    0% { 
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
+    100% { 
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+    }
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+.lunar-globe-container * {
+    will-change: transform;
+}
+
+/* Reduce animations on low-power devices */
+@media (prefers-reduced-motion: reduce) {
+    .ecosystem-hero.lunar-theme::before {
+        animation: none;
+    }
+    
+    .ecosystem-hero.lunar-theme .ecosystem-hero-title {
+        animation: none;
+    }
+    
+    .moon-coin {
+        animation: none;
+    }
+}
+
+/* === WEBGL FALLBACK === */
+.webgl-not-supported {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    max-width: 400px;
+    z-index: 100;
+}
+
+.webgl-not-supported h3 {
+    margin-top: 0;
+    color: #ffd700;
+}
+
+.webgl-not-supported p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.webgl-not-supported a {
+    color: #ffd700;
+    text-decoration: underline;
+}

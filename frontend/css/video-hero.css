@@ -1,0 +1,145 @@
+/* Video Hero Styles - Pure Video Experience */
+/* MoonYetis: The People's Cryptocurrency */
+
+/* === VIDEO THEME HERO === */
+.ecosystem-hero.video-theme {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+/* === VIDEO BACKGROUND === */
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* Fallback for unsupported browsers */
+.video-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+}
+
+.video-fallback img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+}
+
+/* Content styles removed - Pure video experience */
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    /* Optimize video for mobile */
+    #hero-video {
+        object-position: center center;
+    }
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+#hero-video {
+    will-change: transform;
+}
+
+/* Pure video - no animations to reduce */
+
+/* === VIDEO LOADING STATE === */
+.video-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    text-align: center;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.video-loading::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 215, 0, 0.3);
+    border-top: 3px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No text content - accessibility rules not needed */
+
+/* No overlay needed - Pure video experience */
+
+/* === SUPPORT FOR VIDEO CONTROLS (OPTIONAL) === */
+.video-controls {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 15;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.video-control-btn {
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 50%;
+    color: #ffd700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.video-control-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffd700;
+    transform: scale(1.1);
+}
+
+/* Hide controls on mobile */
+@media (max-width: 768px) {
+    .video-controls {
+        display: none;
+    }
+}

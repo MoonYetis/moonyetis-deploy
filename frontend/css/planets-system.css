@@ -1,0 +1,509 @@
+/* MoonYetis Planets System - Interactive Solar System */
+
+/* === PLANETS SYSTEM CONTAINER === */
+.ecosystem-planets {
+    padding: 0;
+    background: #060A14;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Full-width background video */
+.planets-video-fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    z-index: 1;
+}
+
+/* Content overlay */
+.ecosystem-planets .ecosystem-section-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+}
+
+.video-fallback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--ecosystem-light);
+    font-size: 1.1rem;
+}
+
+/* Header styling over video */
+.ecosystem-planets .ecosystem-section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 15;
+}
+
+.ecosystem-planets .ecosystem-section-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #FF6B35, #F7931E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ecosystem-planets .ecosystem-section-subtitle {
+    font-size: 1.2rem;
+    color: rgba(248, 250, 252, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* === PLANET HOVER AREAS === */
+.planet-hover-areas {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 400px;
+    pointer-events: none;
+    z-index: 12;
+}
+
+.planet-hover-area {
+    position: absolute;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+}
+
+/* Position hover areas over each planet in linear horizontal layout for full-width video */
+.venus-area {
+    top: 35%;
+    left: 12%;
+    width: 12%;
+    height: 35%;
+}
+
+.earth-area {
+    top: 35%;
+    left: 32%;
+    width: 12%;
+    height: 35%;
+}
+
+.mars-area {
+    top: 35%;
+    left: 58%;
+    width: 12%;
+    height: 35%;
+}
+
+.jupiter-area {
+    top: 35%;
+    left: 78%;
+    width: 12%;
+    height: 35%;
+}
+
+.planet-hover-area:hover {
+    transform: scale(1.05);
+}
+
+/* === PLANET INFO CARDS - Always Visible & Positioned === */
+.planets-info-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0.5rem auto 0;
+    height: 250px;
+    z-index: 15;
+    min-height: 220px;
+}
+
+.planet-info-card {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    width: 240px;
+    max-width: 240px;
+    background: rgba(6, 10, 20, 0.95);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 16px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Position each card exactly under its corresponding planet */
+.planet-info-card[data-planet="venus"] {
+    left: 5%; /* Venus: Movido 2cm a la derecha */
+}
+
+.planet-info-card[data-planet="earth"] {
+    left: 33.75%; /* Earth: Movido 0.3cm a la derecha */
+}
+
+.planet-info-card[data-planet="mars"] {
+    left: 63.5%; /* Mars: Movido 1cm a la izquierda */
+}
+
+.planet-info-card[data-planet="jupiter"] {
+    left: 92%; /* Jupiter: Movido 3cm a la izquierda */
+}
+
+.planet-info-card:hover {
+    transform: translateX(-50%) translateY(-8px);
+    border-color: rgba(255, 107, 53, 0.6);
+    box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+}
+
+.planet-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin-bottom: 2rem;
+}
+
+.planet {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-shadow: 
+        0 0 50px rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+}
+
+.planet:hover {
+    box-shadow: 
+        0 0 80px rgba(255, 107, 53, 0.5);
+    transform: scale(1.05);
+}
+
+/* === PLANET IMAGES WITH ROTATION === */
+.planet-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.planet-venus {
+    animation: rotatePlanet 10s linear infinite;
+}
+
+.planet-jupiter {
+    animation: rotatePlanet 12s linear infinite;
+}
+
+.planet-mars {
+    animation: rotatePlanet 8s linear infinite;
+}
+
+.planet-earth {
+    animation: rotatePlanet 15s linear infinite;
+}
+
+/* Simple rotation animation for all planets */
+@keyframes rotatePlanet {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* === YETI HOVER EFFECTS === */
+.planet-yeti {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    width: 225px;
+    height: 225px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotate(-10deg);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Specific positioning for each planet's yeti */
+.venus-area .planet-yeti {
+    left: calc(50% - 6.5cm);
+}
+
+.earth-area .planet-yeti {
+    left: calc(50% - 2cm);
+}
+
+.mars-area .planet-yeti {
+    left: 50%; /* Mantener centrado */
+}
+
+.jupiter-area .planet-yeti {
+    left: calc(50% + 5cm);
+}
+
+.planet-yeti img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    background: transparent;
+}
+
+/* Single rule for all yetis - using the perfect yeti-slots.png */
+.planet-yeti img {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* Yetis appear when hovering over corresponding info cards */
+.planet-info-card[data-planet="venus"]:hover ~ .planet-hover-areas .venus-area .planet-yeti,
+.planet-info-card[data-planet="earth"]:hover ~ .planet-hover-areas .earth-area .planet-yeti,
+.planet-info-card[data-planet="mars"]:hover ~ .planet-hover-areas .mars-area .planet-yeti,
+.planet-info-card[data-planet="jupiter"]:hover ~ .planet-hover-areas .jupiter-area .planet-yeti {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+}
+
+/* === PLANET INFO === */
+.planet-info {
+    color: var(--ecosystem-light);
+    max-width: 200px;
+}
+
+.planet-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.planet-subtitle {
+    font-size: 0.7rem;
+    color: rgba(248, 250, 252, 0.8);
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+}
+
+/* === ACTIONS ROW - HORIZONTAL LAYOUT === */
+.planet-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.planet-status {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.planet-status.live {
+    background: linear-gradient(45deg, #10B981, #34D399);
+    color: white;
+}
+
+.planet-status.coming-soon {
+    background: linear-gradient(45deg, #F59E0B, #FCD34D);
+    color: #92400E;
+}
+
+.planet-action {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.planet-action.primary {
+    background: var(--ecosystem-gradient-hero);
+    color: white;
+}
+
+.planet-action.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+}
+
+.planet-action.disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(248, 250, 252, 0.5);
+    cursor: not-allowed;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .planets-info-container {
+        max-width: 900px;
+    }
+    
+    .planet-hover-areas {
+        max-width: 900px;
+    }
+    
+    /* Adjust hover areas for tablet */
+    .venus-area { left: 10%; }
+    .earth-area { left: 30%; }
+    .mars-area { left: 60%; }
+    .jupiter-area { left: 80%; }
+    
+    /* Adjust info card positions to match hover areas */
+    .planet-info-card[data-planet="venus"] { left: 0%; } /* Proporcionalmente ajustado */
+    .planet-info-card[data-planet="earth"] { left: 31%; } /* Proporcionalmente ajustado */
+    .planet-info-card[data-planet="mars"] { left: 68%; } /* Proporcionalmente ajustado */
+    .planet-info-card[data-planet="jupiter"] { left: 97%; } /* Proporcionalmente ajustado */
+    
+    .planet-info-card {
+        width: 200px;
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ecosystem-planets {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+    
+    .ecosystem-planets .ecosystem-section-container {
+        padding: 2rem 1rem;
+    }
+    
+    .ecosystem-planets .ecosystem-section-title {
+        font-size: 2.2rem;
+    }
+    
+    .ecosystem-planets .ecosystem-section-subtitle {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+    
+    /* Hide hover areas on mobile, only show info cards */
+    .planet-hover-areas {
+        display: none;
+    }
+    
+    /* Stack info cards vertically on mobile */
+    .planets-info-container {
+        position: relative;
+        height: auto;
+        padding: 0 1rem;
+    }
+    
+    .planet-info-card {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        margin-bottom: 1.5rem;
+        background: rgba(6, 10, 20, 0.9);
+    }
+    
+    .planet-info-card:hover {
+        transform: translateY(-8px) !important;
+    }
+    
+    .planet-title {
+        font-size: 1.3rem;
+    }
+    
+    .planet-subtitle {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ecosystem-planets .ecosystem-section-title {
+        font-size: 1.8rem;
+    }
+    
+    .ecosystem-planets .ecosystem-section-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .planets-info-container {
+        padding: 0 0.5rem;
+    }
+    
+    .planet-title {
+        font-size: 1.1rem;
+    }
+    
+    .planet-info-card {
+        padding: 1rem;
+    }
+    
+    .planet-actions-row {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
+/* === ORBITAL EFFECTS === */
+.planets-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.planets-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* === VIDEO HOVER EFFECTS === */
+.planet-hover-area:hover {
+    /* Removed circular background effect */
+}

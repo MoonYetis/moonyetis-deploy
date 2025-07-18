@@ -1,6 +1,11 @@
 // Modular Wallet System for Fractal Bitcoin ($FB) and MoonYetis BRC-20 Tokens
 // Version: 1.0.0
 
+// Prevent redeclaration errors
+if (typeof window.WalletManager !== 'undefined') {
+    console.warn('WalletManager already exists, skipping redeclaration');
+} else {
+
 class WalletManager {
     constructor() {
         this.connectedWallet = null;
@@ -43,6 +48,7 @@ class WalletManager {
     init() {
         this.detectWallets();
         this.setupEventListeners();
+        console.log('✅ WalletManager initialized');
     }
 
     detectWallets() {
@@ -68,6 +74,39 @@ class WalletManager {
         if (window.bitkeep && window.bitkeep.unisat) {
             this.supportedWallets[3].detected = true;
             this.supportedWallets[3].provider = window.bitkeep.unisat;
+        }
+
+        // Development mode: Create simulated wallets if none detected
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            this.createSimulatedWallets();
+        }
+
+        console.log('🔍 Wallets detected:', this.supportedWallets.filter(w => w.detected).map(w => w.name));
+    }
+    
+    createSimulatedWallets() {
+        if (!this.supportedWallets[0].detected) {
+            console.log('🦄 Creating simulated UniSat wallet for development');
+            this.supportedWallets[0].detected = true;
+            this.supportedWallets[0].provider = {
+                requestAccounts: () => Promise.resolve(['bc1qdev123456789abcdefghijklmnopqrstuvwxyz']),
+                getAccounts: () => Promise.resolve(['bc1qdev123456789abcdefghijklmnopqrstuvwxyz']),
+                getBalance: () => Promise.resolve({confirmed: 100000000, unconfirmed: 0}),
+                signMessage: (message) => Promise.resolve('simulated_signature_' + Date.now()),
+                on: (event, callback) => console.log('🦄 Simulated UniSat event:', event)
+            };
+        }
+        
+        if (!this.supportedWallets[1].detected) {
+            console.log('🌟 Creating simulated OKX wallet for development');
+            this.supportedWallets[1].detected = true;
+            this.supportedWallets[1].provider = {
+                connect: () => Promise.resolve({address: 'bc1qdev987654321zyxwvutsrqponmlkjihgfedcba'}),
+                getAccounts: () => Promise.resolve(['bc1qdev987654321zyxwvutsrqponmlkjihgfedcba']),
+                getBalance: () => Promise.resolve({confirmed: 50000000, unconfirmed: 0}),
+                signMessage: (message) => Promise.resolve('simulated_okx_signature_' + Date.now()),
+                on: (event, callback) => console.log('🌟 Simulated OKX event:', event)
+            };
         }
     }
 
@@ -305,5 +344,7 @@ class WalletManager {
     }
 }
 
-// Export for use in other modules
+// Export for use in other modules and close redeclaration protection
 window.WalletManager = WalletManager;
+
+} // End of redeclaration protection

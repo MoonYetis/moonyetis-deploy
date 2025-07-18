@@ -1,0 +1,1936 @@
+/* MoonYetis Ecosystem Landing Page Styles */
+
+:root {
+    --ecosystem-primary: #FF6B35;
+    --ecosystem-secondary: #4ECDC4;
+    --ecosystem-accent: #FFE66D;
+    --ecosystem-dark: #0A0E1A;
+    --ecosystem-darker: #060A14;
+    --ecosystem-light: #F8FAFC;
+    --ecosystem-gradient-hero: linear-gradient(135deg, #FF6B35 0%, #F7931E 25%, #FFE66D 50%, #4ECDC4 75%, #FF6B35 100%);
+    --ecosystem-gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    --ecosystem-shadow-hero: 0 50px 100px -20px rgba(255, 107, 53, 0.3);
+    --ecosystem-shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* === MOONYETIS ABOUT SECTION === */
+.ecosystem-about-moonyetis {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #060A14 0%, #0A0E1A 50%, #060A14 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.moonyetis-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.moonyetis-text-column {
+    padding-right: 2rem;
+}
+
+.moonyetis-description {
+    margin-top: 1.5rem;
+}
+
+.moonyetis-description p {
+    margin-bottom: 1.5rem;
+    color: rgba(248, 250, 252, 0.8);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.moonyetis-image-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.moonyetis-building-container {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+}
+
+.moonyetis-building-image {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.moonyetis-building-image:hover {
+    transform: scale(1.05);
+}
+
+.building-caption {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ecosystem-gradient-hero);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.building-text {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive design for MoonYetis section */
+@media (max-width: 768px) {
+    .moonyetis-content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .moonyetis-text-column {
+        padding-right: 0;
+        text-align: center;
+    }
+    
+    .moonyetis-building-container {
+        max-width: 300px;
+    }
+    
+    .moonyetis-description p {
+        font-size: 0.9rem;
+    }
+}
+
+/* === ECOSYSTEM NAVIGATION === */
+.ecosystem-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(6, 10, 20, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    padding: 1rem 2rem;
+}
+
+.ecosystem-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.ecosystem-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--ecosystem-light);
+}
+
+.ecosystem-logo-icon {
+    font-size: 2rem;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ecosystem-logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ecosystem-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.ecosystem-nav-link {
+    color: var(--ecosystem-light);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.ecosystem-nav-link:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-secondary);
+    transform: translateY(-1px);
+}
+
+.ecosystem-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ecosystem-nav-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ecosystem-nav-btn.primary {
+    background: var(--ecosystem-gradient-hero);
+    color: var(--ecosystem-dark);
+}
+
+.ecosystem-nav-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ecosystem-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+/* === HERO SECTION === */
+.ecosystem-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-background-image {
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%);
+    z-index: 1;
+    opacity: 0.4;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 50px rgba(255, 107, 53, 0.4));
+    animation: logoFloat 8s ease-in-out infinite;
+    border-radius: 50%;
+}
+
+@keyframes logoFloat {
+    0%, 100% { 
+        transform: scale(1); 
+        filter: drop-shadow(0 0 50px rgba(255, 107, 53, 0.4));
+    }
+    50% { 
+        transform: scale(1.05); 
+        filter: drop-shadow(0 0 80px rgba(255, 107, 53, 0.6));
+    }
+}
+
+.ecosystem-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 107, 53, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(78, 205, 196, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 230, 109, 0.1) 0%, transparent 50%);
+    animation: heroBreath 8s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes heroBreath {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+
+.ecosystem-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.ecosystem-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--ecosystem-secondary);
+}
+
+.ecosystem-hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.ecosystem-hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--ecosystem-light);
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.ecosystem-hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.ecosystem-hero-btn {
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ecosystem-hero-btn.primary {
+    background: var(--ecosystem-gradient-hero);
+    color: var(--ecosystem-dark);
+    box-shadow: var(--ecosystem-shadow-hero);
+}
+
+.ecosystem-hero-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ecosystem-hero-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 50px 100px -20px rgba(255, 107, 53, 0.4);
+}
+
+/* === PRODUCTS SECTION === */
+.ecosystem-products {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, var(--ecosystem-darker) 0%, var(--ecosystem-dark) 100%);
+}
+
+.ecosystem-section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ecosystem-section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.ecosystem-section-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ecosystem-section-subtitle {
+    font-size: 1.1rem;
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.ecosystem-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.ecosystem-product-card {
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ecosystem-product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--ecosystem-gradient-hero);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.product-image-container {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.ecosystem-product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.slots-card .product-image-container {
+    background: linear-gradient(135deg, #4ECDC4 0%, #FF6B35 100%);
+}
+
+.ecosystem-product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--ecosystem-gradient-hero);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.ecosystem-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--ecosystem-shadow-card);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.ecosystem-product-card:hover::before {
+    opacity: 0.05;
+}
+
+.ecosystem-product-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.4));
+}
+
+.ecosystem-product-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--ecosystem-light);
+}
+
+.ecosystem-product-description {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.ecosystem-product-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.ecosystem-product-status.live {
+    background: rgba(78, 205, 196, 0.2);
+    color: var(--ecosystem-secondary);
+    border: 1px solid var(--ecosystem-secondary);
+}
+
+.ecosystem-product-status.coming-soon {
+    background: rgba(255, 230, 109, 0.2);
+    color: var(--ecosystem-accent);
+    border: 1px solid var(--ecosystem-accent);
+}
+
+.ecosystem-product-action {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border-radius: 16px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.ecosystem-product-action.primary {
+    background: var(--ecosystem-gradient-hero);
+    color: var(--ecosystem-dark);
+}
+
+.ecosystem-product-action.disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ecosystem-product-action:not(.disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -8px rgba(255, 107, 53, 0.3);
+}
+
+/* === STATS SECTION === */
+.ecosystem-stats {
+    padding: 4rem 2rem;
+    background: var(--ecosystem-dark);
+}
+
+.ecosystem-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.ecosystem-stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ecosystem-stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.ecosystem-stat-label {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+/* === ABOUT SECTION === */
+.ecosystem-about {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-darker);
+}
+
+.ecosystem-about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.ecosystem-about-text {
+    font-size: 1.1rem;
+    color: var(--ecosystem-light);
+    opacity: 0.9;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.ecosystem-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.ecosystem-feature {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.ecosystem-feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.ecosystem-feature-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--ecosystem-light);
+}
+
+.ecosystem-feature-text {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .ecosystem-nav {
+        padding: 1rem;
+    }
+    
+    .ecosystem-nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .ecosystem-nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .ecosystem-nav-link {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .ecosystem-hero {
+        padding: 6rem 1rem 3rem;
+    }
+    
+    .ecosystem-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .ecosystem-hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .ecosystem-products-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .ecosystem-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ecosystem-features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .ecosystem-hero-title {
+        font-size: 2rem;
+    }
+    
+    .ecosystem-section-title {
+        font-size: 2rem;
+    }
+    
+    .ecosystem-product-card {
+        padding: 1.5rem;
+    }
+    
+    .ecosystem-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ecosystem-fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.ecosystem-fade-in-delay {
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+/* === TOKENOMICS SECTION === */
+.ecosystem-tokenomics {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.tokenomics-background-images {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.15;
+    overflow: hidden;
+}
+
+/* Floating coins with upward movement */
+.tokenomics-coin-1 {
+    position: absolute;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    animation: coinRiseFloat 12s ease-in-out infinite;
+}
+
+.tokenomics-coin-2 {
+    position: absolute;
+    left: 25%;
+    width: 60px;
+    height: 60px;
+    animation: coinRiseFloat 15s ease-in-out infinite 2s;
+}
+
+/* Additional floating coins */
+.tokenomics-coin-3 {
+    position: absolute;
+    left: 40%;
+    width: 90px;
+    height: 90px;
+    animation: coinRiseFloat 18s ease-in-out infinite 4s;
+}
+
+.tokenomics-coin-4 {
+    position: absolute;
+    left: 65%;
+    width: 70px;
+    height: 70px;
+    animation: coinRiseFloat 14s ease-in-out infinite 6s;
+}
+
+.tokenomics-coin-5 {
+    position: absolute;
+    left: 80%;
+    width: 85px;
+    height: 85px;
+    animation: coinRiseFloat 16s ease-in-out infinite 8s;
+}
+
+.tokenomics-coin-6 {
+    position: absolute;
+    left: 5%;
+    width: 75px;
+    height: 75px;
+    animation: coinRiseFloat 13s ease-in-out infinite 10s;
+}
+
+.tokenomics-moon {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+    width: 150px;
+    height: 150px;
+    opacity: 0.08;
+    animation: moonGlow 10s ease-in-out infinite;
+}
+
+/* Coin rise animation - from bottom to top */
+@keyframes coinRiseFloat {
+    0% { 
+        transform: translateY(150vh) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% { 
+        transform: translateY(-20vh) rotate(720deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Moon glow effect */
+@keyframes moonGlow {
+    0%, 100% { 
+        opacity: 0.05;
+        filter: brightness(1);
+    }
+    50% { 
+        opacity: 0.12;
+        filter: brightness(1.3);
+    }
+}
+
+.tokenomics-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.tokenomics-overview {
+    margin-bottom: 4rem;
+}
+
+.tokenomics-highlight {
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 24px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.tokenomics-highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.tokenomics-highlight-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tokenomics-highlight-icon {
+    font-size: 3rem;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tokenomics-highlight h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--ecosystem-light);
+    margin: 0;
+}
+
+.tokenomics-highlight-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.tokenomics-stat {
+    text-align: center;
+}
+
+.tokenomics-stat-label {
+    display: block;
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.tokenomics-stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tokenomics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.tokenomics-feature {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.tokenomics-feature:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+.tokenomics-feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.tokenomics-feature-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--ecosystem-light);
+}
+
+.tokenomics-feature-text {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.tokenomics-distribution {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.tokenomics-distribution-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 2rem;
+}
+
+.tokenomics-distribution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.distribution-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.distribution-percentage {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.distribution-label {
+    color: var(--ecosystem-light);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.distribution-amount {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.tokenomics-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tokenomics-btn {
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tokenomics-btn.primary {
+    background: var(--ecosystem-gradient-hero);
+    color: var(--ecosystem-dark);
+}
+
+.tokenomics-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tokenomics-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+/* === ROADMAP SECTION === */
+.ecosystem-roadmap {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-darker);
+    position: relative;
+    overflow: hidden;
+}
+
+.roadmap-background-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0.1;
+}
+
+.roadmap-building-image {
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+    filter: sepia(20%) saturate(150%);
+}
+
+.roadmap-timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    z-index: 2;
+}
+
+.roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--ecosystem-primary), var(--ecosystem-secondary));
+    z-index: 1;
+}
+
+.roadmap-item {
+    display: flex;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.roadmap-item:nth-child(odd) {
+    flex-direction: row;
+}
+
+.roadmap-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.roadmap-item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 2rem;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.roadmap-item.completed::before {
+    background: var(--ecosystem-secondary);
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+}
+
+.roadmap-item.active::before {
+    background: var(--ecosystem-primary);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.roadmap-item.upcoming::before {
+    background: var(--ecosystem-accent);
+    opacity: 0.6;
+}
+
+.roadmap-date {
+    flex: 0 0 120px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-top: 2rem;
+}
+
+.roadmap-item:nth-child(even) .roadmap-date {
+    text-align: center;
+}
+
+.roadmap-content {
+    flex: 1;
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 0 2rem;
+    position: relative;
+}
+
+.roadmap-item:nth-child(odd) .roadmap-content {
+    margin-left: 2rem;
+    margin-right: 60px;
+}
+
+.roadmap-item:nth-child(even) .roadmap-content {
+    margin-right: 2rem;
+    margin-left: 60px;
+}
+
+.roadmap-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.roadmap-item.completed .roadmap-status {
+    color: var(--ecosystem-secondary);
+}
+
+.roadmap-item.active .roadmap-status {
+    color: var(--ecosystem-primary);
+}
+
+.roadmap-item.upcoming .roadmap-status {
+    color: var(--ecosystem-accent);
+}
+
+.roadmap-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 0.75rem;
+}
+
+.roadmap-description {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.roadmap-features {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.roadmap-feature {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--ecosystem-light);
+}
+
+/* === SECURITY SECTION === */
+.ecosystem-security {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-dark);
+}
+
+.security-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.security-hero {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.security-hero-badge {
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.security-hero-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.security-hero-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.security-hero-badge h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 0.5rem;
+}
+
+.security-hero-badge p {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+}
+
+.security-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.security-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.security-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+.security-item-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.security-item-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--ecosystem-light);
+}
+
+.security-item-text {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.security-certifications {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.security-certifications-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 2rem;
+}
+
+.security-certifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.certification-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.certification-icon {
+    font-size: 1.5rem;
+    color: var(--ecosystem-secondary);
+}
+
+.certification-name {
+    color: var(--ecosystem-light);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.certification-status {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+/* === ANIMATIONS === */
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+}
+
+/* === RESPONSIVE DESIGN FOR NEW SECTIONS === */
+@media (max-width: 768px) {
+    .tokenomics-highlight-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .tokenomics-highlight-icon {
+        font-size: 2rem;
+    }
+    
+    .tokenomics-highlight h3 {
+        font-size: 1.5rem;
+    }
+    
+    .tokenomics-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .roadmap-timeline::before {
+        left: 20px;
+    }
+    
+    .roadmap-item {
+        flex-direction: column !important;
+        margin-left: 40px;
+    }
+    
+    .roadmap-item::before {
+        left: 20px !important;
+        transform: translateX(-50%);
+    }
+    
+    .roadmap-content {
+        margin: 1rem 0 !important;
+    }
+    
+    .roadmap-date {
+        text-align: left;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+/* === COMMUNITY SECTION === */
+.ecosystem-community {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-darker);
+    position: relative;
+    overflow: hidden;
+}
+
+.community-background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.community-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.15;
+    filter: blur(2px);
+}
+
+.community-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.community-hero {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.community-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.community-stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.community-stat:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+.community-stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.community-stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--ecosystem-gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.community-stat-label {
+    color: var(--ecosystem-light);
+    font-weight: 600;
+}
+
+.social-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--ecosystem-light);
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--ecosystem-shadow-card);
+}
+
+.social-icon {
+    font-size: 2rem;
+    color: var(--ecosystem-secondary);
+}
+
+.social-info h4 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.social-info p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.testimonials {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.testimonials-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 2rem;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.testimonial {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.testimonial-text {
+    color: var(--ecosystem-light);
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.testimonial-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ecosystem-gradient-hero);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.testimonial-info h5 {
+    color: var(--ecosystem-light);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.testimonial-info .rating {
+    color: var(--ecosystem-accent);
+}
+
+/* === TEAM SECTION === */
+.ecosystem-team {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-dark);
+}
+
+.team-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.team-member {
+    text-align: center;
+    padding: 2rem;
+    background: var(--ecosystem-gradient-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--ecosystem-shadow-card);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.team-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--ecosystem-gradient-hero);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 auto 1rem;
+    color: var(--ecosystem-dark);
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 0.5rem;
+}
+
+.team-role {
+    color: var(--ecosystem-secondary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.team-bio {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.partners-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.partners-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 2rem;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.partner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.partner:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.partner-logo {
+    font-size: 1.5rem;
+    color: var(--ecosystem-secondary);
+}
+
+.partner-name {
+    color: var(--ecosystem-light);
+    font-weight: 600;
+}
+
+
+
+/* === FAQ SECTION === */
+.ecosystem-faq {
+    padding: 6rem 2rem;
+    background: var(--ecosystem-dark);
+}
+
+.faq-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-list {
+    margin-bottom: 4rem;
+}
+
+.faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.5rem;
+    text-align: left;
+    color: var(--ecosystem-light);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    color: var(--ecosystem-secondary);
+}
+
+.faq-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px;
+}
+
+.faq-answer-content {
+    padding: 0 1.5rem 1.5rem;
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    line-height: 1.6;
+}
+
+.support-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.support-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ecosystem-light);
+    margin-bottom: 1rem;
+}
+
+.support-text {
+    color: var(--ecosystem-light);
+    opacity: 0.8;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.support-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.support-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    color: var(--ecosystem-light);
+    transition: all 0.3s ease;
+}
+
+.support-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    color: var(--ecosystem-light);
+}
+
+.support-option-icon {
+    font-size: 1.5rem;
+    color: var(--ecosystem-secondary);
+}
+
+.support-option-text {
+    font-weight: 600;
+}
+
+/* === RESPONSIVE DESIGN FOR NEW SECTIONS === */
+@media (max-width: 768px) {
+    .hero-background-image {
+        right: 2%;
+        width: 250px;
+        height: 250px;
+        opacity: 0.25;
+    }
+    
+    .product-image-container {
+        height: 150px;
+    }
+    
+    .tokenomics-coin-1,
+    .tokenomics-coin-2,
+    .tokenomics-coin-3,
+    .tokenomics-coin-4,
+    .tokenomics-coin-5,
+    .tokenomics-coin-6 {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .tokenomics-coin-3,
+    .tokenomics-coin-5 {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .tokenomics-moon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .roadmap-building-image {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .community-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .social-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    
+    .support-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .community-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-question {
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+    
+    .faq-answer-content {
+        padding: 0 1rem 1rem;
+    }
+}
+
+/* === UTILITY CLASSES === */
+.ecosystem-hidden {
+    display: none !important;
+}
+
+.ecosystem-visible {
+    display: block !important;
+}
+
+.ecosystem-text-center {
+    text-align: center;
+}
+
+.ecosystem-mb-2 {
+    margin-bottom: 2rem;
+}
+
+.ecosystem-mt-4 {
+    margin-top: 4rem;
+}

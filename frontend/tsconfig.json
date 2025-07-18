@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    
+    /* Strict Type Checking */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Additional Checks */
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    
+    /* Path Mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@css/*": ["./css/*"],
+      "@js/*": ["./js/*"],
+      "@images/*": ["./images/*"]
+    },
+    
+    /* Type Definitions */
+    "types": ["vite/client", "node"],
+    "typeRoots": ["./node_modules/@types", "./types"]
+  },
+  "include": [
+    "js/**/*",
+    "src/**/*",
+    "types/**/*",
+    "*.ts",
+    "*.d.ts",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "js-backup",
+    "**/*.deprecated.js"
+  ]
+}

@@ -242,11 +242,19 @@ class WalletModal {
     }
 }
 
-// Auto-detect wallet changes
+// Auto-detect wallet changes with defensive checks
 setInterval(() => {
-    if (window.walletManager && window.walletModal) {
-        window.walletManager.detectWallets();
-        window.walletModal.updateWalletList();
+    if (window.walletManager && 
+        typeof window.walletManager.detectWallets === 'function' && 
+        window.walletModal &&
+        typeof window.walletModal.updateWalletList === 'function') {
+        
+        try {
+            window.walletManager.detectWallets();
+            window.walletModal.updateWalletList();
+        } catch (error) {
+            console.warn('Error in wallet detection interval:', error);
+        }
     }
 }, 2000);
 

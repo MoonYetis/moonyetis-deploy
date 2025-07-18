@@ -1,6 +1,11 @@
 // Slot Machine - Game logic and visual effects
 console.log('🎰 Slot Machine Loading...');
 
+// Prevent redeclaration errors
+if (typeof window.SYMBOLS !== 'undefined') {
+    console.warn('SYMBOLS already exists, skipping redeclaration');
+} else {
+
 // Ultra-Accessible Number Formatting Utilities with Performance Cache
 const NumberFormatter = {
     // Cache for performance optimization
@@ -103,7 +108,7 @@ const NumberFormatter = {
 };
 
 // Configuración del juego - usando imágenes reales
-const SYMBOLS = [
+window.SYMBOLS = [
     { id: 'yeti', name: 'Yeti Wild', image: 'assets/symbols/yeti-wild.png', emoji: '🏔️' },
     { id: 'rocket', name: 'Rocket High', image: 'assets/symbols/rocket-high.png', emoji: '🚀' },
     { id: 'moon', name: 'Moon Scatter', image: 'assets/symbols/moon-scatter.png', emoji: '🌙' },
@@ -115,7 +120,7 @@ const SYMBOLS = [
 ];
 
 // Array de IDs para compatibilidad con código existente
-const SYMBOL_IDS = SYMBOLS.map(s => s.id);
+window.SYMBOL_IDS = window.SYMBOLS.map(s => s.id);
 
 // Estado del juego - Ultra-Accessible Limits
 let gameState = {
@@ -752,3 +757,5 @@ setInterval(() => {
 }, 300000); // Cada 5 minutos
 
 console.log('✅ Slot Machine Loaded');
+
+} // End of redeclaration protection

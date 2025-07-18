@@ -1,0 +1,415 @@
+/* Space Animation - Dogecoin Style Recreation */
+/* MoonYetis: The People's Cryptocurrency */
+
+/* === DOGECOIN STYLE HERO === */
+.ecosystem-hero.space-theme {
+    position: relative;
+    overflow: hidden;
+    background: #000011;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === SPACE CONTAINER === */
+.space-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* === SPACE CANVAS === */
+#space-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* === STARS LAYER === */
+.space-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.star {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: twinkle 3s infinite alternate;
+}
+
+.star.small {
+    width: 1px;
+    height: 1px;
+}
+
+.star.medium {
+    width: 2px;
+    height: 2px;
+    opacity: 0.9;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* === EARTH PLANET === */
+.earth-planet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    z-index: 3;
+}
+
+.earth-surface {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #4a90e2 0%, #2c5aa0 30%, #1e3a8a 60%, #0f172a 100%);
+    position: relative;
+    animation: earthRotate 200s linear infinite;
+    box-shadow: 
+        0 0 50px rgba(74, 144, 226, 0.3),
+        inset -30px -30px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Earth continents effect */
+.earth-surface::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(ellipse at 40% 40%, #22c55e 0%, #16a34a 40%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.earth-surface::after {
+    content: '';
+    position: absolute;
+    top: 40%;
+    right: 25%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(ellipse at 60% 30%, #22c55e 0%, #16a34a 50%, transparent 80%);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.planet-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    z-index: 4;
+    animation: logoFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes earthRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes logoFloat {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-50%, -50%) scale(1.02); }
+}
+
+/* === COINS ORBIT === */
+.coins-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+.coin {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url('../assets/symbols/coin-medium.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 0;
+    animation: coinSpin 10s linear infinite;
+}
+
+/* Orbit animations for different radii */
+.coin.orbit-1 {
+    animation: orbit1 45s linear infinite, coinSpin 10s linear infinite;
+}
+
+.coin.orbit-2 {
+    animation: orbit2 50s linear infinite, coinSpin 10s linear infinite;
+}
+
+.coin.orbit-3 {
+    animation: orbit3 55s linear infinite, coinSpin 10s linear infinite;
+}
+
+.coin.orbit-4 {
+    animation: orbit4 60s linear infinite, coinSpin 10s linear infinite;
+}
+
+.coin.orbit-5 {
+    animation: orbit5 65s linear infinite, coinSpin 10s linear infinite;
+}
+
+.coin.orbit-6 {
+    animation: orbit6 70s linear infinite, coinSpin 10s linear infinite;
+}
+
+@keyframes coinSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* === COIN ORBITS === */
+@keyframes orbit1 {
+    0% { transform: rotate(0deg) translateX(250px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(250px) rotate(-360deg); }
+}
+
+@keyframes orbit2 {
+    0% { transform: rotate(0deg) translateX(300px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(300px) rotate(-360deg); }
+}
+
+@keyframes orbit3 {
+    0% { transform: rotate(0deg) translateX(350px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(350px) rotate(-360deg); }
+}
+
+@keyframes orbit4 {
+    0% { transform: rotate(0deg) translateX(400px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(400px) rotate(-360deg); }
+}
+
+@keyframes orbit5 {
+    0% { transform: rotate(0deg) translateX(450px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(450px) rotate(-360deg); }
+}
+
+@keyframes orbit6 {
+    0% { transform: rotate(0deg) translateX(500px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(500px) rotate(-360deg); }
+}
+
+/* === CONNECTION LINES === */
+.connection-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.connection-line {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        rgba(255, 215, 0, 0.8) 0%, 
+        rgba(255, 215, 0, 0.4) 50%, 
+        rgba(255, 215, 0, 0.1) 100%);
+    transform-origin: 0 0;
+    animation: lineGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes lineGlow {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+/* === HERO CONTENT === */
+.ecosystem-hero.space-theme .ecosystem-hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.ecosystem-hero.space-theme .ecosystem-hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+    100% { text-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 140, 0, 0.3); }
+}
+
+.ecosystem-hero.space-theme .ecosystem-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #ffd700;
+    backdrop-filter: blur(10px);
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .earth-planet {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .planet-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .coin {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .ecosystem-hero.space-theme .ecosystem-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    /* Reduce orbit distances for mobile */
+    @keyframes orbit1 {
+        0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit2 {
+        0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit3 {
+        0% { transform: rotate(0deg) translateX(210px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(210px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit4 {
+        0% { transform: rotate(0deg) translateX(240px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(240px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit5 {
+        0% { transform: rotate(0deg) translateX(270px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(270px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit6 {
+        0% { transform: rotate(0deg) translateX(300px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(300px) rotate(-360deg); }
+    }
+}
+
+@media (max-width: 480px) {
+    .earth-planet {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .planet-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .coin {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .ecosystem-hero.space-theme .ecosystem-hero-title {
+        font-size: 2rem;
+    }
+    
+    /* Further reduce orbit distances */
+    @keyframes orbit1 {
+        0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit2 {
+        0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit3 {
+        0% { transform: rotate(0deg) translateX(140px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(140px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit4 {
+        0% { transform: rotate(0deg) translateX(160px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit5 {
+        0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+    }
+    
+    @keyframes orbit6 {
+        0% { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+    }
+}
+
+/* === PERFORMANCE OPTIMIZATION === */
+.space-container * {
+    will-change: transform;
+}
+
+.coin {
+    will-change: transform;
+}
+
+.earth-surface {
+    will-change: transform;
+}
+
+.connection-line {
+    will-change: opacity;
+}
