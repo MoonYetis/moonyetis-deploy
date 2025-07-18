@@ -1,17 +1,7 @@
 #!/bin/bash
 
-# MoonYetis Production Deployment Script
-# This script helps deploy the MoonYetis backend services to production
-
-echo "🚀 MoonYetis Production Deployment"
-echo "=================================="
-echo ""
-
-# Configuration
-DEPLOY_USER="root"
-DEPLOY_HOST="168.231.124.18"
-DEPLOY_PATH="/root/moonyetis-deploy"
-LOCAL_PATH="$(pwd)"
+echo "🚀 MoonYetis Production Deployment Script"
+echo "========================================"
 
 # Colors for output
 RED='\033[0;31m'
@@ -21,218 +11,152 @@ NC='\033[0m' # No Color
 
 # Function to print colored output
 print_status() {
-    echo -e "${GREEN}✓${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}✗${NC} $1"
+    echo -e "${GREEN}[INFO]${NC} $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}!${NC} $1"
+    echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-# Check if we're in the backend directory
-if [ ! -f "package.json" ]; then
-    print_error "This script must be run from the backend directory"
-    exit 1
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if running as root or with sudo
+if [[ $EUID -ne 0 ]]; then
+   print_error "This script must be run as root or with sudo"
+   exit 1
 fi
 
-# Step 1: Generate secrets if needed
-echo ""
-echo "📝 Step 1: Security Configuration"
-echo "---------------------------------"
-if [ ! -f ".env" ]; then
-    print_warning ".env file not found locally"
-    echo "Please create .env from .env.example and configure it"
-    exit 1
+# Update system packages
+print_status "Updating system packages..."
+apt update && apt upgrade -y
+
+# Install Node.js if not installed
+if ! command -v node &> /dev/null; then
+    print_status "Installing Node.js..."
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    apt-get install -y nodejs
 fi
 
-read -p "Have you updated the WEBHOOK_SECRET and ADMIN_KEY in .env? (y/n) " -n 1 -r
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Running secret generator..."
-    ./generate-secrets.sh
-    echo ""
-    print_warning "Please update .env with the generated secrets before continuing"
-    exit 1
+# Install PM2 globally if not installed
+if ! command -v pm2 &> /dev/null; then
+    print_status "Installing PM2 globally..."
+    npm install -g pm2
 fi
 
-# Step 2: Test connection
-echo ""
-echo "🔗 Step 2: Testing SSH Connection"
-echo "---------------------------------"
-ssh -o ConnectTimeout=5 $DEPLOY_USER@$DEPLOY_HOST "echo 'SSH connection successful'" 2>/dev/null
-if [ $? -eq 0 ]; then
-    print_status "SSH connection successful"
+# Navigate to project directory
+PROJECT_DIR="/var/www/moonyetis-backend"
+print_status "Setting up project directory: $PROJECT_DIR"
+
+# Create project directory if it doesn't exist
+mkdir -p $PROJECT_DIR
+cd $PROJECT_DIR
+
+# Clone or update repository
+if [ -d ".git" ]; then
+    print_status "Updating existing repository..."
+    git pull origin main
 else
-    print_error "SSH connection failed. Please check your credentials"
-    exit 1
+    print_status "Cloning repository..."
+    git clone https://github.com/osmanmarin/moonyetis-deploy.git .
 fi
 
-# Step 3: Create deployment package
-echo ""
-echo "📦 Step 3: Creating Deployment Package"
-echo "-------------------------------------"
-DEPLOY_PACKAGE="moonyetis-backend-$(date +%Y%m%d-%H%M%S).tar.gz"
+# Navigate to backend directory
+cd backend
 
-# Files to include in deployment
-tar -czf $DEPLOY_PACKAGE \
-    *.js \
-    services/*.js \
-    package.json \
-    package-lock.json \
-    .env \
-    *.sh \
-    ecosystem.config.js \
-    *.service \
-    --exclude=node_modules \
-    --exclude=*.log \
-    --exclude=deploy-production.sh
-
-if [ $? -eq 0 ]; then
-    print_status "Deployment package created: $DEPLOY_PACKAGE"
-else
-    print_error "Failed to create deployment package"
-    exit 1
-fi
-
-# Step 4: Upload to server
-echo ""
-echo "📤 Step 4: Uploading to Server"
-echo "------------------------------"
-scp $DEPLOY_PACKAGE $DEPLOY_USER@$DEPLOY_HOST:/tmp/
-if [ $? -eq 0 ]; then
-    print_status "Package uploaded successfully"
-else
-    print_error "Failed to upload package"
-    rm $DEPLOY_PACKAGE
-    exit 1
-fi
-
-# Step 5: Deploy on server
-echo ""
-echo "🚀 Step 5: Deploying on Server"
-echo "------------------------------"
-
-ssh $DEPLOY_USER@$DEPLOY_HOST << 'ENDSSH'
-set -e
-
-echo "Creating backup..."
-if [ -d "/root/moonyetis-deploy/backend" ]; then
-    cp -r /root/moonyetis-deploy/backend /root/moonyetis-deploy/backend.backup.$(date +%Y%m%d-%H%M%S)
-fi
-
-echo "Creating directories..."
-mkdir -p /root/moonyetis-deploy/backend
-mkdir -p /root/moonyetis-deploy/backend/services
-mkdir -p /root/moonyetis-deploy/backend/logs
-mkdir -p /var/log/moonyetis
-
-echo "Extracting deployment package..."
-cd /root/moonyetis-deploy/backend
-tar -xzf /tmp/moonyetis-backend-*.tar.gz
-
-echo "Setting permissions..."
-chmod 600 .env
-chmod +x *.sh
-
-echo "Installing dependencies..."
+# Install dependencies
+print_status "Installing production dependencies..."
 npm install --production
 
-echo "Checking for PM2..."
-if command -v pm2 &> /dev/null; then
-    echo "PM2 found, using PM2 for deployment..."
-    
-    # Stop existing services
-    pm2 stop all || true
-    
-    # Start services
-    pm2 start ecosystem.config.js
-    
-    # Save PM2 configuration
-    pm2 save
-    
-    # Show status
-    pm2 status
-else
-    echo "PM2 not found, using systemd..."
-    
-    # Copy service files
-    sudo cp moonyetis-*.service /etc/systemd/system/
-    
-    # Reload systemd
-    sudo systemctl daemon-reload
-    
-    # Stop existing services
-    sudo systemctl stop moonyetis-wallet || true
-    sudo systemctl stop moonyetis-store || true
-    
-    # Start services
-    sudo systemctl start moonyetis-wallet
-    sudo systemctl start moonyetis-store
-    
-    # Enable services
-    sudo systemctl enable moonyetis-wallet
-    sudo systemctl enable moonyetis-store
-    
-    # Show status
-    sudo systemctl status moonyetis-wallet --no-pager
-    sudo systemctl status moonyetis-store --no-pager
+# Create logs directory
+mkdir -p logs
+
+# Copy environment file
+if [ ! -f ".env" ]; then
+    print_warning "No .env file found. Please create one based on .env.example"
+    cp .env.example .env
+    print_warning "Please edit .env file with your production values"
 fi
 
-echo "Cleaning up..."
-rm -f /tmp/moonyetis-backend-*.tar.gz
+# Set proper permissions
+print_status "Setting file permissions..."
+chown -R www-data:www-data $PROJECT_DIR
+chmod -R 755 $PROJECT_DIR
 
-echo "Deployment complete!"
-ENDSSH
+# Stop existing PM2 processes
+print_status "Stopping existing PM2 processes..."
+pm2 stop ecosystem.config.js 2>/dev/null || true
+pm2 delete ecosystem.config.js 2>/dev/null || true
 
-if [ $? -eq 0 ]; then
-    print_status "Deployment successful!"
-else
-    print_error "Deployment failed"
-    rm $DEPLOY_PACKAGE
-    exit 1
-fi
+# Start the application with PM2
+print_status "Starting application with PM2..."
+pm2 start ecosystem.config.js
 
-# Step 6: Verify deployment
-echo ""
-echo "✅ Step 6: Verifying Deployment"
-echo "-------------------------------"
+# Save PM2 configuration
+print_status "Saving PM2 configuration..."
+pm2 save
 
-# Clean up local package
-rm $DEPLOY_PACKAGE
+# Setup PM2 to start on boot
+print_status "Setting up PM2 startup..."
+pm2 startup systemd -u www-data --hp /var/www
 
-# Test endpoints
-echo "Testing endpoints..."
-sleep 5 # Give services time to start
+# Setup UFW firewall
+print_status "Configuring firewall..."
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw allow 3002/tcp
+ufw --force enable
 
-# Test store health
-curl -s http://$DEPLOY_HOST:3002/api/store/health > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    print_status "Store API is responding"
-else
-    print_warning "Store API is not responding yet. Please check logs"
-fi
+# Setup Nginx reverse proxy
+print_status "Setting up Nginx reverse proxy..."
+apt install -y nginx
 
-# Test wallet API
-curl -s http://$DEPLOY_HOST:3001/api/deposit/addresses > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    print_status "Wallet API is responding"
-else
-    print_warning "Wallet API is not responding yet. Please check logs"
-fi
+# Create Nginx configuration
+cat > /etc/nginx/sites-available/moonyetis-api << 'EOF'
+server {
+    listen 80;
+    server_name moonyetis.io api.moonyetis.io;
 
-echo ""
-echo "🎉 Deployment Complete!"
-echo ""
-echo "📊 Next Steps:"
-echo "1. Monitor logs: ssh $DEPLOY_USER@$DEPLOY_HOST 'pm2 logs' (or journalctl -f)"
-echo "2. Check endpoints:"
-echo "   - Store Health: curl http://$DEPLOY_HOST:3002/api/store/health"
-echo "   - Store Prices: curl http://$DEPLOY_HOST:3002/api/store/prices"
-echo "   - Monitor Status: curl http://$DEPLOY_HOST:3002/api/store/monitor-status"
-echo "3. Test frontend integration"
-echo "4. Monitor first transactions carefully"
-echo ""
-print_warning "Remember to monitor the first 24 hours closely!"
+    location /api/ {
+        proxy_pass http://localhost:3002/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location / {
+        root /var/www/moonyetis-frontend;
+        index index.html;
+        try_files $uri $uri/ =404;
+    }
+}
+EOF
+
+# Enable the site
+ln -sf /etc/nginx/sites-available/moonyetis-api /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+nginx -t
+
+# Restart Nginx
+systemctl restart nginx
+systemctl enable nginx
+
+print_status "✅ Deployment completed successfully!"
+print_status "🏪 Store API is running on: http://moonyetis.io:3002"
+print_status "🌐 Frontend will be served on: http://moonyetis.io"
+print_status ""
+print_status "To check the status:"
+print_status "  pm2 status"
+print_status "  pm2 logs moonyetis-store"
+print_status ""
+print_status "To restart the service:"
+print_status "  pm2 restart moonyetis-store"
