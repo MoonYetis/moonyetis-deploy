@@ -5,14 +5,41 @@ class EcosystemRouter {
     constructor() {
         this.currentProduct = null;
         this.products = {
-            'slots': {
-                id: 'slots',
-                name: 'MoonYetis Slots',
-                path: '#/slots',
+            'coin-flip': {
+                id: 'coin-flip',
+                name: 'MoonYetis Coin Flip',
+                path: '#/coin-flip',
                 status: 'live',
-                icon: '🎰',
-                description: 'Classic slot machine with MoonYetis and Fractal Bitcoin rewards',
-                loader: () => this.loadSlotsProduct()
+                icon: '🪙',
+                description: 'Simple coin flip game with instant results and MoonYetis rewards',
+                loader: () => this.loadCoinFlipProduct()
+            },
+            'dice-roll': {
+                id: 'dice-roll',
+                name: 'MoonYetis Dice Roll',
+                path: '#/dice-roll',
+                status: 'live',
+                icon: '🎲',
+                description: 'Roll the dice and predict HIGH (4-6) or LOW (1-3) for instant rewards',
+                loader: () => this.loadDiceRollProduct()
+            },
+            'jupiter-lottery': {
+                id: 'jupiter-lottery',
+                name: 'Jupiter Lottery',
+                path: '#/jupiter-lottery',
+                status: 'live',
+                icon: '🎫',
+                description: 'Win big with Powerball-based lottery draws every Monday, Wednesday & Saturday',
+                loader: () => this.loadJupiterLotteryProduct()
+            },
+            'mars-faucet': {
+                id: 'mars-faucet',
+                name: 'Mars Faucet',
+                path: '#/mars-faucet',
+                status: 'live',
+                icon: '🔴',
+                description: 'Free MoonCoins every 8 hours with anti-bot verification and ad rewards',
+                loader: () => this.loadMarsFaucetProduct()
             }
             // Future products will be added here
         };
@@ -179,8 +206,8 @@ class EcosystemRouter {
         }
     }
     
-    async loadSlotsProduct() {
-        console.log('🎰 Loading MoonYetis Slots...');
+    async loadCoinFlipProduct() {
+        console.log('🪙 Loading MoonYetis Coin Flip...');
         
         const container = document.getElementById('product-container');
         if (!container) {
@@ -192,7 +219,7 @@ class EcosystemRouter {
         container.innerHTML = `
             <div class="product-loading">
                 <div class="loading-spinner"></div>
-                <p>Loading MoonYetis Slots...</p>
+                <p>Loading MoonYetis Coin Flip...</p>
             </div>
         `;
         
@@ -200,44 +227,292 @@ class EcosystemRouter {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         try {
-            // Ensure SlotMachineComponent is available
-            if (typeof SlotMachineComponent === 'undefined') {
-                throw new Error('SlotMachineComponent not available');
+            // Load the coin flip game HTML
+            container.innerHTML = this.getCoinFlipHTML();
+            
+            // Show the coin flip container and hide others
+            const coinFlipContainer = document.getElementById('coin-flip-container');
+            const diceRollContainer = document.getElementById('dice-roll-container');
+            
+            if (coinFlipContainer) {
+                coinFlipContainer.style.display = 'block';
+                
+                // Initialize the game if not already done
+                if (typeof window.coinFlipGame !== 'undefined') {
+                    window.coinFlipGame.init();
+                }
             }
             
-            // Create and load the slot machine component
-            this.slotMachineComponent = new SlotMachineComponent(container);
-            await this.slotMachineComponent.load();
+            // Hide other game containers
+            if (diceRollContainer) {
+                diceRollContainer.style.display = 'none';
+            }
             
-            console.log('✅ MoonYetis Slots loaded successfully');
+            console.log('✅ MoonYetis Coin Flip loaded successfully');
             
         } catch (error) {
-            console.error('❌ Error loading MoonYetis Slots:', error);
+            console.error('❌ Error loading MoonYetis Coin Flip:', error);
             container.innerHTML = `
                 <div class="product-error">
-                    <h2>⚠️ Error Loading Slots</h2>
-                    <p>There was an error loading MoonYetis Slots. Please try again.</p>
+                    <h2>⚠️ Error Loading Coin Flip</h2>
+                    <p>There was an error loading MoonYetis Coin Flip. Please try again.</p>
+                    <button class="product-back-btn" data-route="">← Back to Ecosystem</button>
+                </div>
+            `;
+        }
+    }
+
+    async loadDiceRollProduct() {
+        console.log('🎲 Loading MoonYetis Dice Roll...');
+        
+        const container = document.getElementById('product-container');
+        if (!container) {
+            console.error('❌ Product container not found');
+            return;
+        }
+        
+        // Set loading state
+        container.innerHTML = `
+            <div class="product-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading MoonYetis Dice Roll...</p>
+            </div>
+        `;
+        
+        // Wait a moment for visual feedback
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        try {
+            // Load the dice roll game HTML
+            container.innerHTML = this.getDiceRollHTML();
+            
+            // Show the dice roll container and hide others
+            const diceRollContainer = document.getElementById('dice-roll-container');
+            const coinFlipContainer = document.getElementById('coin-flip-container');
+            
+            if (diceRollContainer) {
+                diceRollContainer.style.display = 'block';
+                
+                // Initialize the game if not already done
+                if (typeof window.diceRollGame !== 'undefined') {
+                    window.diceRollGame.init();
+                }
+            }
+            
+            // Hide other game containers
+            if (coinFlipContainer) {
+                coinFlipContainer.style.display = 'none';
+            }
+            
+            console.log('✅ MoonYetis Dice Roll loaded successfully');
+            
+        } catch (error) {
+            console.error('❌ Error loading MoonYetis Dice Roll:', error);
+            container.innerHTML = `
+                <div class="product-error">
+                    <h2>⚠️ Error Loading Dice Roll</h2>
+                    <p>There was an error loading MoonYetis Dice Roll. Please try again.</p>
+                    <button class="product-back-btn" data-route="">← Back to Ecosystem</button>
+                </div>
+            `;
+        }
+    }
+
+    async loadJupiterLotteryProduct() {
+        console.log('🎫 Loading Jupiter Lottery...');
+        
+        const container = document.getElementById('product-container');
+        if (!container) {
+            console.error('❌ Product container not found');
+            return;
+        }
+        
+        // Set loading state
+        container.innerHTML = `
+            <div class="product-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading Jupiter Lottery...</p>
+            </div>
+        `;
+        
+        // Wait a moment for visual feedback
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        try {
+            // Load the Jupiter Lottery game HTML
+            container.innerHTML = this.getJupiterLotteryHTML();
+            
+            // Show the Jupiter Lottery container and hide others
+            const jupiterContainer = document.getElementById('jupiter-lottery-container');
+            const diceRollContainer = document.getElementById('dice-roll-container');
+            const coinFlipContainer = document.getElementById('coin-flip-container');
+            
+            if (jupiterContainer) {
+                jupiterContainer.style.display = 'block';
+                
+                // Initialize the game if not already done
+                if (typeof window.jupiterLotteryGame !== 'undefined') {
+                    window.jupiterLotteryGame.init();
+                }
+            }
+            
+            // Hide other game containers
+            if (diceRollContainer) {
+                diceRollContainer.style.display = 'none';
+            }
+            if (coinFlipContainer) {
+                coinFlipContainer.style.display = 'none';
+            }
+            
+            console.log('✅ Jupiter Lottery loaded successfully');
+            
+        } catch (error) {
+            console.error('❌ Error loading Jupiter Lottery:', error);
+            container.innerHTML = `
+                <div class="product-error">
+                    <h2>⚠️ Error Loading Jupiter Lottery</h2>
+                    <p>There was an error loading Jupiter Lottery. Please try again.</p>
+                    <button class="product-back-btn" data-route="">← Back to Ecosystem</button>
+                </div>
+            `;
+        }
+    }
+
+    async loadMarsFaucetProduct() {
+        console.log('🔴 Loading Mars Faucet...');
+        
+        const container = document.getElementById('product-container');
+        if (!container) {
+            console.error('❌ Product container not found');
+            return;
+        }
+        
+        // Set loading state
+        container.innerHTML = `
+            <div class="product-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading Mars Faucet...</p>
+            </div>
+        `;
+        
+        // Wait a moment for visual feedback
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        try {
+            // Load the Mars Faucet game HTML
+            container.innerHTML = this.getMarsFaucetHTML();
+            
+            // Show the Mars Faucet container and hide others
+            const marsFaucetContainer = document.getElementById('mars-faucet-container');
+            const diceRollContainer = document.getElementById('dice-roll-container');
+            const coinFlipContainer = document.getElementById('coin-flip-container');
+            const jupiterContainer = document.getElementById('jupiter-lottery-container');
+            
+            if (marsFaucetContainer) {
+                marsFaucetContainer.style.display = 'block';
+                
+                // Initialize the game if not already done
+                if (typeof window.marsFaucetGame !== 'undefined') {
+                    window.marsFaucetGame.init();
+                }
+            }
+            
+            // Hide other game containers
+            if (diceRollContainer) {
+                diceRollContainer.style.display = 'none';
+            }
+            if (coinFlipContainer) {
+                coinFlipContainer.style.display = 'none';
+            }
+            if (jupiterContainer) {
+                jupiterContainer.style.display = 'none';
+            }
+            
+            console.log('✅ Mars Faucet loaded successfully');
+            
+        } catch (error) {
+            console.error('❌ Error loading Mars Faucet:', error);
+            container.innerHTML = `
+                <div class="product-error">
+                    <h2>⚠️ Error Loading Mars Faucet</h2>
+                    <p>There was an error loading Mars Faucet. Please try again.</p>
                     <button class="product-back-btn" data-route="">← Back to Ecosystem</button>
                 </div>
             `;
         }
     }
     
-    getSlotsHTML() {
+    getCoinFlipHTML() {
         return `
             <div class="product-header">
                 <div class="product-nav">
                     <button class="product-back-btn" data-route="">
                         ← Back to Ecosystem
                     </button>
-                    <h1 class="product-title">🎰 MoonYetis Slots</h1>
+                    <h1 class="product-title">🪙 MoonYetis Coin Flip</h1>
                 </div>
             </div>
             
-            <div class="slot-game-container">
-                <!-- Slot machine content will be moved here -->
-                <div id="slot-machine-wrapper">
-                    <!-- This will contain the existing slot machine -->
+            <div class="coin-flip-game-container">
+                <div id="coin-flip-container">
+                    <!-- Coin flip game will be initialized here -->
+                </div>
+            </div>
+        `;
+    }
+
+    getDiceRollHTML() {
+        return `
+            <div class="product-header">
+                <div class="product-nav">
+                    <button class="product-back-btn" data-route="">
+                        ← Back to Ecosystem
+                    </button>
+                    <h1 class="product-title">🎲 MoonYetis Dice Roll</h1>
+                </div>
+            </div>
+            
+            <div class="dice-roll-game-container">
+                <div id="dice-roll-container">
+                    <!-- Dice roll game will be initialized here -->
+                </div>
+            </div>
+        `;
+    }
+
+    getJupiterLotteryHTML() {
+        return `
+            <div class="product-header">
+                <div class="product-nav">
+                    <button class="product-back-btn" data-route="">
+                        ← Back to Ecosystem
+                    </button>
+                    <h1 class="product-title">🎫 Jupiter Lottery</h1>
+                </div>
+            </div>
+            
+            <div class="jupiter-lottery-game-container">
+                <div id="jupiter-lottery-container">
+                    <!-- Jupiter Lottery game will be initialized here -->
+                </div>
+            </div>
+        `;
+    }
+
+    getMarsFaucetHTML() {
+        return `
+            <div class="product-header">
+                <div class="product-nav">
+                    <button class="product-back-btn" data-route="">
+                        ← Back to Ecosystem
+                    </button>
+                    <h1 class="product-title">🔴 Mars Faucet</h1>
+                </div>
+            </div>
+            
+            <div class="mars-faucet-game-container">
+                <div id="mars-faucet-container">
+                    <!-- Mars Faucet game will be initialized here -->
                 </div>
             </div>
         `;
@@ -320,11 +595,22 @@ class EcosystemRouter {
     
     // Destroy current product component
     destroyCurrentProduct() {
-        if (this.slotMachineComponent && typeof this.slotMachineComponent.destroy === 'function') {
-            console.log('🗑️ Destroying current product component');
-            this.slotMachineComponent.destroy();
-            this.slotMachineComponent = null;
-        }
+        // Hide all game containers when navigating away
+        const containers = [
+            'coin-flip-container',
+            'dice-roll-container', 
+            'jupiter-lottery-container',
+            'mars-faucet-container'
+        ];
+        
+        containers.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.style.display = 'none';
+            }
+        });
+        
+        console.log('🗑️ Current product component cleaned up');
     }
 }
 

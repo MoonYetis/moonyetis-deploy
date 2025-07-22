@@ -17,15 +17,13 @@
     <!-- Ecosystem Styles -->
     <link href="css/ecosystem.css" rel="stylesheet">
     
-    <!-- Slot Machine Styles -->
-    <link href="css/slot-machine.css" rel="stylesheet">
-    
-    
-    
     <!-- New Modular Architecture Styles -->
     <link href="css/dashboard-modal.css" rel="stylesheet">
     <link href="css/wallet-connection-hub.css" rel="stylesheet">
-    <link href="css/slot-selection-modal.css" rel="stylesheet">
+    <link href="css/coin-flip.css" rel="stylesheet">
+    <link href="css/dice-roll.css" rel="stylesheet">
+    <link href="css/jupiter-lottery.css" rel="stylesheet">
+    <link href="css/mars-faucet.css" rel="stylesheet">
     
     <!-- Core Application System -->
     <script type="module" src="js/config.ts"></script>
@@ -156,21 +154,21 @@
             <!-- Invisible hover areas over each planet (only for yeti effects) -->
             <div class="planet-hover-areas">
                     <!-- Venus - Leftmost -->
-                    <div class="planet-hover-area venus-area" data-product="slots">
+                    <div class="planet-hover-area venus-area" data-product="coin-flip">
                         <div class="planet-yeti">
                             <img src="images/yeti-slots.png" alt="MoonYetis Yeti">
                         </div>
                     </div>
                     
                     <!-- Earth - Second from left -->
-                    <div class="planet-hover-area earth-area" data-product="charity">
+                    <div class="planet-hover-area earth-area" data-product="dice-roll">
                         <div class="planet-yeti">
                             <img src="images/yeti-slots.png" alt="MoonYetis Yeti">
                         </div>
                     </div>
                     
                     <!-- Mars - Third from left -->
-                    <div class="planet-hover-area mars-area" data-product="faucet">
+                    <div class="planet-hover-area mars-area" data-product="mars-faucet">
                         <div class="planet-yeti">
                             <img src="images/yeti-slots.png" alt="MoonYetis Yeti">
                         </div>
@@ -187,38 +185,38 @@
                 <!-- Info cards always visible under planets -->
                 <div class="planets-info-container">
                     <div class="planet-info-card" data-planet="venus">
-                        <h3 class="planet-title">Venus Slots</h3>
-                        <p class="planet-subtitle">Classic slot machine experience with stunning graphics and real MoonYetis rewards.</p>
+                        <h3 class="planet-title">Venus Coin Flip</h3>
+                        <p class="planet-subtitle">Simple coin flip game with instant results and MoonYetis rewards.</p>
                         <div class="planet-actions-row">
                             <span class="planet-status live">🟢 Live</span>
-                            <a href="#" class="planet-action primary" data-route="slots">🚀 Play Now</a>
+                            <a href="#" class="planet-action primary" data-route="coin-flip">🪙 Flip Now</a>
                         </div>
                     </div>
                     
                     <div class="planet-info-card" data-planet="earth">
-                        <h3 class="planet-title">Earth Charity</h3>
-                        <p class="planet-subtitle">Donate to verified causes with full blockchain transparency.</p>
+                        <h3 class="planet-title">Earth Dice Roll</h3>
+                        <p class="planet-subtitle">Roll the dice and predict HIGH (4-6) or LOW (1-3) for instant rewards.</p>
                         <div class="planet-actions-row">
-                            <span class="planet-status coming-soon">🟡 Coming Soon</span>
-                            <button class="planet-action disabled" disabled>📅 Q4 2025</button>
+                            <span class="planet-status live">🟢 Live</span>
+                            <a href="#" class="planet-action primary" data-route="dice-roll">🎲 Roll Now</a>
                         </div>
                     </div>
                     
                     <div class="planet-info-card" data-planet="mars">
                         <h3 class="planet-title">Mars Faucet</h3>
-                        <p class="planet-subtitle">Free MY tokens every 24 hours with anti-bot verification system.</p>
+                        <p class="planet-subtitle">Free MC every 8 hours with anti-bot protection and ad bonus rewards.</p>
                         <div class="planet-actions-row">
-                            <span class="planet-status coming-soon">🟡 Coming Soon</span>
-                            <button class="planet-action disabled" disabled>📅 Q3 2025</button>
+                            <span class="planet-status live">🟢 Live</span>
+                            <a href="#" class="planet-action primary" data-route="mars-faucet">🔴 Claim Now</a>
                         </div>
                     </div>
                     
                     <div class="planet-info-card" data-planet="jupiter">
                         <h3 class="planet-title">Jupiter Lottery</h3>
-                        <p class="planet-subtitle">Daily and weekly lotteries with accumulative prizes in MY tokens.</p>
+                        <p class="planet-subtitle">Win big with Powerball-based lottery draws every Monday, Wednesday & Saturday.</p>
                         <div class="planet-actions-row">
-                            <span class="planet-status coming-soon">🟡 Coming Soon</span>
-                            <button class="planet-action disabled" disabled>📅 Q3 2025</button>
+                            <span class="planet-status live">🟢 Live</span>
+                            <a href="#" class="planet-action primary" data-route="jupiter-lottery">🎫 Play Now</a>
                         </div>
                     </div>
                 </div>
@@ -452,6 +450,9 @@
     <!-- Configuration -->
     <script src="js/config.js"></script>
     
+    <!-- Balance Manager (must load before games) -->
+    <script src="js/balance-manager.js"></script>
+    
     <!-- New Modular Architecture -->
     <script src="js/dashboard-modal.js"></script>
 </script>
@@ -522,12 +523,20 @@
     <!-- New Modular Wallet System -->
     <script type="module" src="js/wallets.ts"></script>
     
+    <!-- Coin Flip Game -->
+    <script src="js/coin-flip.js"></script>
     
-    <!-- Slot Machine Core -->
-    <script src="js/slot-machine.js"></script>
+    <!-- Dice Roll Game -->
+    <script src="js/dice-roll.js"></script>
     
-    <!-- Slot Machine Component (modular loader) -->
-    <script src="js/slot-machine-component.js"></script>
+    <!-- Jupiter Lottery Game -->
+    <script src="js/powerball-api.js"></script>
+    <script src="js/jupiter-lottery.js"></script>
+    
+    <!-- Mars Faucet Game -->
+    <script src="js/mars-faucet.js"></script>
+    
+    
     
     <!-- Navigation Scroll Handler -->
     <script>
@@ -748,6 +757,18 @@
             statsObserver.observe(statsSection);
         }
     </script>
+    
+    <!-- Coin Flip Game Container (Hidden by default, shown by router) -->
+    <div id="coin-flip-container" style="display: none;"></div>
+    
+    <!-- Dice Roll Game Container (Hidden by default, shown by router) -->
+    <div id="dice-roll-container" style="display: none;"></div>
+    
+    <!-- Jupiter Lottery Game Container (Hidden by default, shown by router) -->
+    <div id="jupiter-lottery-container" style="display: none;"></div>
+    
+    <!-- Mars Faucet Game Container (Hidden by default, shown by router) -->
+    <div id="mars-faucet-container" style="display: none;"></div>
     
 </body>
 </html>

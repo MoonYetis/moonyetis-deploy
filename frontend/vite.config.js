@@ -34,7 +34,6 @@ export default defineConfig({
             './js/wallet-hub-backend.js'
           ],
           'game-engine': [
-            './js/slot-machine.js',
             './js/graphics-engine.js',
             './js/animation-system.js'
           ]

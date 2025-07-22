@@ -187,7 +187,7 @@ class DashboardModal {
                                 <div class="change-card">
                                     <div class="change-header">
                                         <h4>MC → MY</h4>
-                                        <span class="change-rate">1 MC = 1.2 MY</span>
+                                        <span class="change-rate">1 MC = 1.188 MY (1% fee)</span>
                                     </div>
                                     <div class="change-form">
                                         <div class="form-group">
@@ -199,7 +199,34 @@ class DashboardModal {
                                             <span>You'll receive: </span>
                                             <span id="mc-to-my-receive">0 MY</span>
                                         </div>
+                                        <div class="fee-notice">
+                                            <small>💡 1% transaction fee applies</small>
+                                        </div>
                                         <button class="change-btn" id="mc-to-my-btn">Sell MoonCoins</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="change-option">
+                                <div class="change-card">
+                                    <div class="change-header">
+                                        <h4>MC → FB</h4>
+                                        <span class="change-rate">67,500 MC = 0.99 FB (1% fee)</span>
+                                    </div>
+                                    <div class="change-form">
+                                        <div class="form-group">
+                                            <label for="mc-to-fb-amount">Amount</label>
+                                            <input type="number" id="mc-to-fb-amount" placeholder="0" step="1">
+                                            <span class="input-suffix">MC</span>
+                                        </div>
+                                        <div class="will-receive">
+                                            <span>You'll receive: </span>
+                                            <span id="mc-to-fb-receive">0.00000 FB</span>
+                                        </div>
+                                        <div class="fee-notice">
+                                            <small>💡 1% transaction fee applies</small>
+                                        </div>
+                                        <button class="change-btn" id="mc-to-fb-btn">Sell MoonCoins</button>
                                     </div>
                                 </div>
                             </div>
@@ -288,11 +315,13 @@ class DashboardModal {
         this.modal.querySelector('#fb-to-mc-btn').addEventListener('click', () => this.processChange('FB', 'MC'));
         this.modal.querySelector('#my-to-mc-btn').addEventListener('click', () => this.processChange('MY', 'MC'));
         this.modal.querySelector('#mc-to-my-btn').addEventListener('click', () => this.processChange('MC', 'MY'));
+        this.modal.querySelector('#mc-to-fb-btn').addEventListener('click', () => this.processChange('MC', 'FB'));
         
         // Change amount calculators
         this.modal.querySelector('#fb-to-mc-amount').addEventListener('input', () => this.updateChangePreview('FB', 'MC'));
         this.modal.querySelector('#my-to-mc-amount').addEventListener('input', () => this.updateChangePreview('MY', 'MC'));
         this.modal.querySelector('#mc-to-my-amount').addEventListener('input', () => this.updateChangePreview('MC', 'MY'));
+        this.modal.querySelector('#mc-to-fb-amount').addEventListener('input', () => this.updateChangePreview('MC', 'FB'));
         
         // Withdrawal forms
         this.modal.querySelector('#withdraw-fb-btn').addEventListener('click', () => this.processWithdrawal('FB'));
@@ -793,6 +822,13 @@ class DashboardModal {
         if (this.user) {
             this.user.balances[detail.tokenType] = detail.amount;
             this.updateBalanceDisplay();
+            
+            // 🔄 SYNC WITH BALANCEMANAGER: If MC balance was updated via wallet, sync with games
+            if (detail.tokenType === 'MC' && window.balanceManager) {
+                // Update BalanceManager without syncing back to wallet (avoid infinite loop)
+                window.balanceManager.setBalance(detail.amount, true, false);
+                console.log(`🔄 Dashboard synced MC balance with BalanceManager: ${detail.amount} MC`);
+            }
         }
     }
     
@@ -834,22 +870,59 @@ class DashboardModal {
     }
     
     // Change methods
+    calculateConversionWithFee(amount, fromToken, toToken) {
+        let rate = 1;
+        let fee = 0; // No fee by default
+        
+        // Define conversion rates
+        if (fromToken === 'FB' && toToken === 'MC') {
+            rate = 67500; // 1 FB = 67,500 MC (no fee for buying MC)
+        } else if (fromToken === 'MY' && toToken === 'MC') {
+            rate = 0.8 * 1.03; // 1 MY = 0.824 MC with 3% bonus (no fee for buying MC)
+        } else if (fromToken === 'MC' && toToken === 'MY') {
+            rate = 1.2; // Base rate: 1 MC = 1.2 MY
+            fee = 0.01; // 1% fee for selling MC
+        } else if (fromToken === 'MC' && toToken === 'FB') {
+            rate = 1 / 67500; // Base rate: 1 MC = 1/67500 FB
+            fee = 0.01; // 1% fee for selling MC
+        }
+        
+        // Calculate conversion
+        const grossAmount = amount * rate;
+        const feeAmount = grossAmount * fee;
+        const netAmount = grossAmount - feeAmount;
+        
+        return {
+            grossAmount: grossAmount,
+            feeAmount: feeAmount,
+            netAmount: Math.floor(netAmount * 100000) / 100000, // Round to 5 decimals for FB, or keep integer for MY
+            effectiveRate: netAmount / amount,
+            feePercentage: fee * 100
+        };
+    }
+    
     updateChangePreview(fromToken, toToken) {
         const amountInput = this.modal.querySelector(`#${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}-amount`);
         const receiveSpan = this.modal.querySelector(`#${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}-receive`);
         const amount = parseFloat(amountInput.value) || 0;
         
-        let rate = 1;
-        if (fromToken === 'FB' && toToken === 'MC') {
-            rate = 67500;
-        } else if (fromToken === 'MY' && toToken === 'MC') {
-            rate = 0.8 * 1.03; // 3% bonus
-        } else if (fromToken === 'MC' && toToken === 'MY') {
-            rate = 1.2;
+        if (amount <= 0) {
+            receiveSpan.textContent = `0${toToken === 'FB' ? '.00000' : ''} ${toToken}`;
+            return;
         }
         
-        const willReceive = amount * rate;
-        receiveSpan.textContent = `${willReceive.toFixed(fromToken === 'FB' ? 0 : 2)} ${toToken}`;
+        // Use the new fee calculation function
+        const conversion = this.calculateConversionWithFee(amount, fromToken, toToken);
+        const willReceive = conversion.netAmount;
+        
+        // Format the display based on token type
+        if (toToken === 'FB') {
+            receiveSpan.textContent = `${willReceive.toFixed(5)} FB`;
+        } else if (toToken === 'MC') {
+            receiveSpan.textContent = `${Math.floor(willReceive)} MC`;
+        } else {
+            receiveSpan.textContent = `${willReceive.toFixed(2)} MY`;
+        }
     }
     
     async processChange(fromToken, toToken) {
@@ -879,27 +952,45 @@ class DashboardModal {
             // Simulate change process
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Calculate exchange
-            let rate = 1;
-            if (fromToken === 'FB' && toToken === 'MC') {
-                rate = 67500;
-            } else if (fromToken === 'MY' && toToken === 'MC') {
-                rate = 0.8 * 1.03; // 3% bonus
-            } else if (fromToken === 'MC' && toToken === 'MY') {
-                rate = 1.2;
+            // Calculate exchange with fees
+            const conversion = this.calculateConversionWithFee(amount, fromToken, toToken);
+            const willReceive = toToken === 'MC' ? Math.floor(conversion.netAmount) : conversion.netAmount;
+            
+            // Log fee information for transparency
+            if (conversion.feePercentage > 0) {
+                console.log(`💰 Conversion fee: ${conversion.feeAmount.toFixed(5)} ${toToken} (${conversion.feePercentage}%)`);
+                console.log(`📊 Gross: ${conversion.grossAmount.toFixed(5)} ${toToken} → Net: ${willReceive.toFixed(5)} ${toToken}`);
             }
             
-            const willReceive = amount * rate;
-            
-            // Update balances
+            // Update wallet balances
             walletHub.updateUserBalance(fromToken, fromBalance - amount);
-            walletHub.updateUserBalance(toToken, walletHub.getUserBalance(toToken) + willReceive);
+            const newToBalance = walletHub.getUserBalance(toToken) + willReceive;
+            walletHub.updateUserBalance(toToken, newToBalance);
+            
+            // 🔄 SYNC WITH BALANCEMANAGER: If conversion involves MC, sync with games
+            if (toToken === 'MC' && window.balanceManager) {
+                // Converting TO MC - update BalanceManager with new MC amount
+                const currentMC = walletHub.getUserBalance('MC');
+                window.balanceManager.setBalance(currentMC);
+                console.log(`💱 Wallet conversion: ${amount} ${fromToken} → ${willReceive} MC. Total MC: ${currentMC}`);
+            } else if (fromToken === 'MC' && window.balanceManager) {
+                // Converting FROM MC - update BalanceManager with remaining MC
+                const currentMC = walletHub.getUserBalance('MC');
+                window.balanceManager.setBalance(currentMC);
+                console.log(`💱 Wallet conversion: ${amount} MC → ${willReceive} ${toToken}. Remaining MC: ${currentMC}`);
+            }
             
             // Clear input
             amountInput.value = '';
             this.updateChangePreview(fromToken, toToken);
             
-            alert(`Successfully exchanged ${amount} ${fromToken} for ${willReceive.toFixed(2)} ${toToken}!`);
+            // Create success message with fee info if applicable
+            let successMessage = `Successfully exchanged ${amount} ${fromToken} for ${toToken === 'FB' ? willReceive.toFixed(5) : willReceive.toFixed(2)} ${toToken}!`;
+            if (conversion.feePercentage > 0) {
+                successMessage += `\n💡 Transaction fee: ${conversion.feeAmount.toFixed(toToken === 'FB' ? 5 : 2)} ${toToken} (${conversion.feePercentage}%)`;
+            }
+            
+            alert(successMessage);
             
         } catch (error) {
             console.error('Change error:', error);
