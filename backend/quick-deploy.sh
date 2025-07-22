@@ -21,7 +21,6 @@ cat > .env << 'EOF'
 # Server Configuration
 NODE_ENV=production
 STORE_PORT=3002
-HD_WALLET_PORT=3001
 
 # UniSat API Configuration
 UNISAT_API_KEY=fc77d31a8981cb27425b73f93d2d2354c81d2e3c429137bbfc19d55d7a0dfe12
@@ -65,22 +64,6 @@ echo "📝 Creating PM2 configuration..."
 cat > ecosystem.config.js << 'EOF'
 module.exports = {
   apps: [
-    {
-      name: 'moonyetis-wallet',
-      script: './hd-wallet-server.js',
-      instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '1G',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 3001
-      },
-      error_file: './logs/wallet-error.log',
-      out_file: './logs/wallet-out.log',
-      log_file: './logs/wallet-combined.log',
-      time: true
-    },
     {
       name: 'moonyetis-store',
       script: './store-server-v2.js',
@@ -129,9 +112,9 @@ sleep 5
 echo -n "Store API: "
 curl -s http://localhost:3002/api/store/health > /dev/null 2>&1 && echo "✅ Working" || echo "❌ Not responding"
 
-# Test wallet API
-echo -n "Wallet API: "
-curl -s http://localhost:3001/api/deposit/addresses > /dev/null 2>&1 && echo "✅ Working" || echo "❌ Not responding"
+# Test additional store endpoints
+echo -n "Store Prices: "
+curl -s http://localhost:3002/api/store/prices > /dev/null 2>&1 && echo "✅ Working" || echo "❌ Not responding"
 
 echo ""
 echo "📝 Useful commands:"
@@ -140,11 +123,10 @@ echo "  pm2 logs      - View logs"
 echo "  pm2 restart all - Restart services"
 echo "  pm2 monit     - Real-time monitoring"
 echo ""
-echo "🌐 Your APIs are available at:"
+echo "🌐 Your API is available at:"
 echo "  Store API: http://168.231.124.18:3002"
-echo "  Wallet API: http://168.231.124.18:3001"
 echo ""
 echo "🔒 Security reminder:"
 echo "  - Your webhook secret and admin key are configured"
-echo "  - Make sure ports 3001 and 3002 are open in firewall"
+echo "  - Make sure port 3002 is open in firewall"
 echo "  - Monitor logs for the first 24 hours"

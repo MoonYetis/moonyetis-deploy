@@ -1,20 +1,37 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-require('dotenv').config();
+const config = require('./config');
 
 // Import services
 const PriceService = require('./services/price-service');
 const TransactionMonitor = require('./services/transaction-monitor');
 
+// Import authentication and database
+const MoonYetisDatabase = require('./database');
+const AuthManager = require('./auth');
+const ReferralManager = require('./referrals');
+
 const app = express();
-app.use(cors());
+
+// Configure CORS for development
+const corsOptions = {
+    origin: config.corsOrigins,
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Initialize services
-const priceService = new PriceService(process.env.UNISAT_API_KEY || 'fc77d31a8981cb27425b73f93d2d2354c81d2e3c429137bbfc19d55d7a0dfe12');
-const paymentAddress = process.env.PAYMENT_ADDRESS || 'bc1pnhnqmuhx9xtqd8naa9wa60ur2n5fv9emjpcethzdwn8kzkx4gv4sf7xkr5';
-const transactionMonitor = new TransactionMonitor(process.env.UNISAT_API_KEY || 'fc77d31a8981cb27425b73f93d2d2354c81d2e3c429137bbfc19d55d7a0dfe12', paymentAddress);
+// Initialize services using config
+const priceService = new PriceService(config.unisatApiKey);
+const transactionMonitor = new TransactionMonitor(config.unisatApiKey, config.paymentAddress);
+
+// Initialize authentication system
+const database = new MoonYetisDatabase();
+const authManager = new AuthManager(database);
+const referralManager = new ReferralManager(database, authManager);
 
 // Store configuration
 const STORE_CONFIG = {
@@ -42,12 +59,12 @@ const STORE_CONFIG = {
         fb: {
             name: 'Fractal Bitcoin',
             bonus: 0,
-            address: paymentAddress
+            address: config.paymentAddress
         },
         my: {
             name: 'MoonYetis BRC-20',
             bonus: 3, // 3% bonus
-            address: paymentAddress
+            address: config.paymentAddress
         }
     }
 };
@@ -126,13 +143,225 @@ async function processOrderPayment(orderId, txHash) {
     const newBalance = currentBalance + order.mooncoins;
     userBalances.set(order.userWallet, newBalance);
     
+    // If user is authenticated, update database balance and process referral
+    if (order.userId) {
+        try {
+            // Add MoonCoins to authenticated user's database balance
+            authManager.addMoonCoins(order.userId, order.mooncoins, `Pack purchase: ${order.packName}`);
+            
+            // Process referral reward if this is user's first purchase
+            const referralResult = await referralManager.processReferralPurchase(order.userId, order.amount);
+            if (referralResult.rewardGranted) {
+                console.log(`🎁 Referral reward granted: ${referralResult.rewardAmount} MC to user ${referralResult.referrerId}`);
+            }
+            
+            console.log(`💰 Authenticated user ${order.userId} received ${order.mooncoins} MC`);
+        } catch (error) {
+            console.error('❌ Error updating authenticated user balance:', error);
+        }
+    }
+    
     console.log(`✅ Order ${orderId} completed`);
     console.log(`💰 User ${order.userWallet} balance: ${currentBalance} -> ${newBalance}`);
     
     return true;
 }
 
-// API Endpoints
+// Authentication middleware
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    
+    if (!token) {
+        return res.status(401).json({ success: false, error: 'Access token required' });
+    }
+    
+    const verification = authManager.verifyToken(token);
+    if (!verification.success) {
+        return res.status(403).json({ success: false, error: 'Invalid or expired token' });
+    }
+    
+    req.user = verification;
+    next();
+}
+
+// Optional authentication middleware (allows both authenticated and guest users)
+function optionalAuth(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (token) {
+        const verification = authManager.verifyToken(token);
+        if (verification.success) {
+            req.user = verification;
+        }
+    }
+    
+    next();
+}
+
+// Authentication API Endpoints
+
+// Register new user
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { username, email, password, referralCode } = req.body;
+        
+        const result = await authManager.register(username, email, password, referralCode);
+        
+        if (result.success) {
+            res.status(201).json({
+                success: true,
+                message: 'User registered successfully',
+                userId: result.userId,
+                username: result.username,
+                referralCode: result.referralCode
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Registration endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Login user
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { usernameOrEmail, password } = req.body;
+        
+        const result = await authManager.login(usernameOrEmail, password);
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Login successful',
+                token: result.token,
+                user: result.user,
+                dailyReward: result.dailyReward
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Login endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Get user profile
+app.get('/api/auth/profile', authenticateToken, (req, res) => {
+    try {
+        const user = authManager.getUserById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                mooncoinsBalance: user.mooncoins_balance,
+                referralCode: user.referral_code,
+                associatedWallet: user.associated_wallet,
+                totalPurchased: user.total_purchased,
+                createdAt: user.created_at,
+                lastLogin: user.last_login
+            }
+        });
+    } catch (error) {
+        console.error('Profile endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Validate referral code
+app.get('/api/auth/validate-referral/:code', (req, res) => {
+    try {
+        const { code } = req.params;
+        const validation = referralManager.validateReferralCode(code);
+        
+        res.json({
+            success: true,
+            valid: validation.valid,
+            error: validation.error || null
+        });
+    } catch (error) {
+        console.error('Referral validation error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Get referral information
+app.get('/api/auth/referrals', authenticateToken, (req, res) => {
+    try {
+        const referralInfo = referralManager.getUserReferralInfo(req.user.userId);
+        
+        if (referralInfo.success) {
+            res.json({
+                success: true,
+                referralCode: referralInfo.referralCode,
+                stats: referralInfo.stats,
+                recentReferrals: referralInfo.recentReferrals
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                error: referralInfo.error
+            });
+        }
+    } catch (error) {
+        console.error('Referrals endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Process daily login (can be called manually)
+app.post('/api/auth/daily-login', authenticateToken, (req, res) => {
+    try {
+        const dailyReward = authManager.processDailyLogin(req.user.userId);
+        
+        res.json({
+            success: true,
+            dailyReward: dailyReward
+        });
+    } catch (error) {
+        console.error('Daily login endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Store API Endpoints
 
 // Get current prices
 app.get('/api/store/prices', (req, res) => {
@@ -173,7 +402,7 @@ app.get('/api/store/products', (req, res) => {
 });
 
 // Create purchase order
-app.post('/api/store/purchase', (req, res) => {
+app.post('/api/store/purchase', optionalAuth, (req, res) => {
     try {
         const { packId, paymentMethod, userWallet, expectedCoins } = req.body;
         const walletHeader = req.headers['x-wallet-address'];
@@ -214,6 +443,7 @@ app.post('/api/store/purchase', (req, res) => {
         const order = {
             orderId,
             userWallet,
+            userId: req.user ? req.user.userId : null, // Include user ID if authenticated
             packId,
             packName: pack.name,
             paymentMethod,
@@ -443,6 +673,124 @@ app.get('/api/store/health', (req, res) => {
     });
 });
 
+// === ECOSYSTEM PRODUCT MANAGEMENT ===
+
+// Get available products
+app.get('/api/ecosystem/products', (req, res) => {
+    const products = [
+        {
+            id: 'slots',
+            name: 'MoonYetis Slots',
+            status: 'live',
+            icon: '🎰',
+            description: 'Classic slot machine with MoonYetis and Fractal Bitcoin rewards',
+            category: 'casino',
+            minBet: 10000,
+            maxBet: 2500000,
+            currency: 'MY',
+            features: ['Progressive Jackpot', 'Free Spins', 'Wild Symbols', 'Scatter Rewards'],
+            launchDate: '2024-12-01',
+            lastUpdate: new Date().toISOString()
+        },
+        {
+            id: 'lottery',
+            name: 'MoonYetis Lottery',
+            status: 'coming_soon',
+            icon: '🎟️',
+            description: 'Daily and weekly lotteries with accumulative prizes in MY tokens',
+            category: 'lottery',
+            estimatedLaunch: 'Q2 2025',
+            features: ['Daily Draws', 'Weekly Jackpots', 'Transparent Results', 'MY Token Prizes'],
+            lastUpdate: new Date().toISOString()
+        },
+        {
+            id: 'faucet',
+            name: 'MoonYetis Faucet',
+            status: 'coming_soon',
+            icon: '💧',
+            description: 'Free MY tokens every 24 hours with anti-bot verification',
+            category: 'utility',
+            estimatedLaunch: 'Q3 2025',
+            features: ['Daily Claims', 'Anti-Bot Protection', 'Activity Bonuses', 'Free MY Tokens'],
+            lastUpdate: new Date().toISOString()
+        },
+        {
+            id: 'charity',
+            name: 'MoonYetis Charity',
+            status: 'coming_soon',
+            icon: '❤️',
+            description: 'Donate to verified charitable causes with full blockchain transparency',
+            category: 'charity',
+            estimatedLaunch: 'Q4 2025',
+            features: ['Verified Causes', 'Blockchain Transparency', 'Matching Donations', 'Impact Tracking'],
+            lastUpdate: new Date().toISOString()
+        }
+    ];
+    
+    res.json({
+        success: true,
+        products: products,
+        totalProducts: products.length,
+        liveProducts: products.filter(p => p.status === 'live').length,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Get specific product details
+app.get('/api/ecosystem/products/:productId', (req, res) => {
+    const { productId } = req.params;
+    
+    // For now, only slots has detailed stats
+    if (productId === 'slots') {
+        res.json({
+            success: true,
+            product: {
+                id: 'slots',
+                name: 'MoonYetis Slots',
+                status: 'live',
+                stats: {
+                    totalPlayers: userBalances.size,
+                    totalWagered: 50000000, // Mock data
+                    bigWins: 1250, // Mock data
+                    jackpotAmount: 1000000, // Mock data
+                    activeNow: 45 // Mock data
+                },
+                recentActivity: [
+                    { player: 'CryptoKing', amount: 2450000, time: '2 min ago' },
+                    { player: 'MoonWhale', amount: 1890000, time: '5 min ago' },
+                    { player: 'YetiHunter', amount: 1250000, time: '8 min ago' }
+                ]
+            },
+            timestamp: new Date().toISOString()
+        });
+    } else {
+        res.json({
+            success: false,
+            error: 'Product not found or not available yet',
+            availableProducts: ['slots']
+        });
+    }
+});
+
+// Get ecosystem stats
+app.get('/api/ecosystem/stats', (req, res) => {
+    const stats = {
+        totalUsers: userBalances.size,
+        totalProducts: 4,
+        liveProducts: 1,
+        totalTransactions: processedTransactions.size,
+        totalVolume: 50000000, // Mock data
+        averageSession: '25 min', // Mock data
+        topCountries: ['US', 'Canada', 'UK', 'Germany', 'Japan']
+    };
+    
+    res.json({
+        success: true,
+        stats: stats,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('📛 SIGTERM received, shutting down gracefully...');
@@ -451,10 +799,12 @@ process.on('SIGTERM', () => {
     process.exit(0);
 });
 
-const PORT = process.env.STORE_PORT || 3002;
-app.listen(PORT, () => {
-    console.log(`🏪 MoonYetis Store Server V2 running on port ${PORT}`);
-    console.log('🔐 Payment address:', paymentAddress);
+app.listen(config.port, () => {
+    console.log(`🏪 MoonYetis Store Server V2 running on port ${config.port}`);
+    console.log('🔐 Payment address:', config.paymentAddress);
     console.log('💱 Price service: Active');
     console.log('🔍 Transaction monitor: Active');
+    
+    // Log configuration
+    config.logConfig();
 });

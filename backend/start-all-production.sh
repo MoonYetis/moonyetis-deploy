@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🚀 Starting MoonYetis Backend Services - PRODUCTION"
-echo "==================================================="
+echo "🚀 Starting MoonYetis Store - PRODUCTION"
+echo "======================================="
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
@@ -18,15 +18,8 @@ fi
 # Set production environment
 export NODE_ENV=production
 
-echo "🔐 Starting HD Wallet API Server on port 3001..."
 echo "🏪 Starting Store API Server on port 3002..."
 echo ""
-
-# Function to start HD wallet server
-start_hd_wallet() {
-    echo "[HD-Wallet] Starting..."
-    node hd-wallet-server.js 2>&1 | sed 's/^/[HD-Wallet] /'
-}
 
 # Function to start store server
 start_store() {
@@ -34,18 +27,16 @@ start_store() {
     STORE_PORT=3002 node store-server-v2.js 2>&1 | sed 's/^/[Store] /'
 }
 
-# Trap to ensure both processes are killed on exit
+# Trap to ensure process is killed on exit
 trap 'kill $(jobs -p)' EXIT
 
-# Start both servers in background
-start_hd_wallet &
+# Start store server in background
 start_store &
 
-echo "✅ All services started"
-echo "🌐 HD Wallet API: http://moonyetis.io:3001"
+echo "✅ Store service started"
 echo "🏪 Store API: http://moonyetis.io:3002"
 echo ""
-echo "Press Ctrl+C to stop all services"
+echo "Press Ctrl+C to stop the service"
 
-# Wait for all background processes
+# Wait for background process
 wait

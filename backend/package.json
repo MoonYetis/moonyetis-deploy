@@ -1,27 +1,19 @@
 {
-  "name": "moonyetis-backend",
-  "version": "2.0.0",
-  "description": "Backend services for MoonYetis Casino - Production",
-  "main": "hd-wallet-server.js",
+  "name": "moonyetis-auth-server",
+  "version": "1.0.0",
+  "description": "MoonYetis Authentication Test Server",
+  "main": "auth-test-server.js",
   "scripts": {
-    "start": "NODE_ENV=production node hd-wallet-server.js",
-    "start:store": "NODE_ENV=production node store-server.js",
-    "start:store-v2": "NODE_ENV=production node store-server-v2.js",
-    "start:all": "./start-all-production.sh",
-    "dev": "nodemon hd-wallet-server.js",
-    "dev:store": "nodemon store-server-v2.js",
-    "production": "./start-production.sh"
+    "start": "node auth-test-server.js",
+    "test": "node test-local.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
     "dotenv": "^16.3.1"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "keywords": ["bitcoin", "hd-wallet", "casino", "fractal", "brc20", "store"]
+  "keywords": ["moonyetis", "auth", "test"],
+  "author": "MoonYetis Team",
+  "license": "MIT"
 }
