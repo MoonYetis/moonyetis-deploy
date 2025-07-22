@@ -1,0 +1,867 @@
+/* MoonYetis Jupiter Lottery - Modular Styling with Transparency Focus */
+
+/* === CONTAINER AND LAYOUT === */
+.jupiter-lottery-game {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--ecosystem-gradient-card);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* === TRANSPARENCY HEADER === */
+.transparency-header {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(0, 123, 255, 0.1));
+    border-radius: 16px;
+    border: 1px solid rgba(78, 205, 196, 0.2);
+}
+
+.lottery-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.game-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--ecosystem-light);
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.transparency-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(78, 205, 196, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.badge-icon {
+    font-size: 1.2rem;
+}
+
+.badge-text {
+    font-weight: 600;
+    color: var(--ecosystem-primary);
+    font-size: 0.9rem;
+}
+
+.badge-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 0.5rem;
+}
+
+.transparency-notice {
+    color: var(--ecosystem-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.transparency-notice strong {
+    color: var(--ecosystem-primary);
+}
+
+.verification-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.verify-btn, .api-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: var(--ecosystem-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.verify-btn:hover, .api-btn:hover {
+    background: rgba(78, 205, 196, 0.2);
+    border-color: var(--ecosystem-primary);
+    transform: translateY(-1px);
+}
+
+/* === LATEST RESULTS === */
+.latest-results {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.latest-results h3 {
+    color: var(--ecosystem-light);
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.results-placeholder {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+}
+
+.api-info {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.5rem;
+}
+
+.winning-numbers-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.draw-date {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.numbers {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.white-ball, .powerball-result {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.white-ball {
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #333;
+    border: 2px solid #ddd;
+}
+
+.powerball-result {
+    background: linear-gradient(145deg, #ff4757, #ff3838);
+    color: white;
+    border: 2px solid #ff6b7a;
+    margin-left: 0.5rem;
+}
+
+/* === GAME INFO === */
+.game-info {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.game-info h3 {
+    color: var(--ecosystem-primary);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.game-info p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+}
+
+.info-btn {
+    background: rgba(78, 205, 196, 0.2);
+    border: 1px solid var(--ecosystem-primary);
+    color: var(--ecosystem-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.info-btn:hover {
+    background: rgba(78, 205, 196, 0.3);
+    transform: translateY(-1px);
+}
+
+/* === NUMBER SELECTION === */
+.number-selection {
+    margin-bottom: 2rem;
+}
+
+.white-balls-section, .powerball-section {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.white-balls-section h4, .powerball-section h4 {
+    color: var(--ecosystem-light);
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.selected-display {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    color: var(--ecosystem-primary);
+    font-weight: 600;
+    text-align: center;
+}
+
+.numbers-grid {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: center;
+}
+
+.numbers-grid.white-balls {
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    max-width: 100%;
+}
+
+.numbers-grid.powerball-grid {
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    max-width: 600px;
+}
+
+.number-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.number-btn:hover {
+    border-color: var(--ecosystem-primary);
+    background: rgba(78, 205, 196, 0.2);
+    transform: scale(1.1);
+}
+
+.number-btn.selected {
+    background: var(--ecosystem-primary);
+    border-color: var(--ecosystem-primary);
+    color: #000;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(78, 205, 196, 0.4);
+}
+
+.number-btn.white-ball.selected {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    color: #333;
+    border-color: #4ECDC4;
+}
+
+.number-btn.powerball.selected {
+    background: linear-gradient(145deg, #ff4757, #ff3838);
+    color: white;
+    border-color: #ff6b7a;
+}
+
+/* === QUICK ACTIONS === */
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.action-btn {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: var(--ecosystem-light);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* === PURCHASE SECTION === */
+.purchase-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(78, 205, 196, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(78, 205, 196, 0.2);
+}
+
+.ticket-summary {
+    margin-bottom: 1rem;
+}
+
+.cost-display {
+    font-size: 1.2rem;
+    color: var(--ecosystem-light);
+    font-weight: 600;
+}
+
+.cost-amount {
+    color: var(--ecosystem-primary);
+    font-size: 1.3rem;
+}
+
+.purchase-btn {
+    width: 100%;
+    max-width: 400px;
+    padding: 1.2rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--ecosystem-gradient-primary);
+    color: #000;
+    text-shadow: none;
+}
+
+.purchase-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+}
+
+.purchase-btn:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* === YOUR TICKETS === */
+.your-tickets {
+    margin-bottom: 2rem;
+}
+
+.your-tickets h3 {
+    color: var(--ecosystem-light);
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.tickets-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.no-tickets {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+    font-style: italic;
+}
+
+.ticket-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.ticket-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(78, 205, 196, 0.3);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ticket-id {
+    font-weight: 600;
+    color: var(--ecosystem-light);
+}
+
+.ticket-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-won {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-lost {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.ticket-numbers {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.white-balls {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.powerball-display {
+    margin-left: 0.5rem;
+}
+
+.number-display {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.number-display.white {
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.number-display.red {
+    background: linear-gradient(145deg, #ff4757, #ff3838);
+    color: white;
+    border: 1px solid #ff6b7a;
+}
+
+.ticket-info {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ticket-info p {
+    margin: 0.25rem 0;
+}
+
+.win-amount {
+    color: var(--ecosystem-primary) !important;
+    font-weight: 600;
+}
+
+/* === GAME STATS === */
+.game-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+}
+
+.stat-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    display: block;
+    color: var(--ecosystem-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(78, 205, 196, 0.3);
+}
+
+/* === MESSAGES === */
+.message-area {
+    margin-bottom: 2rem;
+}
+
+.message {
+    display: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    margin: 1rem 0;
+    animation: messageSlide 0.3s ease-out;
+    text-align: center;
+}
+
+.message.info {
+    background: rgba(78, 205, 196, 0.2);
+    color: #4ECDC4;
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.message.success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.message.warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.message.error {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === TRANSPARENCY FOOTER === */
+.transparency-footer {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(78, 205, 196, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(78, 205, 196, 0.2);
+    text-align: center;
+}
+
+.disclaimer p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.small-disclaimer {
+    font-size: 0.8rem !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* === PRIZE MODAL === */
+.prize-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: var(--ecosystem-gradient-card);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h3 {
+    color: var(--ecosystem-light);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+}
+
+.prize-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.prize-table th,
+.prize-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--ecosystem-light);
+}
+
+.prize-table th {
+    background: rgba(78, 205, 196, 0.1);
+    font-weight: 600;
+    color: var(--ecosystem-primary);
+}
+
+.prize-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.transparency-note {
+    background: rgba(78, 205, 196, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(78, 205, 196, 0.2);
+    margin-top: 1rem;
+}
+
+.transparency-note p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 0.5rem 0;
+}
+
+.transparency-note a {
+    color: var(--ecosystem-primary);
+    text-decoration: none;
+}
+
+.transparency-note a:hover {
+    text-decoration: underline;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .jupiter-lottery-game {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    .game-title {
+        font-size: 2rem;
+    }
+
+    .lottery-title {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .transparency-badge {
+        order: -1;
+    }
+
+    .verification-links {
+        justify-content: center;
+    }
+
+    .numbers-grid.white-balls {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .numbers-grid.powerball-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .number-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    .ticket-numbers {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .game-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+        max-height: 90vh;
+    }
+
+    .prize-table {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .jupiter-lottery-game {
+        padding: 0.75rem;
+    }
+
+    .game-title {
+        font-size: 1.75rem;
+    }
+
+    .transparency-header {
+        padding: 1rem;
+    }
+
+    .numbers-grid.white-balls {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .numbers-grid.powerball-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .number-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+
+    .number-display {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    .game-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .purchase-btn {
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+    }
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+    .number-btn:hover {
+        transform: none;
+    }
+    
+    .ticket-card:hover {
+        transform: none;
+    }
+    
+    .stat-item:hover {
+        transform: none;
+    }
+    
+    @keyframes messageSlide {
+        to { opacity: 1; }
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .number-btn {
+        border-width: 3px;
+    }
+    
+    .number-btn.selected {
+        border-width: 4px;
+    }
+    
+    .transparency-badge {
+        border-width: 2px;
+    }
+}

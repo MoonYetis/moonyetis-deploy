@@ -1,0 +1,1046 @@
+/* MoonYetis Mars Faucet - Martian Theme with Ad Integration */
+
+/* === MARS COLOR PALETTE === */
+:root {
+    --mars-primary: #CD5C5C; /* Indian Red */
+    --mars-secondary: #B22222; /* Fire Brick */
+    --mars-accent: #FF4500; /* Orange Red */
+    --mars-surface: #8B4513; /* Saddle Brown */
+    --mars-atmosphere: rgba(205, 92, 92, 0.1);
+    --mars-rock: #A0522D; /* Sienna */
+    --mars-text-light: #FFF8DC; /* Cornsilk */
+    --mars-text-dark: #8B0000; /* Dark Red */
+    --mars-success: #32CD32; /* Lime Green */
+    --mars-warning: #FFD700; /* Gold */
+    --mars-error: #FF1493; /* Deep Pink */
+}
+
+/* === CONTAINER AND LAYOUT === */
+.mars-faucet-game {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(205, 92, 92, 0.1), rgba(178, 34, 34, 0.1));
+    border-radius: 24px;
+    border: 1px solid rgba(205, 92, 92, 0.2);
+    box-shadow: 0 20px 40px rgba(205, 92, 92, 0.15);
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* === MARS BACKGROUND === */
+.mars-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    opacity: 0.3;
+}
+
+.mars-surface {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        rgba(139, 69, 19, 0.3) 50%,
+        rgba(139, 69, 19, 0.5) 100%
+    );
+    border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+}
+
+.mars-atmosphere {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 30% 20%,
+        rgba(255, 69, 0, 0.1) 0%,
+        rgba(205, 92, 92, 0.05) 40%,
+        transparent 70%
+    );
+}
+
+.floating-rocks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.rock {
+    position: absolute;
+    background: var(--mars-rock);
+    border-radius: 50%;
+    opacity: 0.2;
+    animation: float 6s ease-in-out infinite;
+}
+
+.rock-1 {
+    width: 20px;
+    height: 20px;
+    top: 20%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.rock-2 {
+    width: 15px;
+    height: 15px;
+    top: 60%;
+    right: 20%;
+    animation-delay: -2s;
+}
+
+.rock-3 {
+    width: 25px;
+    height: 25px;
+    bottom: 40%;
+    left: 70%;
+    animation-delay: -4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* === HEADER === */
+.mars-header {
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, 
+        rgba(205, 92, 92, 0.2), 
+        rgba(255, 69, 0, 0.1)
+    );
+    border-radius: 20px;
+    border: 1px solid rgba(205, 92, 92, 0.3);
+    text-align: center;
+}
+
+.mars-title-section {
+    margin-bottom: 1.5rem;
+}
+
+.game-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--mars-primary);
+    margin: 0 0 0.5rem 0;
+    text-shadow: 
+        0 0 20px rgba(205, 92, 92, 0.5),
+        0 2px 10px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(45deg, var(--mars-primary), var(--mars-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mars-subtitle {
+    font-size: 1.2rem;
+    color: var(--mars-text-light);
+    opacity: 0.9;
+}
+
+.mars-info-badges {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.info-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(205, 92, 92, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid rgba(205, 92, 92, 0.3);
+}
+
+.badge-icon {
+    font-size: 1.2rem;
+}
+
+.badge-text {
+    font-weight: 600;
+    color: var(--mars-text-light);
+    font-size: 0.9rem;
+}
+
+/* === AD BANNERS === */
+.ad-banner-top,
+.ad-banner-bottom,
+.ad-banner-sidebar {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.ad-banner-top {
+    min-height: 120px;
+    margin-bottom: 2rem;
+}
+
+.ad-banner-bottom {
+    min-height: 120px;
+    margin-top: 2rem;
+}
+
+.ad-banner-sidebar {
+    min-height: 300px;
+    margin-bottom: 2rem;
+}
+
+/* Placeholder for when ads don't load */
+.ad-banner-top::before,
+.ad-banner-bottom::before,
+.ad-banner-sidebar::before {
+    content: "Advertisement Space";
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* === MAIN CONTENT LAYOUT === */
+.mars-main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* === FAUCET SECTION === */
+.faucet-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* === CLAIM STATUS CARD === */
+.claim-status-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(205, 92, 92, 0.2);
+    box-shadow: 0 10px 25px rgba(205, 92, 92, 0.1);
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.status-header h3 {
+    color: var(--mars-text-light);
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.claim-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.indicator-dot.ready {
+    background: var(--mars-success);
+    box-shadow: 0 0 10px rgba(50, 205, 50, 0.5);
+}
+
+.indicator-dot.waiting {
+    background: var(--mars-warning);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.indicator-dot.disconnected {
+    background: var(--mars-error);
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+}
+
+.indicator-text {
+    color: var(--mars-text-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* === COUNTDOWN DISPLAY === */
+.countdown-display {
+    text-align: center;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+}
+
+.time-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--mars-primary);
+    font-family: 'JetBrains Mono', monospace;
+    text-shadow: 0 0 15px rgba(205, 92, 92, 0.4);
+    background: rgba(205, 92, 92, 0.1);
+    padding: 0.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(205, 92, 92, 0.2);
+    min-width: 60px;
+}
+
+.time-label {
+    font-size: 0.8rem;
+    color: rgba(255, 248, 220, 0.7);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+
+.next-claim-info {
+    color: rgba(255, 248, 220, 0.8);
+    font-size: 0.9rem;
+}
+
+/* === CLAIM INTERFACE CARD === */
+.claim-interface-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(205, 92, 92, 0.2);
+    box-shadow: 0 10px 25px rgba(205, 92, 92, 0.1);
+}
+
+/* === REWARD DISPLAY === */
+.reward-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.base-reward,
+.bonus-reward {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.base-reward {
+    background: linear-gradient(135deg, 
+        rgba(205, 92, 92, 0.2), 
+        rgba(178, 34, 34, 0.1)
+    );
+}
+
+.bonus-reward {
+    background: linear-gradient(135deg, 
+        rgba(255, 69, 0, 0.2), 
+        rgba(255, 140, 0, 0.1)
+    );
+}
+
+.base-reward h4,
+.bonus-reward h4 {
+    color: var(--mars-text-light);
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.reward-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--mars-primary);
+    margin-bottom: 0.5rem;
+}
+
+.reward-amount.bonus {
+    color: var(--mars-accent);
+}
+
+.reward-amount.active {
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% { 
+        text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+        transform: scale(1);
+    }
+    50% { 
+        text-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+        transform: scale(1.05);
+    }
+}
+
+.bonus-note {
+    font-size: 0.8rem;
+    color: rgba(255, 248, 220, 0.7);
+    font-style: italic;
+}
+
+/* === VERIFICATION SECTION === */
+.verification-section {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    margin-bottom: 2rem;
+}
+
+.verification-section h4 {
+    color: var(--mars-warning);
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.captcha-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.captcha-container label {
+    color: var(--mars-text-light);
+    font-weight: 600;
+}
+
+.captcha-question {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--mars-primary);
+    text-align: center;
+    background: rgba(205, 92, 92, 0.2);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(205, 92, 92, 0.3);
+}
+
+.captcha-input {
+    padding: 0.75rem;
+    border: 2px solid rgba(205, 92, 92, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--mars-text-light);
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.captcha-input:focus {
+    outline: none;
+    border-color: var(--mars-primary);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(205, 92, 92, 0.3);
+}
+
+.verify-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(45deg, var(--mars-success), #228B22);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.verify-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(50, 205, 50, 0.3);
+}
+
+.verification-status {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.verification-status .success {
+    color: var(--mars-success);
+}
+
+.verification-status .error {
+    color: var(--mars-error);
+}
+
+/* === CLAIM BUTTON === */
+.claim-button-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.claim-btn {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 1.5rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--ecosystem-gradient-primary);
+    color: #000;
+    text-shadow: none;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+}
+
+.claim-btn.active {
+    background: linear-gradient(45deg, var(--mars-primary), var(--mars-accent));
+    color: white;
+    box-shadow: 0 10px 25px rgba(205, 92, 92, 0.3);
+}
+
+.claim-btn.active:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(205, 92, 92, 0.4);
+}
+
+.claim-btn.disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+}
+
+.hold-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: var(--mars-success);
+    width: 0%;
+    transition: width 0.1s ease;
+    border-radius: 0 0 20px 20px;
+}
+
+.claim-instructions {
+    margin-top: 1rem;
+    color: rgba(255, 248, 220, 0.6);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* === AD BONUS SECTION === */
+.ad-bonus-section {
+    background: linear-gradient(135deg, 
+        rgba(255, 69, 0, 0.15), 
+        rgba(255, 140, 0, 0.1)
+    );
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    text-align: center;
+}
+
+.ad-bonus-section h4 {
+    color: var(--mars-accent);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.ad-bonus-section p {
+    color: var(--mars-text-light);
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.watch-ad-btn {
+    background: linear-gradient(45deg, var(--mars-accent), #FF6347);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.watch-ad-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 69, 0, 0.3);
+}
+
+.watch-ad-btn:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.watch-ad-btn.completed {
+    background: linear-gradient(45deg, var(--mars-success), #228B22);
+}
+
+/* === SIDEBAR SECTION === */
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.faucet-stats-card,
+.claim-history-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(205, 92, 92, 0.2);
+    box-shadow: 0 10px 25px rgba(205, 92, 92, 0.1);
+}
+
+.faucet-stats-card h4,
+.claim-history-card h4 {
+    color: var(--mars-text-light);
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* === STATS GRID === */
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateX(2px);
+    border-color: rgba(205, 92, 92, 0.3);
+}
+
+.stat-label {
+    color: rgba(255, 248, 220, 0.8);
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    color: var(--mars-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* === CLAIM HISTORY === */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+}
+
+.claim-amount {
+    color: var(--mars-success);
+    font-weight: 700;
+}
+
+.claim-time {
+    color: rgba(255, 248, 220, 0.6);
+}
+
+.bonus-indicator {
+    color: var(--mars-accent);
+    font-size: 0.8rem;
+}
+
+.no-claims {
+    text-align: center;
+    color: rgba(255, 248, 220, 0.6);
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* === AD OVERLAY === */
+.ad-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.ad-container {
+    background: var(--ecosystem-gradient-card);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.ad-header {
+    margin-bottom: 2rem;
+}
+
+.ad-header h3 {
+    color: var(--mars-text-light);
+    margin: 0 0 1rem 0;
+}
+
+.ad-timer {
+    color: var(--mars-accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.ad-content {
+    margin-bottom: 2rem;
+}
+
+.simulated-ad {
+    background: linear-gradient(135deg, 
+        rgba(255, 69, 0, 0.2), 
+        rgba(255, 140, 0, 0.1)
+    );
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 69, 0, 0.3);
+}
+
+.simulated-ad h4 {
+    color: var(--mars-accent);
+    margin: 0 0 1rem 0;
+}
+
+.simulated-ad p {
+    color: var(--mars-text-light);
+    margin: 0 0 1rem 0;
+}
+
+.ad-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ad-progress {
+    height: 100%;
+    background: linear-gradient(45deg, var(--mars-accent), var(--mars-success));
+    width: 0%;
+    transition: width 1s ease;
+}
+
+.skip-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.skip-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--mars-text-light);
+}
+
+.skip-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* === MESSAGES === */
+.message-area {
+    margin-top: 2rem;
+}
+
+.message {
+    display: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    margin: 1rem 0;
+    animation: messageSlide 0.3s ease-out;
+    text-align: center;
+}
+
+.message.info {
+    background: rgba(205, 92, 92, 0.2);
+    color: var(--mars-primary);
+    border: 1px solid rgba(205, 92, 92, 0.3);
+}
+
+.message.success {
+    background: rgba(50, 205, 50, 0.2);
+    color: var(--mars-success);
+    border: 1px solid rgba(50, 205, 50, 0.3);
+}
+
+.message.warning {
+    background: rgba(255, 215, 0, 0.2);
+    color: var(--mars-warning);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.message.error {
+    background: rgba(255, 20, 147, 0.2);
+    color: var(--mars-error);
+    border: 1px solid rgba(255, 20, 147, 0.3);
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1024px) {
+    .mars-main-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .sidebar-section {
+        order: -1;
+    }
+    
+    .ad-banner-sidebar {
+        display: none; /* Hide sidebar ads on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .mars-faucet-game {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    .game-title {
+        font-size: 2.2rem;
+    }
+    
+    .mars-subtitle {
+        font-size: 1rem;
+    }
+
+    .mars-info-badges {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .reward-display {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .countdown-timer {
+        gap: 1rem;
+    }
+
+    .time-value {
+        font-size: 2rem;
+        min-width: 50px;
+    }
+
+    .status-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        gap: 0.75rem;
+    }
+    
+    .ad-container {
+        margin: 1rem;
+        padding: 1.5rem;
+        max-height: 90vh;
+    }
+    
+    .claim-btn {
+        font-size: 1rem;
+        padding: 1.2rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mars-faucet-game {
+        padding: 0.75rem;
+    }
+
+    .game-title {
+        font-size: 1.8rem;
+    }
+
+    .mars-header {
+        padding: 1rem;
+    }
+
+    .countdown-timer {
+        gap: 0.5rem;
+    }
+
+    .time-value {
+        font-size: 1.5rem;
+        padding: 0.25rem;
+        min-width: 40px;
+    }
+
+    .time-label {
+        font-size: 0.7rem;
+    }
+
+    .claim-status-card,
+    .claim-interface-card,
+    .faucet-stats-card,
+    .claim-history-card {
+        padding: 1rem;
+    }
+    
+    .captcha-container {
+        max-width: 250px;
+    }
+    
+    .ad-banner-top,
+    .ad-banner-bottom {
+        min-height: 80px;
+        padding: 0.5rem;
+    }
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+    .rock {
+        animation: none;
+    }
+    
+    .indicator-dot {
+        animation: none;
+    }
+    
+    .reward-amount.active {
+        animation: none;
+    }
+    
+    @keyframes messageSlide {
+        to { opacity: 1; }
+    }
+    
+    @keyframes float {
+        to { transform: none; }
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .claim-btn.active {
+        border: 3px solid var(--mars-accent);
+    }
+    
+    .verification-section {
+        border-width: 2px;
+    }
+    
+    .info-badge {
+        border-width: 2px;
+    }
+}
+
+/* === CUSTOM SCROLLBAR === */
+.history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: var(--mars-primary);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: var(--mars-accent);
+}
