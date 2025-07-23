@@ -118,9 +118,9 @@
 }
 
 .wallet-option:hover {
-    border-color: rgba(79, 70, 229, 0.5);
-    background: rgba(79, 70, 229, 0.05);
-    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    cursor: default;
 }
 
 .wallet-option.not-installed {
@@ -211,6 +211,19 @@
 
 .install-btn:hover {
     box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+}
+
+/* Disabled state for connecting */
+.connect-btn:disabled {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.8;
+}
+
+.connect-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 /* Connection Info */

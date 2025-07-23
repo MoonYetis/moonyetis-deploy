@@ -152,11 +152,25 @@ class WalletConnectionHub {
         // Copy address
         this.modal.querySelector('#copy-address').addEventListener('click', () => this.copyAddress());
         
-        // Wallet selection (delegated event)
+        // Wallet selection (delegated event) - Only respond to button clicks
         this.modal.querySelector('#wallets-grid').addEventListener('click', (e) => {
-            const walletOption = e.target.closest('.wallet-option');
-            if (walletOption) {
-                this.connectWallet(walletOption.dataset.wallet);
+            // Check if the click was on the connect button
+            const connectBtn = e.target.closest('.connect-btn');
+            if (connectBtn) {
+                const walletOption = connectBtn.closest('.wallet-option');
+                if (walletOption && walletOption.dataset.wallet) {
+                    // Add visual feedback
+                    connectBtn.disabled = true;
+                    connectBtn.textContent = 'Connecting...';
+                    this.connectWallet(walletOption.dataset.wallet);
+                }
+            }
+            
+            // Handle install button clicks (already has onclick attribute)
+            const installBtn = e.target.closest('.install-btn');
+            if (installBtn) {
+                // Prevent default to avoid any conflicts
+                e.preventDefault();
             }
         });
         
@@ -243,7 +257,7 @@ class WalletConnectionHub {
                 </div>
                 <div class="wallet-action">
                     ${wallet.installed ? 
-                        '<button class="connect-btn">Connect</button>' : 
+                        '<button class="connect-btn">Connect Wallet</button>' : 
                         `<button class="install-btn" onclick="window.open('${wallet.downloadUrl}', '_blank')">Install</button>`
                     }
                 </div>
@@ -252,6 +266,12 @@ class WalletConnectionHub {
     }
     
     async connectWallet(walletId) {
+        // Prevent multiple connection attempts
+        if (this.connectionState.isConnecting) {
+            console.log('Already connecting to a wallet...');
+            return;
+        }
+        
         const wallet = this.availableWallets.find(w => w.id === walletId);
         if (!wallet || !wallet.installed) return;
         
@@ -321,6 +341,11 @@ class WalletConnectionHub {
             console.error('Wallet connection failed:', error);
             this.showConnectionError(error.message);
             this.connectionState.isConnecting = false;
+            
+            // Reset button state after error
+            setTimeout(() => {
+                this.renderWallets(); // Re-render to reset button states
+            }, 2000);
         }
     }
     
