@@ -927,12 +927,12 @@ class DashboardModal {
         }
     }
     
-    // Dynamic conversion with real-time BRC20 prices
+    // Dynamic conversion with real-time hybrid prices
     calculateDynamicConversion(amount, fromToken, toToken) {
-        // Get current prices from BRC20 service
-        const priceService = window.brc20PriceService;
+        // Get current prices from hybrid service (backward compatible)
+        const priceService = window.hybridPriceService || window.brc20PriceService;
         if (!priceService) {
-            console.error('❌ BRC20 Price Service not available, using fallback');
+            console.error('❌ Hybrid Price Service not available, using fallback');
             return this.calculateFallbackConversion(amount, fromToken, toToken);
         }
         
@@ -1046,7 +1046,7 @@ class DashboardModal {
     
     // Update price display in swap cards
     updatePriceDisplay(fromToken, toToken, conversion) {
-        const priceService = window.brc20PriceService;
+        const priceService = window.hybridPriceService || window.brc20PriceService;
         if (!priceService) return;
         
         // Update current prices in the swap card header
@@ -1101,7 +1101,7 @@ class DashboardModal {
     
     // Update all price displays in swap section
     updateAllPriceDisplays() {
-        const priceService = window.brc20PriceService;
+        const priceService = window.hybridPriceService || window.brc20PriceService;
         if (!priceService) return;
         
         const prices = priceService.getAllPrices();
