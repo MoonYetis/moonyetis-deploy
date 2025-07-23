@@ -570,6 +570,36 @@ class WalletConnectionHub {
         return this.connectionState.balance;
     }
     
+    // Helper method to safely serialize wallet data (avoid circular references)
+    createSafeWalletData(walletData) {
+        try {
+            // Create a clean object with only the necessary properties
+            const safeWalletData = {
+                address: walletData.address,
+                balance: walletData.balance,
+                walletType: walletData.wallet ? walletData.wallet.name : 'Unknown',
+                connectedAt: walletData.connectedAt || new Date().toISOString(),
+                // Only include serializable wallet properties
+                wallet: {
+                    name: walletData.wallet ? walletData.wallet.name : 'Unknown',
+                    version: walletData.wallet ? walletData.wallet.version : null
+                }
+            };
+            
+            return safeWalletData;
+        } catch (error) {
+            console.warn('⚠️ Error creating safe wallet data:', error);
+            // Return minimal safe data as fallback
+            return {
+                address: walletData.address || 'Unknown',
+                balance: walletData.balance || 0,
+                walletType: 'Unknown',
+                connectedAt: new Date().toISOString(),
+                wallet: { name: 'Unknown', version: null }
+            };
+        }
+    }
+
     // User session management methods
     createUserSession(walletData) {
         const user = {
@@ -584,9 +614,18 @@ class WalletConnectionHub {
             }
         };
         
-        // Store user session
-        localStorage.setItem('wallet_user_session', JSON.stringify(user));
-        localStorage.setItem('wallet_connection_data', JSON.stringify(walletData));
+        // Create safe wallet data without circular references
+        const safeWalletData = this.createSafeWalletData(walletData);
+        
+        // Store user session with safe serialization
+        try {
+            localStorage.setItem('wallet_user_session', JSON.stringify(user));
+            localStorage.setItem('wallet_connection_data', JSON.stringify(safeWalletData));
+            console.log('✅ Wallet data safely stored in localStorage');
+        } catch (error) {
+            console.error('❌ Failed to store wallet data:', error);
+            console.warn('⚠️ Continuing without localStorage storage...');
+        }
         
         // Load user balances
         this.loadUserBalances(user);
