@@ -549,27 +549,20 @@
         });
     </script>
 
-    <!-- Modern Ecosystem Initialization -->
-    <script type="module">
-        import AppCore from './js/core/app-core.js';
-        
-        // Initialize the modern app core system
+    <!-- Modern Ecosystem Initialization - FALLBACK VERSION -->
+    <script>
+        // Direct initialization without module dependencies
         document.addEventListener('DOMContentLoaded', () => {
-            const app = new AppCore({
-                enableDevMode: window.location.hostname === 'localhost',
-                logLevel: 'info'
-            });
+            console.log('🚀 DOM loaded, starting Connect Wallet initialization...');
             
-            // Listen for app ready event
-            window.addEventListener('appReady', () => {
-                console.log('🎉 MoonYetis Ecosystem fully loaded and ready!');
-                
-                // Setup legacy compatibility
-                setupLegacyCompatibility();
-                
-                // Initialize authentication system
+            // Setup legacy compatibility immediately
+            setupLegacyCompatibility();
+            
+            // Initialize authentication system with delay to allow module loading
+            setTimeout(() => {
+                console.log('🎯 Starting Connect Wallet authentication system...');
                 initializeAuthentication();
-            });
+            }, 2000); // Increased delay to ensure wallet-connection-hub.js loads
         });
         
         function setupLegacyCompatibility() {
