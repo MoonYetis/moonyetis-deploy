@@ -10,6 +10,15 @@ class DashboardModal {
         this.balance = 0;
         this.isDevelopmentMode = window.location.hostname === 'localhost';
         
+        // Tab navigation system
+        this.activeTab = 'balance';
+        this.tabs = {
+            balance: { name: 'Balance', icon: '💰' },
+            receive: { name: 'Receive', icon: '⬇️' },
+            swap: { name: 'Swap', icon: '🔄' },
+            send: { name: 'Send', icon: '⬆️' }
+        };
+        
         // Daily rewards tracking
         this.dailyRewards = {
             lastClaim: null,
@@ -47,11 +56,24 @@ class DashboardModal {
                     <button class="dashboard-close" id="dashboard-close">×</button>
                 </div>
                 
+                <!-- Tab Navigation -->
+                <div class="dashboard-nav">
+                    <div class="dashboard-tabs">
+                        ${Object.entries(this.tabs).map(([tabId, tab]) => `
+                            <button class="dashboard-tab ${tabId === this.activeTab ? 'active' : ''}" 
+                                    data-tab="${tabId}" id="tab-${tabId}">
+                                <span class="tab-icon">${tab.icon}</span>
+                                <span class="tab-name">${tab.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                
                 <div class="dashboard-content">
                     <!-- Balance Section -->
-                    <div class="dashboard-section balance-section">
+                    <div class="dashboard-section balance-section" data-section="balance">
                         <div class="section-header">
-                            <h3>💰 Your Balance</h3>
+                            <h3>💰 Balance</h3>
                             <button class="refresh-balance-btn" id="refresh-balance" title="Refresh Balance">🔄</button>
                         </div>
                         
@@ -90,10 +112,10 @@ class DashboardModal {
                         </div>
                     </div>
                     
-                    <!-- Deposit Section -->
-                    <div class="dashboard-section deposit-section">
+                    <!-- Receive Section -->
+                    <div class="dashboard-section receive-section" data-section="receive">
                         <div class="section-header">
-                            <h3>⬇️ Deposit</h3>
+                            <h3>⬇️ Receive</h3>
                         </div>
                         
                         <div class="deposit-options">
@@ -134,10 +156,10 @@ class DashboardModal {
                         </div>
                     </div>
                     
-                    <!-- Change Section -->
-                    <div class="dashboard-section change-section">
+                    <!-- Swap Section -->
+                    <div class="dashboard-section swap-section" data-section="swap">
                         <div class="section-header">
-                            <h3>🔄 Change</h3>
+                            <h3>🔄 Swap</h3>
                         </div>
                         
                         <div class="change-options">
@@ -233,10 +255,10 @@ class DashboardModal {
                         </div>
                     </div>
                     
-                    <!-- Withdrawal Section -->
-                    <div class="dashboard-section withdrawal-section">
+                    <!-- Send Section -->
+                    <div class="dashboard-section send-section" data-section="send">
                         <div class="section-header">
-                            <h3>⬆️ Withdraw</h3>
+                            <h3>⬆️ Send</h3>
                         </div>
                         
                         <div class="withdrawal-container" id="withdrawal-container">
@@ -301,6 +323,14 @@ class DashboardModal {
             if (e.target === this.modal) this.close();
         });
         
+        // Tab navigation
+        this.modal.querySelectorAll('.dashboard-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabId = e.currentTarget.dataset.tab;
+                this.switchTab(tabId);
+            });
+        });
+        
         // Balance refresh
         this.modal.querySelector('#refresh-balance').addEventListener('click', () => this.refreshBalance());
         
@@ -338,6 +368,33 @@ class DashboardModal {
         
         // Balance updates
         window.addEventListener('balanceUpdated', (e) => this.handleBalanceUpdate(e.detail));
+    }
+    
+    // Tab navigation methods
+    switchTab(tabId) {
+        if (!this.tabs[tabId]) return;
+        
+        // Update active tab
+        this.activeTab = tabId;
+        
+        // Update tab buttons
+        this.modal.querySelectorAll('.dashboard-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabId);
+        });
+        
+        // Show/hide sections
+        this.modal.querySelectorAll('.dashboard-section').forEach(section => {
+            const sectionId = section.dataset.section;
+            if (sectionId === tabId) {
+                section.style.display = 'block';
+                section.classList.add('section-active');
+            } else {
+                section.style.display = 'none';
+                section.classList.remove('section-active');
+            }
+        });
+        
+        console.log(`🔄 Dashboard switched to ${this.tabs[tabId].name} tab`);
     }
     
     checkAuthState() {
@@ -1102,6 +1159,9 @@ class DashboardModal {
         this.modal.classList.add('dashboard-visible');
         this.isOpen = true;
         document.body.style.overflow = 'hidden';
+        
+        // Initialize with balance tab active
+        this.switchTab('balance');
         
         // Refresh data when opening
         this.loadUserData();
