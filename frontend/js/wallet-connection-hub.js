@@ -621,6 +621,21 @@ class WalletConnectionHub {
         return sessionData ? JSON.parse(sessionData) : null;
     }
     
+    getConnectedWallet() {
+        if (!this.connectionState.isConnected) {
+            return null;
+        }
+        
+        return {
+            id: this.connectionState.wallet?.id || 'unknown',
+            name: this.connectionState.wallet?.name || 'Unknown Wallet',
+            address: this.connectionState.address,
+            balance: this.connectionState.balance,
+            isConnected: true,
+            type: this.connectionState.wallet?.id || 'unisat'
+        };
+    }
+    
     isUserAuthenticated() {
         const user = this.getCurrentUser();
         return user && this.connectionState.isConnected;
