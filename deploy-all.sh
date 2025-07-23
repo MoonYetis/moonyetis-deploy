@@ -35,7 +35,7 @@ fi
 
 print_step "1/3 - Deploying Backend Services"
 echo "================================="
-bash /var/www/moonyetis-backend/backend/deploy-production.sh
+bash /var/www/moonyetis-deploy/backend/deploy-production.sh
 
 if [ $? -eq 0 ]; then
     print_status "✅ Backend deployment completed successfully"
@@ -46,7 +46,7 @@ fi
 
 print_step "2/3 - Deploying Frontend"
 echo "========================="
-bash /var/www/moonyetis-backend/frontend/deploy-frontend.sh
+bash /var/www/moonyetis-deploy/frontend/deploy-frontend.sh
 
 if [ $? -eq 0 ]; then
     print_status "✅ Frontend deployment completed successfully"

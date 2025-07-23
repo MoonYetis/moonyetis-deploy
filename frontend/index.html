@@ -582,67 +582,87 @@
             };
         }
         
+        function setupWalletEventListeners() {
+            console.log('🔧 Setting up wallet event listeners...');
+            
+            // Connect the ecosystem wallet button
+            const ecosystemWalletBtn = document.getElementById('ecosystemWalletBtn');
+            const ecosystemWalletBtnText = document.getElementById('ecosystemWalletBtnText');
+            const ecosystemDashboardBtn = document.getElementById('ecosystemDashboardBtn');
+            
+            if (ecosystemWalletBtn && ecosystemWalletBtnText) {
+                // Add click event listener
+                ecosystemWalletBtn.addEventListener('click', function() {
+                    console.log('🔗 Ecosystem wallet button clicked');
+                    if (window.walletConnectionModal) {
+                        window.walletConnectionModal.open();
+                    } else {
+                        console.error('❌ walletConnectionModal not available at click time');
+                    }
+                });
+                
+                // Listen for wallet state changes to update buttons
+                window.addEventListener('walletStateChanged', function(event) {
+                    const { isConnected, wallet } = event.detail;
+                    
+                    if (isConnected && wallet) {
+                        // Hide connect wallet button, show dashboard button
+                        ecosystemWalletBtn.style.display = 'none';
+                        ecosystemDashboardBtn.style.display = 'block';
+                    } else {
+                        // Show connect wallet button, hide dashboard button
+                        ecosystemWalletBtn.style.display = 'block';
+                        ecosystemDashboardBtn.style.display = 'none';
+                        
+                        ecosystemWalletBtnText.textContent = '🔗 Connect Wallet';
+                        ecosystemWalletBtn.title = 'Connect your Fractal Bitcoin wallet';
+                    }
+                });
+                
+                console.log('✅ Ecosystem wallet button connected successfully');
+            } else {
+                console.warn('⚠️ Ecosystem wallet button elements not found');
+            }
+            
+            // Connect dashboard button
+            if (ecosystemDashboardBtn) {
+                ecosystemDashboardBtn.addEventListener('click', function() {
+                    console.log('🏠 Dashboard button clicked');
+                    if (window.dashboardModal) {
+                        window.dashboardModal.open();
+                    } else {
+                        console.warn('⚠️ Dashboard modal not available');
+                    }
+                });
+                console.log('✅ Ecosystem dashboard button connected successfully');
+            }
+        }
+        
         function initializeAuthentication() {
             console.log('🔗 Initializing wallet connection system...');
             
-            // Wait a moment to ensure modules are loaded
-            setTimeout(() => {
-                // Check if walletConnectionModal instance is available
+            let attempts = 0;
+            const maxAttempts = 25; // 25 attempts x 200ms = 5 seconds max
+            const interval = 200; // Check every 200ms
+            
+            const checkWalletModal = () => {
+                attempts++;
+                console.log(`🔄 Attempt ${attempts}/${maxAttempts} - Checking for walletConnectionModal...`);
+                
                 if (window.walletConnectionModal) {
-                    // Connect the ecosystem wallet button
-                    const ecosystemWalletBtn = document.getElementById('ecosystemWalletBtn');
-                    const ecosystemWalletBtnText = document.getElementById('ecosystemWalletBtnText');
-                    const ecosystemDashboardBtn = document.getElementById('ecosystemDashboardBtn');
-                
-                if (ecosystemWalletBtn && ecosystemWalletBtnText) {
-                    // Add click event listener
-                    ecosystemWalletBtn.addEventListener('click', function() {
-                        console.log('🔗 Ecosystem wallet button clicked');
-                        if (window.walletConnectionModal) {
-                            window.walletConnectionModal.open();
-                        }
-                    });
-                    
-                    // Listen for wallet state changes to update buttons
-                    window.addEventListener('walletStateChanged', function(event) {
-                        const { isConnected, wallet } = event.detail;
-                        
-                        if (isConnected && wallet) {
-                            // Hide connect wallet button, show dashboard button
-                            ecosystemWalletBtn.style.display = 'none';
-                            ecosystemDashboardBtn.style.display = 'block';
-                        } else {
-                            // Show connect wallet button, hide dashboard button
-                            ecosystemWalletBtn.style.display = 'block';
-                            ecosystemDashboardBtn.style.display = 'none';
-                            
-                            ecosystemWalletBtnText.textContent = '🔗 Connect Wallet';
-                            ecosystemWalletBtn.title = 'Connect your Fractal Bitcoin wallet';
-                        }
-                    });
-                    
-                    console.log('✅ Ecosystem wallet button connected');
+                    console.log('✅ walletConnectionModal found! Setting up event listeners...');
+                    setupWalletEventListeners();
+                } else if (attempts < maxAttempts) {
+                    console.log('⏳ walletConnectionModal not ready yet, retrying in', interval, 'ms...');
+                    setTimeout(checkWalletModal, interval);
                 } else {
-                    console.warn('⚠️ Ecosystem wallet button not found');
+                    console.error('❌ walletConnectionModal not available after', maxAttempts, 'attempts (', maxAttempts * interval, 'ms)');
+                    console.error('💡 This likely means wallet-connection-hub.js failed to load or initialize');
                 }
-                
-                // Connect dashboard button
-                if (ecosystemDashboardBtn) {
-                    ecosystemDashboardBtn.addEventListener('click', function() {
-                        console.log('🏠 Dashboard button clicked');
-                        if (window.dashboardModal) {
-                            window.dashboardModal.open();
-                        } else {
-                            console.warn('⚠️ Dashboard modal not available');
-                        }
-                    });
-                    console.log('✅ Ecosystem dashboard button connected');
-                }
-                
-            } else {
-                console.error('❌ walletConnectionModal not available - wallet-connection-hub.js may not be loaded');
-            }
-            }, 500);
+            };
+            
+            // Start checking immediately
+            checkWalletModal();
         }
     </script>
         
