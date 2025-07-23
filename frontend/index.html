@@ -42,10 +42,10 @@
     <link rel="stylesheet" href="css/planets-system.css">
     
     <!-- Video Hero JavaScript -->
-    <script src="js/video-hero.js"></script>
+    <script type="module" src="js/video-hero.js"></script>
     
     <!-- Planets System JavaScript -->
-    <script src="js/planets-system.js"></script>
+    <script type="module" src="js/planets-system.js"></script>
 </head>
 <body>
     <!-- Background Effects -->
@@ -448,52 +448,17 @@
     </div>
 
     <!-- Configuration -->
-    <script src="js/config.js"></script>
+    <script type="module" src="js/config.js"></script>
     
     <!-- Balance Manager (must load before games) -->
-    <script src="js/balance-manager.js"></script>
+    <script type="module" src="js/balance-manager.js"></script>
     
     <!-- New Modular Architecture -->
-    <script src="js/dashboard-modal.js"></script>
-</script>
-    <script src="js/wallet-connection-hub.js"></script>
-    <script src="js/modular-integration.js"></script>
+    <script type="module" src="js/dashboard-modal.js"></script>
+    <script type="module" src="js/wallet-connection-hub.js"></script>
+    <script type="module" src="js/modular-integration.js"></script>
     
     
-    <!-- Authentication Button Handler -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🔐 Setting up auth button...');
-            
-            // Wait for AuthModal to be available
-            const setupAuth = () => {
-                if (typeof window.AuthModal !== 'undefined') {
-                    console.log('✅ AuthModal found, setting up auth button');
-                    
-                    // Create AuthModal instance
-                    window.authModal = new window.AuthModal();
-                    
-                    // Connect auth button
-                    const ecosystemAuthBtn = document.getElementById('ecosystemAuthBtn');
-                    if (ecosystemAuthBtn) {
-                        ecosystemAuthBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            console.log('👤 Auth button clicked, opening modal');
-                            window.authModal.open('login');
-                        });
-                        console.log('✅ Auth button connected');
-                    } else {
-                        console.error('❌ Auth button not found');
-                    }
-                } else {
-                    console.log('⏳ AuthModal not ready yet, retrying...');
-                    setTimeout(setupAuth, 100);
-                }
-            };
-            
-            setupAuth();
-        });
-    </script>
     
     <!-- Ecosystem Router -->
     <script type="module" src="js/ecosystem-router.ts"></script>
@@ -524,17 +489,17 @@
     <script type="module" src="js/wallets.ts"></script>
     
     <!-- Coin Flip Game -->
-    <script src="js/coin-flip.js"></script>
+    <script type="module" src="js/coin-flip.js"></script>
     
     <!-- Dice Roll Game -->
-    <script src="js/dice-roll.js"></script>
+    <script type="module" src="js/dice-roll.js"></script>
     
     <!-- Jupiter Lottery Game -->
-    <script src="js/powerball-api.js"></script>
-    <script src="js/jupiter-lottery.js"></script>
+    <script type="module" src="js/powerball-api.js"></script>
+    <script type="module" src="js/jupiter-lottery.js"></script>
     
     <!-- Mars Faucet Game -->
-    <script src="js/mars-faucet.js"></script>
+    <script type="module" src="js/mars-faucet.js"></script>
     
     
     
@@ -620,12 +585,14 @@
         function initializeAuthentication() {
             console.log('🔗 Initializing wallet connection system...');
             
-            // Check if WalletConnectionHub is available
-            if (typeof window.WalletConnectionHub !== 'undefined') {
-                // Connect the ecosystem wallet button
-                const ecosystemWalletBtn = document.getElementById('ecosystemWalletBtn');
-                const ecosystemWalletBtnText = document.getElementById('ecosystemWalletBtnText');
-                const ecosystemDashboardBtn = document.getElementById('ecosystemDashboardBtn');
+            // Wait a moment to ensure modules are loaded
+            setTimeout(() => {
+                // Check if walletConnectionModal instance is available
+                if (window.walletConnectionModal) {
+                    // Connect the ecosystem wallet button
+                    const ecosystemWalletBtn = document.getElementById('ecosystemWalletBtn');
+                    const ecosystemWalletBtnText = document.getElementById('ecosystemWalletBtnText');
+                    const ecosystemDashboardBtn = document.getElementById('ecosystemDashboardBtn');
                 
                 if (ecosystemWalletBtn && ecosystemWalletBtnText) {
                     // Add click event listener
@@ -670,10 +637,12 @@
                         }
                     });
                     console.log('✅ Ecosystem dashboard button connected');
+                }
                 
             } else {
-                console.error('❌ WalletConnectionHub not available - wallet-connection-hub.js may not be loaded');
+                console.error('❌ walletConnectionModal not available - wallet-connection-hub.js may not be loaded');
             }
+            }, 500);
         }
     </script>
         

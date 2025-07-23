@@ -418,7 +418,7 @@ class AppCore {
     return this.walletManager;
   }
 
-  get router() {
+  getRouter() {
     return this.router;
   }
 
