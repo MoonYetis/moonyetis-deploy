@@ -37,6 +37,7 @@ class DashboardModal {
         console.log('🏠 Dashboard: Initializing...');
         this.createModal();
         this.setupEventListeners();
+        this.setupPriceUpdateListener();
         this.checkAuthState();
         this.loadUserData();
         console.log('✅ Dashboard: Initialization complete');
@@ -926,25 +927,80 @@ class DashboardModal {
         }
     }
     
-    // Change methods
-    calculateConversionWithFee(amount, fromToken, toToken) {
-        let rate = 1;
-        let fee = 0; // No fee by default
-        
-        // Define conversion rates
-        if (fromToken === 'FB' && toToken === 'MC') {
-            rate = 67500; // 1 FB = 67,500 MC (no fee for buying MC)
-        } else if (fromToken === 'MY' && toToken === 'MC') {
-            rate = 0.8 * 1.03; // 1 MY = 0.824 MC with 3% bonus (no fee for buying MC)
-        } else if (fromToken === 'MC' && toToken === 'MY') {
-            rate = 1.2; // Base rate: 1 MC = 1.2 MY
-            fee = 0.01; // 1% fee for selling MC
-        } else if (fromToken === 'MC' && toToken === 'FB') {
-            rate = 1 / 67500; // Base rate: 1 MC = 1/67500 FB
-            fee = 0.01; // 1% fee for selling MC
+    // Dynamic conversion with real-time BRC20 prices
+    calculateDynamicConversion(amount, fromToken, toToken) {
+        // Get current prices from BRC20 service
+        const priceService = window.brc20PriceService;
+        if (!priceService) {
+            console.error('❌ BRC20 Price Service not available, using fallback');
+            return this.calculateFallbackConversion(amount, fromToken, toToken);
         }
         
-        // Calculate conversion
+        const fromPrice = priceService.getPrice(fromToken);
+        const toPrice = priceService.getPrice(toToken);
+        
+        if (!fromPrice || !toPrice) {
+            console.warn('⚠️ Price not available for conversion, using fallback');
+            return this.calculateFallbackConversion(amount, fromToken, toToken);
+        }
+        
+        // Convert via USD
+        const usdValue = amount * fromPrice;
+        let grossAmount = usdValue / toPrice;
+        
+        // Apply bonus for MY → MC (3% bonus)
+        if (fromToken === 'MY' && toToken === 'MC') {
+            grossAmount *= 1.03; // 3% bonus
+        }
+        
+        // Apply fees for selling MC (1% fee)
+        let fee = 0;
+        if (fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY')) {
+            fee = 0.01; // 1% fee
+        }
+        
+        const feeAmount = grossAmount * fee;
+        let netAmount = grossAmount - feeAmount;
+        
+        // Round appropriately based on token type
+        if (toToken === 'FB') {
+            netAmount = Math.floor(netAmount * 100000) / 100000; // 5 decimals for FB
+        } else if (toToken === 'MC') {
+            netAmount = Math.floor(netAmount); // Integer for MC
+        } else {
+            netAmount = Math.floor(netAmount * 100) / 100; // 2 decimals for MY
+        }
+        
+        return {
+            grossAmount: grossAmount,
+            feeAmount: feeAmount,
+            netAmount: netAmount,
+            effectiveRate: netAmount / amount,
+            feePercentage: fee * 100,
+            fromPrice: fromPrice,
+            toPrice: toPrice,
+            usdValue: usdValue
+        };
+    }
+    
+    // Fallback conversion with static rates (if BRC20 service fails)
+    calculateFallbackConversion(amount, fromToken, toToken) {
+        let rate = 1;
+        let fee = 0;
+        
+        // Static fallback rates
+        if (fromToken === 'FB' && toToken === 'MC') {
+            rate = 3000000; // $30,000 FB / $0.01 MC = 3,000,000 MC per FB
+        } else if (fromToken === 'MY' && toToken === 'MC') {
+            rate = 10 * 1.03; // $0.10 MY / $0.01 MC = 10 MC per MY + 3% bonus
+        } else if (fromToken === 'MC' && toToken === 'MY') {
+            rate = 0.1; // $0.01 MC / $0.10 MY = 0.1 MY per MC
+            fee = 0.01; // 1% fee
+        } else if (fromToken === 'MC' && toToken === 'FB') {
+            rate = 1 / 3000000; // $0.01 MC / $30,000 FB = 0.00000033 FB per MC
+            fee = 0.01; // 1% fee
+        }
+        
         const grossAmount = amount * rate;
         const feeAmount = grossAmount * fee;
         const netAmount = grossAmount - feeAmount;
@@ -952,9 +1008,12 @@ class DashboardModal {
         return {
             grossAmount: grossAmount,
             feeAmount: feeAmount,
-            netAmount: Math.floor(netAmount * 100000) / 100000, // Round to 5 decimals for FB, or keep integer for MY
+            netAmount: Math.floor(netAmount * 100000) / 100000,
             effectiveRate: netAmount / amount,
-            feePercentage: fee * 100
+            feePercentage: fee * 100,
+            fromPrice: null,
+            toPrice: null,
+            usdValue: null
         };
     }
     
@@ -968,8 +1027,8 @@ class DashboardModal {
             return;
         }
         
-        // Use the new fee calculation function
-        const conversion = this.calculateConversionWithFee(amount, fromToken, toToken);
+        // Use dynamic conversion with real-time prices
+        const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
         const willReceive = conversion.netAmount;
         
         // Format the display based on token type
@@ -979,6 +1038,137 @@ class DashboardModal {
             receiveSpan.textContent = `${Math.floor(willReceive)} MC`;
         } else {
             receiveSpan.textContent = `${willReceive.toFixed(2)} MY`;
+        }
+        
+        // Update price display if available
+        this.updatePriceDisplay(fromToken, toToken, conversion);
+    }
+    
+    // Update price display in swap cards
+    updatePriceDisplay(fromToken, toToken, conversion) {
+        const priceService = window.brc20PriceService;
+        if (!priceService) return;
+        
+        // Update current prices in the swap card header
+        const cardId = `${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}`;
+        const cardElement = this.modal.querySelector(`[data-swap="${cardId}"]`);
+        
+        if (cardElement) {
+            let priceHTML = '';
+            
+            if (conversion.fromPrice && conversion.toPrice) {
+                priceHTML = `
+                    <div class="price-info">
+                        <span class="price-item">${fromToken}: $${conversion.fromPrice.toLocaleString()}</span>
+                        <span class="price-item">${toToken}: $${conversion.toPrice.toFixed(toToken === 'MC' ? 2 : 0)}</span>
+                        ${conversion.usdValue ? `<span class="usd-value">≈ $${conversion.usdValue.toFixed(2)} USD</span>` : ''}
+                    </div>
+                `;
+            }
+            
+            // Update or create price display
+            let priceDisplay = cardElement.querySelector('.price-info');
+            if (priceDisplay) {
+                priceDisplay.innerHTML = priceHTML;
+            } else if (priceHTML) {
+                const header = cardElement.querySelector('.change-header');
+                if (header) {
+                    header.insertAdjacentHTML('afterend', priceHTML);
+                }
+            }
+        }
+    }
+    
+    // Listen for price updates from BRC20 service
+    setupPriceUpdateListener() {
+        window.addEventListener('pricesUpdated', (event) => {
+            console.log('💰 Prices updated, refreshing swap displays');
+            
+            // Update all active swap previews
+            const activeInputs = this.modal.querySelectorAll('.change-form input[type="number"]');
+            activeInputs.forEach(input => {
+                if (input.value && parseFloat(input.value) > 0) {
+                    // Trigger preview update for this input
+                    const event = new Event('input');
+                    input.dispatchEvent(event);
+                }
+            });
+            
+            // Update price displays
+            this.updateAllPriceDisplays();
+        });
+    }
+    
+    // Update all price displays in swap section
+    updateAllPriceDisplays() {
+        const priceService = window.brc20PriceService;
+        if (!priceService) return;
+        
+        const prices = priceService.getAllPrices();
+        const pricesInfo = priceService.getAllPricesInfo();
+        
+        // Update exchange rate displays in swap cards
+        const fbToMcRate = this.modal.querySelector('[data-swap="fb-to-mc"] .change-rate');
+        const myToMcRate = this.modal.querySelector('[data-swap="my-to-mc"] .change-rate');
+        const mcToMyRate = this.modal.querySelector('[data-swap="mc-to-my"] .change-rate');
+        const mcToFbRate = this.modal.querySelector('[data-swap="mc-to-fb"] .change-rate');
+        
+        if (fbToMcRate && prices.FB && prices.MC) {
+            const fbToMcAmount = Math.floor(prices.FB / prices.MC);
+            fbToMcRate.textContent = `1 FB = ${fbToMcAmount.toLocaleString()} MC`;
+        }
+        
+        if (myToMcRate && prices.MY && prices.MC) {
+            const myToMcAmount = Math.floor((prices.MY / prices.MC) * 1.03); // Include 3% bonus
+            myToMcRate.textContent = `1 MY = ${myToMcAmount} MC (+3% bonus)`;
+        }
+        
+        if (mcToMyRate && prices.MC && prices.MY) {
+            const mcToMyAmount = ((prices.MC / prices.MY) * 0.99).toFixed(3); // Include 1% fee
+            mcToMyRate.textContent = `1 MC = ${mcToMyAmount} MY (1% fee)`;
+        }
+        
+        if (mcToFbRate && prices.MC && prices.FB) {
+            const mcToFbAmount = ((prices.MC / prices.FB) * 0.99).toFixed(8); // Include 1% fee
+            mcToFbRate.textContent = `1 MC = ${mcToFbAmount} FB (1% fee)`;
+        }
+        
+        // Update last update timestamp
+        this.updateLastUpdateDisplay(pricesInfo);
+    }
+    
+    // Update last update timestamp display
+    updateLastUpdateDisplay(pricesInfo) {
+        const now = Date.now();
+        let lastUpdate = null;
+        
+        // Find most recent update
+        if (pricesInfo.FB && pricesInfo.FB.lastUpdate) {
+            lastUpdate = pricesInfo.FB.lastUpdate;
+        }
+        if (pricesInfo.MY && pricesInfo.MY.lastUpdate && 
+            (!lastUpdate || pricesInfo.MY.lastUpdate > lastUpdate)) {
+            lastUpdate = pricesInfo.MY.lastUpdate;
+        }
+        
+        if (lastUpdate) {
+            const minutesAgo = Math.floor((now - lastUpdate) / (1000 * 60));
+            const timeText = minutesAgo < 1 ? 'Just now' : `${minutesAgo} min ago`;
+            
+            // Update all price update indicators
+            const updateIndicators = this.modal.querySelectorAll('.price-update-indicator');
+            updateIndicators.forEach(indicator => {
+                indicator.textContent = `Updated: ${timeText}`;
+                
+                // Add warning if prices are old
+                if (minutesAgo > 10) {
+                    indicator.classList.add('price-warning');
+                    indicator.title = 'Prices may be outdated';
+                } else {
+                    indicator.classList.remove('price-warning');
+                    indicator.title = '';
+                }
+            });
         }
     }
     
@@ -1009,9 +1199,9 @@ class DashboardModal {
             // Simulate change process
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Calculate exchange with fees
-            const conversion = this.calculateConversionWithFee(amount, fromToken, toToken);
-            const willReceive = toToken === 'MC' ? Math.floor(conversion.netAmount) : conversion.netAmount;
+            // Calculate exchange with dynamic prices and fees
+            const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
+            const willReceive = conversion.netAmount;
             
             // Log fee information for transparency
             if (conversion.feePercentage > 0) {
@@ -1166,6 +1356,11 @@ class DashboardModal {
         // Refresh data when opening
         this.loadUserData();
         this.updateWalletDisplay();
+        
+        // Initialize price displays
+        setTimeout(() => {
+            this.updateAllPriceDisplays();
+        }, 1000);
     }
     
     close() {
