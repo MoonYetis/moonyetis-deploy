@@ -40,7 +40,7 @@ class WalletConnectionHub {
                 <div class="wallet-connection-header">
                     <div class="connection-title">
                         <h2>🔗 Connect Wallet</h2>
-                        <span class="connection-subtitle">Choose your Fractal Bitcoin wallet</span>
+                        <span class="connection-subtitle">Connect with UniSat Wallet</span>
                     </div>
                     <button class="connection-close" id="connection-close">×</button>
                 </div>
@@ -181,13 +181,13 @@ class WalletConnectionHub {
     detectWallets() {
         this.availableWallets = [];
         
-        // Check for UniSat Wallet
+        // Only UniSat Wallet is supported
         if (window.unisat) {
             this.availableWallets.push({
                 id: 'unisat',
                 name: 'UniSat Wallet',
-                icon: '🦄',
-                description: 'The most popular Bitcoin wallet',
+                icon: '<img src="images/Unisat-wallet.png" alt="UniSat Wallet" style="width: 48px; height: 48px; border-radius: 8px;">',
+                description: 'Connect with UniSat - The most popular Bitcoin wallet',
                 installed: true,
                 provider: window.unisat
             });
@@ -195,43 +195,10 @@ class WalletConnectionHub {
             this.availableWallets.push({
                 id: 'unisat',
                 name: 'UniSat Wallet',
-                icon: '🦄',
-                description: 'The most popular Bitcoin wallet',
+                icon: '<img src="images/Unisat-wallet.png" alt="UniSat Wallet" style="width: 48px; height: 48px; border-radius: 8px; opacity: 0.5;">',
+                description: 'Install UniSat extension to connect your Bitcoin wallet',
                 installed: false,
                 downloadUrl: 'https://unisat.io/'
-            });
-        }
-        
-        // Check for OKX Wallet
-        if (window.okxwallet) {
-            this.availableWallets.push({
-                id: 'okx',
-                name: 'OKX Wallet',
-                icon: '🏦',
-                description: 'Multi-chain crypto wallet',
-                installed: true,
-                provider: window.okxwallet
-            });
-        } else {
-            this.availableWallets.push({
-                id: 'okx',
-                name: 'OKX Wallet',
-                icon: '🏦',
-                description: 'Multi-chain crypto wallet',
-                installed: false,
-                downloadUrl: 'https://www.okx.com/web3'
-            });
-        }
-        
-        // Check for other wallets
-        if (window.bitget) {
-            this.availableWallets.push({
-                id: 'bitget',
-                name: 'Bitget Wallet',
-                icon: '🌟',
-                description: 'Secure multi-chain wallet',
-                installed: true,
-                provider: window.bitget
             });
         }
         
@@ -283,18 +250,13 @@ class WalletConnectionHub {
             
             let address, balance;
             
+            // Only UniSat wallet is supported
             if (walletId === 'unisat') {
                 const accounts = await window.unisat.requestAccounts();
                 address = accounts[0];
                 balance = await window.unisat.getBalance();
-            } else if (walletId === 'okx') {
-                const accounts = await window.okxwallet.bitcoin.requestAccounts();
-                address = accounts[0];
-                balance = await window.okxwallet.bitcoin.getBalance();
-            } else if (walletId === 'bitget') {
-                const accounts = await window.bitget.requestAccounts();
-                address = accounts[0];
-                balance = await window.bitget.getBalance();
+            } else {
+                throw new Error(`Unsupported wallet: ${walletId}. Only UniSat wallet is supported.`);
             }
             
             this.updateConnectionStep(2);
@@ -498,12 +460,12 @@ class WalletConnectionHub {
             const walletId = this.connectionState.wallet.id;
             let balance;
             
+            // Only UniSat wallet is supported
             if (walletId === 'unisat' && window.unisat) {
                 balance = await window.unisat.getBalance();
-            } else if (walletId === 'okx' && window.okxwallet) {
-                balance = await window.okxwallet.bitcoin.getBalance();
-            } else if (walletId === 'bitget' && window.bitget) {
-                balance = await window.bitget.getBalance();
+            } else {
+                console.warn(`Unsupported wallet for refresh: ${walletId}`);
+                return;
             }
             
             this.connectionState.balance = balance;
