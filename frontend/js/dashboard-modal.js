@@ -1455,6 +1455,12 @@ class DashboardModal {
 }
 
 // Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    // DOM is still loading, wait for it
+    document.addEventListener('DOMContentLoaded', () => {
+        window.dashboardModal = new DashboardModal();
+    });
+} else {
+    // DOM is already ready, initialize immediately
     window.dashboardModal = new DashboardModal();
-});
+}
