@@ -211,7 +211,7 @@ class DashboardModal {
                             <!-- Swap Direction Button -->
                             <div class="swap-direction-container">
                                 <button class="swap-direction-btn-clean" id="swap-flip-btn">
-                                    <span class="swap-arrow">⬇️</span>
+                                    <span class="swap-arrow">🔄</span>
                                 </button>
                             </div>
                             
@@ -227,8 +227,8 @@ class DashboardModal {
                                     <div class="swap-amount-output-clean" id="swap-to-amount">12,750,632.31514473193447322</div>
                                     <div class="token-selector-clean" id="swap-to-token">
                                         <div class="token-display-clean">
-                                            <span class="token-icon-clean" id="swap-to-icon">🪙</span>
-                                            <span class="token-symbol-clean" id="swap-to-symbol">MoonYetis</span>
+                                            <span class="token-icon-clean" id="swap-to-icon">💰</span>
+                                            <span class="token-symbol-clean" id="swap-to-symbol">MoonCoins</span>
                                             <span class="dropdown-arrow-clean">▼</span>
                                         </div>
                                         <div class="token-dropdown-clean" id="swap-to-dropdown">
@@ -253,44 +253,6 @@ class DashboardModal {
                                 <div class="swap-usd-value" id="swap-to-usd">≈ $0.44</div>
                             </div>
                             
-                            <!-- Exchange Details -->
-                            <div class="exchange-details-clean" id="exchange-details">
-                                <div class="exchange-header-clean">
-                                    <span class="exchange-icon-clean">🔄</span>
-                                    <span class="exchange-title-clean">Exchange</span>
-                                </div>
-                                <div class="exchange-rate-display">
-                                    <span class="rate-amount">1</span>
-                                    <span class="rate-token-badge">FB</span>
-                                    <span class="rate-equals">($0.44) = 12,750,632.31</span>
-                                    <span class="rate-token-badge">MoonYetis</span>
-                                    <span class="rate-usd">($0.44)</span>
-                                </div>
-                                <div class="exchange-details-grid">
-                                    <div class="exchange-detail-row">
-                                        <span class="detail-label">Fee</span>
-                                        <div class="detail-value">
-                                            <span class="fee-percentage">1.5%</span>
-                                            <span class="fee-amount">194,172.0657</span>
-                                            <span class="fee-token">MoonYetis</span>
-                                        </div>
-                                    </div>
-                                    <div class="exchange-detail-row">
-                                        <span class="detail-label">Minimum output <span class="info-icon">ⓘ</span></span>
-                                        <div class="detail-value">
-                                            <span class="min-amount">12,687,196.33</span>
-                                            <span class="min-token">MoonYetis</span>
-                                        </div>
-                                    </div>
-                                    <div class="exchange-detail-row">
-                                        <span class="detail-label">Expected output <span class="info-icon">ⓘ</span></span>
-                                        <div class="detail-value">
-                                            <span class="expected-amount">12,750,632.31</span>
-                                            <span class="expected-token">MoonYetis</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             
                             <!-- Swap Action Button -->
                             <div class="swap-action-container-clean">
@@ -1503,6 +1465,10 @@ class DashboardModal {
             amountInput.addEventListener('input', () => this.calculateSwapOutput());
         }
         
+        // Initialize dropdown options based on default state (FB -> MC)
+        this.updateAvailableToTokens('FB');
+        this.updateAvailableFromTokens('MC');
+        
         console.log('✅ Modern swap listeners setup complete');
     }
     
@@ -1533,10 +1499,16 @@ class DashboardModal {
         
         const tokenData = this.getTokenData(token);
         if (icon) icon.textContent = tokenData.icon;
-        if (symbol) symbol.textContent = tokenData.name; // Show full name in clean design
+        if (symbol) symbol.textContent = tokenData.name;
         if (dropdown) dropdown.classList.remove('active');
         
+        // Force MC on the "To" side if FB or MY is selected
+        if (token === 'FB' || token === 'MY') {
+            this.setToToken('MC');
+        }
+        
         this.updateSwapBalance('from', token);
+        this.updateAvailableToTokens(token);
         this.calculateSwapOutput();
     }
     
@@ -1547,10 +1519,16 @@ class DashboardModal {
         
         const tokenData = this.getTokenData(token);
         if (icon) icon.textContent = tokenData.icon;
-        if (symbol) symbol.textContent = tokenData.name; // Show full name in clean design
+        if (symbol) symbol.textContent = tokenData.name;
         if (dropdown) dropdown.classList.remove('active');
         
+        // Force MC on the "From" side if FB or MY is selected
+        if (token === 'FB' || token === 'MY') {
+            this.setFromToken('MC');
+        }
+        
         this.updateSwapBalance('to', token);
+        this.updateAvailableFromTokens(token);
         this.calculateSwapOutput();
     }
     
@@ -1561,6 +1539,74 @@ class DashboardModal {
             'MC': { icon: '💰', symbol: 'MC', name: 'MoonCoins' }
         };
         return tokens[token] || tokens['FB'];
+    }
+    
+    // Helper functions to set tokens without triggering events
+    setFromToken(token) {
+        const icon = this.modal.querySelector('#swap-from-icon');
+        const symbol = this.modal.querySelector('#swap-from-symbol');
+        
+        const tokenData = this.getTokenData(token);
+        if (icon) icon.textContent = tokenData.icon;
+        if (symbol) symbol.textContent = tokenData.name;
+        
+        this.updateSwapBalance('from', token);
+    }
+    
+    setToToken(token) {
+        const icon = this.modal.querySelector('#swap-to-icon');
+        const symbol = this.modal.querySelector('#swap-to-symbol');
+        
+        const tokenData = this.getTokenData(token);
+        if (icon) icon.textContent = tokenData.icon;
+        if (symbol) symbol.textContent = tokenData.name;
+        
+        this.updateSwapBalance('to', token);
+    }
+    
+    // Update available tokens in dropdowns based on FB/MY <-> MC rule
+    updateAvailableFromTokens(toToken) {
+        const dropdown = this.modal.querySelector('#swap-from-dropdown');
+        if (!dropdown) return;
+        
+        // If "To" is MC, "From" can be FB or MY (not MC)
+        // If "To" is FB or MY, "From" must be MC
+        let availableTokens;
+        if (toToken === 'MC') {
+            availableTokens = ['FB', 'MY'];
+        } else {
+            availableTokens = ['MC'];
+        }
+        
+        this.updateDropdownOptions(dropdown, availableTokens);
+    }
+    
+    updateAvailableToTokens(fromToken) {
+        const dropdown = this.modal.querySelector('#swap-to-dropdown');
+        if (!dropdown) return;
+        
+        // If "From" is MC, "To" can be FB or MY (not MC)
+        // If "From" is FB or MY, "To" must be MC
+        let availableTokens;
+        if (fromToken === 'MC') {
+            availableTokens = ['FB', 'MY'];
+        } else {
+            availableTokens = ['MC'];
+        }
+        
+        this.updateDropdownOptions(dropdown, availableTokens);
+    }
+    
+    updateDropdownOptions(dropdown, availableTokens) {
+        const options = dropdown.querySelectorAll('.token-option-clean');
+        options.forEach(option => {
+            const token = option.dataset.token;
+            if (availableTokens.includes(token)) {
+                option.style.display = 'flex';
+            } else {
+                option.style.display = 'none';
+            }
+        });
     }
     
     handleMaxButton() {
@@ -1582,20 +1628,29 @@ class DashboardModal {
         const toSymbol = this.modal.querySelector('#swap-to-symbol');
         
         if (fromIcon && fromSymbol && toIcon && toSymbol) {
-            // Swap the values
-            const tempIcon = fromIcon.textContent;
-            const tempSymbol = fromSymbol.textContent;
+            // Get current token symbols by matching with token data
+            const currentFromToken = this.getTokenByName(fromSymbol.textContent);
+            const currentToToken = this.getTokenByName(toSymbol.textContent);
             
-            fromIcon.textContent = toIcon.textContent;
-            fromSymbol.textContent = toSymbol.textContent;
-            toIcon.textContent = tempIcon;
-            toSymbol.textContent = tempSymbol;
+            // Swap the tokens
+            this.setFromToken(currentToToken);
+            this.setToToken(currentFromToken);
             
-            // Update balances and recalculate
-            this.updateSwapBalance('from', fromSymbol.textContent);
-            this.updateSwapBalance('to', toSymbol.textContent);
+            // Update available options and recalculate
+            this.updateAvailableToTokens(currentToToken);
+            this.updateAvailableFromTokens(currentFromToken);
             this.calculateSwapOutput();
         }
+    }
+    
+    // Helper function to get token symbol by name
+    getTokenByName(name) {
+        const tokenMap = {
+            'Fractal Bitcoin': 'FB',
+            'MoonYetis': 'MY',
+            'MoonCoins': 'MC'
+        };
+        return tokenMap[name] || 'FB';
     }
     
     updateSwapBalance(direction, token) {
@@ -1625,19 +1680,105 @@ class DashboardModal {
         
         if (amountInput && outputElement && fromSymbol && toSymbol) {
             const inputAmount = parseFloat(amountInput.value) || 0;
-            const from = fromSymbol.textContent;
-            const to = toSymbol.textContent;
+            const fromToken = this.getTokenByName(fromSymbol.textContent);
+            const toToken = this.getTokenByName(toSymbol.textContent);
             
-            // Simple conversion logic (you'd replace this with real rates)
             let outputAmount = 0;
-            if (from === 'FB' && to === 'MY') {
-                outputAmount = inputAmount * 12750632;
-            } else if (from === 'MY' && to === 'FB') {
-                outputAmount = inputAmount / 12750632;
+            
+            // Get real prices from HybridPriceService
+            if (window.hybridPriceService) {
+                try {
+                    const fromPriceUSD = window.hybridPriceService.getPrice(fromToken);
+                    const toPriceUSD = window.hybridPriceService.getPrice(toToken);
+                    
+                    if (fromPriceUSD && toPriceUSD && fromPriceUSD > 0 && toPriceUSD > 0) {
+                        // Calculate conversion rate based on USD values
+                        const conversionRate = fromPriceUSD / toPriceUSD;
+                        outputAmount = inputAmount * conversionRate;
+                        
+                        console.log(`💱 Swap calculation: ${inputAmount} ${fromToken} (${fromPriceUSD} USD) → ${outputAmount.toFixed(8)} ${toToken} (${toPriceUSD} USD)`);
+                    } else {
+                        console.warn('⚠️ Price data not available, using fallback calculation');
+                        outputAmount = this.calculateFallbackSwap(inputAmount, fromToken, toToken);
+                    }
+                } catch (error) {
+                    console.error('❌ Error calculating swap output:', error);
+                    outputAmount = this.calculateFallbackSwap(inputAmount, fromToken, toToken);
+                }
+            } else {
+                console.warn('⚠️ HybridPriceService not available, using fallback');
+                outputAmount = this.calculateFallbackSwap(inputAmount, fromToken, toToken);
             }
             
-            outputElement.textContent = outputAmount.toLocaleString();
+            // Format output with appropriate decimal places
+            const formattedOutput = this.formatSwapAmount(outputAmount, toToken);
+            outputElement.textContent = formattedOutput;
+            
+            // Update USD values displayed
+            this.updateUSDValues(inputAmount, fromToken, outputAmount, toToken);
+            
             this.updateSwapButton(inputAmount > 0);
+        }
+    }
+    
+    // Fallback calculation if price service is unavailable
+    calculateFallbackSwap(inputAmount, fromToken, toToken) {
+        // Use backup rates based on approximate market values
+        const fallbackRates = {
+            'FB_MC': 43.9,  // ~$0.439 / $0.01
+            'MC_FB': 1/43.9,
+            'MY_MC': 0.000003529,  // Very small rate for MY to MC
+            'MC_MY': 1/0.000003529
+        };
+        
+        const rateKey = `${fromToken}_${toToken}`;
+        const rate = fallbackRates[rateKey];
+        
+        return rate ? inputAmount * rate : 0;
+    }
+    
+    // Format swap amounts based on token type
+    formatSwapAmount(amount, token) {
+        if (amount === 0) return '0';
+        
+        // Different formatting for different tokens
+        switch (token) {
+            case 'FB':
+                return amount.toFixed(8); // Bitcoin precision
+            case 'MY':
+                return amount.toLocaleString(undefined, { maximumFractionDigits: 0 });
+            case 'MC':
+                return amount.toLocaleString(undefined, { maximumFractionDigits: 2 });
+            default:
+                return amount.toLocaleString();
+        }
+    }
+    
+    // Update USD values displayed in the interface
+    updateUSDValues(inputAmount, fromToken, outputAmount, toToken) {
+        const fromUSDElement = this.modal.querySelector('#swap-from-usd');
+        const toUSDElement = this.modal.querySelector('#swap-to-usd');
+        
+        if (window.hybridPriceService && fromUSDElement && toUSDElement) {
+            try {
+                const fromPriceUSD = window.hybridPriceService.getPrice(fromToken);
+                const toPriceUSD = window.hybridPriceService.getPrice(toToken);
+                
+                if (fromPriceUSD && toPriceUSD) {
+                    const fromUSDValue = (inputAmount * fromPriceUSD).toFixed(4);
+                    const toUSDValue = (outputAmount * toPriceUSD).toFixed(4);
+                    
+                    fromUSDElement.textContent = `≈ $${fromUSDValue}`;
+                    toUSDElement.textContent = `≈ $${toUSDValue}`;
+                } else {
+                    fromUSDElement.textContent = '≈ $0.00';
+                    toUSDElement.textContent = '≈ $0.00';
+                }
+            } catch (error) {
+                console.error('❌ Error updating USD values:', error);
+                if (fromUSDElement) fromUSDElement.textContent = '≈ $0.00';
+                if (toUSDElement) toUSDElement.textContent = '≈ $0.00';
+            }
         }
     }
     
