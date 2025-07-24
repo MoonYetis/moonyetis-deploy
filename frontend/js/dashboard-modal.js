@@ -1474,7 +1474,7 @@ class DashboardModal {
     
     setupTokenSelection() {
         // From token options
-        const fromOptions = this.modal.querySelectorAll('#swap-from-dropdown .token-option');
+        const fromOptions = this.modal.querySelectorAll('#swap-from-dropdown .token-option-clean');
         fromOptions.forEach(option => {
             option.addEventListener('click', (e) => {
                 const token = e.currentTarget.dataset.token;
@@ -1483,7 +1483,7 @@ class DashboardModal {
         });
         
         // To token options
-        const toOptions = this.modal.querySelectorAll('#swap-to-dropdown .token-option');
+        const toOptions = this.modal.querySelectorAll('#swap-to-dropdown .token-option-clean');
         toOptions.forEach(option => {
             option.addEventListener('click', (e) => {
                 const token = e.currentTarget.dataset.token;
