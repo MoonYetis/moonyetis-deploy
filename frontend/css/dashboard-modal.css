@@ -1427,3 +1427,400 @@
     background: rgba(255, 215, 0, 0.2);
     transform: translateY(-1px);
 }
+
+/* Modern Swap Interface Styles */
+.modern-swap-container {
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Swap Section Headers */
+.swap-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.swap-label {
+    color: #a0a0b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.swap-balance-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #a0a0b8;
+    font-size: 0.85rem;
+}
+
+.max-btn {
+    background: none;
+    border: none;
+    color: #FF6B35;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.max-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+/* Swap Input Sections */
+.swap-input-section, .swap-output-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+}
+
+/* Input Row */
+.swap-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.swap-amount-input {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 400;
+    flex: 1;
+    outline: none;
+    width: 0;
+}
+
+.swap-amount-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Output Row */
+.swap-output-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.swap-amount-output-clean {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 400;
+    flex: 1;
+    word-break: break-all;
+}
+
+/* Token Selector Clean */
+.token-selector-clean {
+    position: relative;
+}
+
+.token-display-clean {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
+    justify-content: space-between;
+}
+
+.token-display-clean:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.token-icon-clean {
+    font-size: 1.2rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FF6B35;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.token-symbol-clean {
+    color: #fff;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.dropdown-arrow-clean {
+    color: #a0a0b8;
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+/* Token Dropdown Clean */
+.token-dropdown-clean {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-top: 4px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.token-dropdown-clean.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.token-option-clean {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.token-option-clean:last-child {
+    border-bottom: none;
+}
+
+.token-option-clean:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.token-name-clean {
+    color: #fff;
+    font-weight: 500;
+    flex: 1;
+}
+
+/* Swap USD Values */
+.swap-usd-value {
+    color: #a0a0b8;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* Swap Direction */
+.swap-direction-container {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    position: relative;
+}
+
+.swap-direction-btn-clean {
+    background: #FF6B35;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 10;
+}
+
+.swap-direction-btn-clean:hover {
+    background: #e55a2b;
+    transform: scale(1.05);
+}
+
+.swap-arrow {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+/* Exchange Details Clean */
+.exchange-details-clean {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.exchange-header-clean {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.exchange-icon-clean {
+    font-size: 1rem;
+}
+
+.exchange-title-clean {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Exchange Rate Display */
+.exchange-rate-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.rate-amount {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.rate-token-badge {
+    background: rgba(255, 107, 53, 0.1);
+    color: #FF6B35;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.rate-equals {
+    color: #fff;
+    font-size: 1rem;
+}
+
+.rate-usd {
+    color: #a0a0b8;
+    font-size: 0.9rem;
+}
+
+/* Exchange Details Grid */
+.exchange-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.exchange-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
+    color: #a0a0b8;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.info-icon {
+    color: #a0a0b8;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.detail-value {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.fee-percentage, .fee-amount, .min-amount, .expected-amount {
+    color: #fff;
+    font-weight: 500;
+}
+
+.fee-token, .min-token, .expected-token {
+    background: rgba(255, 107, 53, 0.1);
+    color: #FF6B35;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+/* Swap Action Container */
+.swap-action-container-clean {
+    margin-top: 24px;
+}
+
+.swap-action-btn-insufficient {
+    width: 100%;
+    background: rgba(128, 128, 128, 0.3);
+    color: #a0a0b8;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: not-allowed;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.swap-help-link-clean {
+    text-align: center;
+}
+
+.deposit-link {
+    color: #FF6B35;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.deposit-link:hover {
+    color: #e55a2b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .modern-swap-container {
+        padding: 16px;
+    }
+    
+    .swap-amount-input {
+        font-size: 2rem;
+    }
+    
+    .swap-amount-output-clean {
+        font-size: 1.5rem;
+    }
+    
+    .exchange-rate-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

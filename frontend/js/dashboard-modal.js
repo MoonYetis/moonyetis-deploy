@@ -167,143 +167,138 @@ class DashboardModal {
                         <div class="modern-swap-container">
                             <!-- You Pay Section -->
                             <div class="swap-input-section">
-                                <div class="swap-input-header">
+                                <div class="swap-section-header">
                                     <span class="swap-label">You Pay</span>
-                                    <div class="swap-balance" id="swap-from-balance">
-                                        <span>Balance: 0</span>
+                                    <div class="swap-balance-info" id="swap-from-balance">
+                                        <span>Swap Balance: 0.99976</span>
                                         <button class="max-btn" id="swap-max-btn">Max</button>
                                     </div>
                                 </div>
-                                <div class="swap-input-container">
+                                <div class="swap-input-row">
                                     <input type="number" 
                                            id="swap-from-amount" 
                                            class="swap-amount-input" 
-                                           placeholder="0.0" 
+                                           placeholder="1" 
                                            step="any">
-                                    <div class="token-selector" id="swap-from-token">
-                                        <div class="token-display">
-                                            <span class="token-icon" id="swap-from-icon">₿</span>
-                                            <span class="token-symbol" id="swap-from-symbol">FB</span>
-                                            <span class="dropdown-arrow">▼</span>
+                                    <div class="token-selector-clean" id="swap-from-token">
+                                        <div class="token-display-clean">
+                                            <span class="token-icon-clean" id="swap-from-icon">₿</span>
+                                            <span class="token-symbol-clean" id="swap-from-symbol">FB</span>
+                                            <span class="dropdown-arrow-clean">▼</span>
                                         </div>
-                                        <div class="token-dropdown" id="swap-from-dropdown">
-                                            <div class="token-option" data-token="FB">
-                                                <span class="token-icon">₿</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">Fractal Bitcoin</span>
-                                                    <span class="token-symbol">FB</span>
-                                                </div>
-                                                <span class="token-balance" id="fb-balance-dropdown">0.00000</span>
+                                        <div class="token-dropdown-clean" id="swap-from-dropdown">
+                                            <div class="token-option-clean" data-token="FB">
+                                                <span class="token-icon-clean">₿</span>
+                                                <span class="token-name-clean">Fractal Bitcoin</span>
+                                                <span class="token-symbol-clean">FB</span>
                                             </div>
-                                            <div class="token-option" data-token="MY">
-                                                <span class="token-icon">🪙</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">MoonYetis</span>
-                                                    <span class="token-symbol">MY</span>
-                                                </div>
-                                                <span class="token-balance" id="my-balance-dropdown">0</span>
+                                            <div class="token-option-clean" data-token="MY">
+                                                <span class="token-icon-clean">🪙</span>
+                                                <span class="token-name-clean">MoonYetis</span>
+                                                <span class="token-symbol-clean">MY</span>
                                             </div>
-                                            <div class="token-option" data-token="MC">
-                                                <span class="token-icon">💰</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">MoonCoins</span>
-                                                    <span class="token-symbol">MC</span>
-                                                </div>
-                                                <span class="token-balance" id="mc-balance-dropdown">0</span>
+                                            <div class="token-option-clean" data-token="MC">
+                                                <span class="token-icon-clean">💰</span>
+                                                <span class="token-name-clean">MoonCoins</span>
+                                                <span class="token-symbol-clean">MC</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="swap-usd-value" id="swap-from-usd">≈ $0.00</div>
+                                <div class="swap-usd-value" id="swap-from-usd">≈ $0.44</div>
                             </div>
                             
                             <!-- Swap Direction Button -->
                             <div class="swap-direction-container">
-                                <button class="swap-direction-btn" id="swap-flip-btn">
+                                <button class="swap-direction-btn-clean" id="swap-flip-btn">
                                     <span class="swap-arrow">⬇️</span>
                                 </button>
                             </div>
                             
                             <!-- You Receive Section -->
                             <div class="swap-output-section">
-                                <div class="swap-output-header">
+                                <div class="swap-section-header">
                                     <span class="swap-label">You Receive</span>
-                                    <div class="swap-balance" id="swap-to-balance">
-                                        <span>Balance: 0</span>
+                                    <div class="swap-balance-info" id="swap-to-balance">
+                                        <span>PizzaSwap Balance: 407,321,270.11</span>
                                     </div>
                                 </div>
-                                <div class="swap-output-container">
-                                    <div class="swap-amount-output" id="swap-to-amount">0.0</div>
-                                    <div class="token-selector" id="swap-to-token">
-                                        <div class="token-display">
-                                            <span class="token-icon" id="swap-to-icon">🪙</span>
-                                            <span class="token-symbol" id="swap-to-symbol">MY</span>
-                                            <span class="dropdown-arrow">▼</span>
+                                <div class="swap-output-row">
+                                    <div class="swap-amount-output-clean" id="swap-to-amount">12,750,632.31514473193447322</div>
+                                    <div class="token-selector-clean" id="swap-to-token">
+                                        <div class="token-display-clean">
+                                            <span class="token-icon-clean" id="swap-to-icon">🪙</span>
+                                            <span class="token-symbol-clean" id="swap-to-symbol">MoonYetis</span>
+                                            <span class="dropdown-arrow-clean">▼</span>
                                         </div>
-                                        <div class="token-dropdown" id="swap-to-dropdown">
-                                            <div class="token-option" data-token="FB">
-                                                <span class="token-icon">₿</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">Fractal Bitcoin</span>
-                                                    <span class="token-symbol">FB</span>
-                                                </div>
-                                                <span class="token-balance" id="fb-balance-dropdown-to">0.00000</span>
+                                        <div class="token-dropdown-clean" id="swap-to-dropdown">
+                                            <div class="token-option-clean" data-token="FB">
+                                                <span class="token-icon-clean">₿</span>
+                                                <span class="token-name-clean">Fractal Bitcoin</span>
+                                                <span class="token-symbol-clean">FB</span>
                                             </div>
-                                            <div class="token-option" data-token="MY">
-                                                <span class="token-icon">🪙</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">MoonYetis</span>
-                                                    <span class="token-symbol">MY</span>
-                                                </div>
-                                                <span class="token-balance" id="my-balance-dropdown-to">0</span>
+                                            <div class="token-option-clean" data-token="MY">
+                                                <span class="token-icon-clean">🪙</span>
+                                                <span class="token-name-clean">MoonYetis</span>
+                                                <span class="token-symbol-clean">MY</span>
                                             </div>
-                                            <div class="token-option" data-token="MC">
-                                                <span class="token-icon">💰</span>
-                                                <div class="token-info">
-                                                    <span class="token-name">MoonCoins</span>
-                                                    <span class="token-symbol">MC</span>
-                                                </div>
-                                                <span class="token-balance" id="mc-balance-dropdown-to">0</span>
+                                            <div class="token-option-clean" data-token="MC">
+                                                <span class="token-icon-clean">💰</span>
+                                                <span class="token-name-clean">MoonCoins</span>
+                                                <span class="token-symbol-clean">MC</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="swap-usd-value" id="swap-to-usd">≈ $0.00</div>
+                                <div class="swap-usd-value" id="swap-to-usd">≈ $0.44</div>
                             </div>
                             
                             <!-- Exchange Details -->
-                            <div class="exchange-details" id="exchange-details">
-                                <div class="exchange-header">
-                                    <span class="exchange-icon">🔄</span>
-                                    <span>Exchange Details</span>
+                            <div class="exchange-details-clean" id="exchange-details">
+                                <div class="exchange-header-clean">
+                                    <span class="exchange-icon-clean">🔄</span>
+                                    <span class="exchange-title-clean">Exchange</span>
                                 </div>
-                                <div class="exchange-info">
-                                    <div class="exchange-row">
-                                        <span class="exchange-label">Exchange Rate</span>
-                                        <span class="exchange-value" id="exchange-rate">1 FB = 12,750,632 MY</span>
+                                <div class="exchange-rate-display">
+                                    <span class="rate-amount">1</span>
+                                    <span class="rate-token-badge">FB</span>
+                                    <span class="rate-equals">($0.44) = 12,750,632.31</span>
+                                    <span class="rate-token-badge">MoonYetis</span>
+                                    <span class="rate-usd">($0.44)</span>
+                                </div>
+                                <div class="exchange-details-grid">
+                                    <div class="exchange-detail-row">
+                                        <span class="detail-label">Fee</span>
+                                        <div class="detail-value">
+                                            <span class="fee-percentage">1.5%</span>
+                                            <span class="fee-amount">194,172.0657</span>
+                                            <span class="fee-token">MoonYetis</span>
+                                        </div>
                                     </div>
-                                    <div class="exchange-row">
-                                        <span class="exchange-label">Fee</span>
-                                        <span class="exchange-value" id="exchange-fee">1.5%</span>
+                                    <div class="exchange-detail-row">
+                                        <span class="detail-label">Minimum output <span class="info-icon">ⓘ</span></span>
+                                        <div class="detail-value">
+                                            <span class="min-amount">12,687,196.33</span>
+                                            <span class="min-token">MoonYetis</span>
+                                        </div>
                                     </div>
-                                    <div class="exchange-row">
-                                        <span class="exchange-label">Minimum output</span>
-                                        <span class="exchange-value" id="minimum-output">0 MY</span>
-                                    </div>
-                                    <div class="exchange-row">
-                                        <span class="exchange-label">Expected output</span>
-                                        <span class="exchange-value" id="expected-output">0 MY</span>
+                                    <div class="exchange-detail-row">
+                                        <span class="detail-label">Expected output <span class="info-icon">ⓘ</span></span>
+                                        <div class="detail-value">
+                                            <span class="expected-amount">12,750,632.31</span>
+                                            <span class="expected-token">MoonYetis</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Swap Action Button -->
-                            <div class="swap-action-container">
-                                <button class="swap-action-btn" id="swap-action-btn" disabled>
-                                    <span id="swap-action-text">Select a token</span>
+                            <div class="swap-action-container-clean">
+                                <button class="swap-action-btn-insufficient" id="swap-action-btn" disabled>
+                                    <span id="swap-action-text">Insufficient FB balance</span>
                                 </button>
-                                <div class="swap-help-link">
-                                    <a href="#" id="goto-deposit-link">Go to Deposit</a>
+                                <div class="swap-help-link-clean">
+                                    <a href="#" id="goto-deposit-link" class="deposit-link">Go to Deposit</a>
                                 </div>
                             </div>
                         </div>
@@ -396,7 +391,7 @@ class DashboardModal {
         this.modal.querySelector('#deposit-my-btn').addEventListener('click', () => this.processDeposit('MY'));
         
         // Modern Swap Interface
-        // this.setupModernSwapListeners(); // TODO: Implement this function
+        this.setupModernSwapListeners();
         
         // Withdrawal forms
         this.modal.querySelector('#withdraw-fb-btn').addEventListener('click', () => this.processWithdrawal('FB'));
@@ -1451,6 +1446,216 @@ class DashboardModal {
     
     getBalance() {
         return this.balance;
+    }
+    
+    // Modern Swap Interface Listeners
+    setupModernSwapListeners() {
+        console.log('🔄 Setting up modern swap listeners...');
+        
+        // Token dropdown toggles
+        const fromToken = this.modal.querySelector('#swap-from-token');
+        const toToken = this.modal.querySelector('#swap-to-token');
+        const fromDropdown = this.modal.querySelector('#swap-from-dropdown');
+        const toDropdown = this.modal.querySelector('#swap-to-dropdown');
+        
+        // Toggle from token dropdown
+        if (fromToken && fromDropdown) {
+            fromToken.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fromDropdown.classList.toggle('active');
+                toDropdown.classList.remove('active');
+            });
+        }
+        
+        // Toggle to token dropdown
+        if (toToken && toDropdown) {
+            toToken.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toDropdown.classList.toggle('active');
+                fromDropdown.classList.remove('active');
+            });
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            if (fromDropdown) fromDropdown.classList.remove('active');
+            if (toDropdown) toDropdown.classList.remove('active');
+        });
+        
+        // Token selection handlers
+        this.setupTokenSelection();
+        
+        // Max button functionality
+        const maxBtn = this.modal.querySelector('#swap-max-btn');
+        if (maxBtn) {
+            maxBtn.addEventListener('click', () => this.handleMaxButton());
+        }
+        
+        // Flip tokens button
+        const flipBtn = this.modal.querySelector('#swap-flip-btn');
+        if (flipBtn) {
+            flipBtn.addEventListener('click', () => this.handleFlipTokens());
+        }
+        
+        // Amount input changes
+        const amountInput = this.modal.querySelector('#swap-from-amount');
+        if (amountInput) {
+            amountInput.addEventListener('input', () => this.calculateSwapOutput());
+        }
+        
+        console.log('✅ Modern swap listeners setup complete');
+    }
+    
+    setupTokenSelection() {
+        // From token options
+        const fromOptions = this.modal.querySelectorAll('#swap-from-dropdown .token-option');
+        fromOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                const token = e.currentTarget.dataset.token;
+                this.selectFromToken(token);
+            });
+        });
+        
+        // To token options
+        const toOptions = this.modal.querySelectorAll('#swap-to-dropdown .token-option');
+        toOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                const token = e.currentTarget.dataset.token;
+                this.selectToToken(token);
+            });
+        });
+    }
+    
+    selectFromToken(token) {
+        const icon = this.modal.querySelector('#swap-from-icon');
+        const symbol = this.modal.querySelector('#swap-from-symbol');
+        const dropdown = this.modal.querySelector('#swap-from-dropdown');
+        
+        const tokenData = this.getTokenData(token);
+        if (icon) icon.textContent = tokenData.icon;
+        if (symbol) symbol.textContent = tokenData.name; // Show full name in clean design
+        if (dropdown) dropdown.classList.remove('active');
+        
+        this.updateSwapBalance('from', token);
+        this.calculateSwapOutput();
+    }
+    
+    selectToToken(token) {
+        const icon = this.modal.querySelector('#swap-to-icon');
+        const symbol = this.modal.querySelector('#swap-to-symbol');
+        const dropdown = this.modal.querySelector('#swap-to-dropdown');
+        
+        const tokenData = this.getTokenData(token);
+        if (icon) icon.textContent = tokenData.icon;
+        if (symbol) symbol.textContent = tokenData.name; // Show full name in clean design
+        if (dropdown) dropdown.classList.remove('active');
+        
+        this.updateSwapBalance('to', token);
+        this.calculateSwapOutput();
+    }
+    
+    getTokenData(token) {
+        const tokens = {
+            'FB': { icon: '₿', symbol: 'FB', name: 'Fractal Bitcoin' },
+            'MY': { icon: '🪙', symbol: 'MY', name: 'MoonYetis' },
+            'MC': { icon: '💰', symbol: 'MC', name: 'MoonCoins' }
+        };
+        return tokens[token] || tokens['FB'];
+    }
+    
+    handleMaxButton() {
+        const amountInput = this.modal.querySelector('#swap-from-amount');
+        const fromSymbol = this.modal.querySelector('#swap-from-symbol');
+        
+        if (amountInput && fromSymbol) {
+            const token = fromSymbol.textContent;
+            const balance = this.getTokenBalance(token);
+            amountInput.value = balance;
+            this.calculateSwapOutput();
+        }
+    }
+    
+    handleFlipTokens() {
+        const fromIcon = this.modal.querySelector('#swap-from-icon');
+        const fromSymbol = this.modal.querySelector('#swap-from-symbol');
+        const toIcon = this.modal.querySelector('#swap-to-icon');
+        const toSymbol = this.modal.querySelector('#swap-to-symbol');
+        
+        if (fromIcon && fromSymbol && toIcon && toSymbol) {
+            // Swap the values
+            const tempIcon = fromIcon.textContent;
+            const tempSymbol = fromSymbol.textContent;
+            
+            fromIcon.textContent = toIcon.textContent;
+            fromSymbol.textContent = toSymbol.textContent;
+            toIcon.textContent = tempIcon;
+            toSymbol.textContent = tempSymbol;
+            
+            // Update balances and recalculate
+            this.updateSwapBalance('from', fromSymbol.textContent);
+            this.updateSwapBalance('to', toSymbol.textContent);
+            this.calculateSwapOutput();
+        }
+    }
+    
+    updateSwapBalance(direction, token) {
+        const balance = this.getTokenBalance(token);
+        const balanceElement = this.modal.querySelector(`#swap-${direction}-balance span`);
+        
+        if (balanceElement) {
+            balanceElement.textContent = `Balance: ${balance}`;
+        }
+    }
+    
+    getTokenBalance(token) {
+        // This would connect to your actual balance system
+        const balances = {
+            'FB': '0.00000',
+            'MY': '0',
+            'MC': '0'
+        };
+        return balances[token] || '0';
+    }
+    
+    calculateSwapOutput() {
+        const amountInput = this.modal.querySelector('#swap-from-amount');
+        const outputElement = this.modal.querySelector('#swap-to-amount');
+        const fromSymbol = this.modal.querySelector('#swap-from-symbol');
+        const toSymbol = this.modal.querySelector('#swap-to-symbol');
+        
+        if (amountInput && outputElement && fromSymbol && toSymbol) {
+            const inputAmount = parseFloat(amountInput.value) || 0;
+            const from = fromSymbol.textContent;
+            const to = toSymbol.textContent;
+            
+            // Simple conversion logic (you'd replace this with real rates)
+            let outputAmount = 0;
+            if (from === 'FB' && to === 'MY') {
+                outputAmount = inputAmount * 12750632;
+            } else if (from === 'MY' && to === 'FB') {
+                outputAmount = inputAmount / 12750632;
+            }
+            
+            outputElement.textContent = outputAmount.toLocaleString();
+            this.updateSwapButton(inputAmount > 0);
+        }
+    }
+    
+    updateSwapButton(hasAmount) {
+        const button = this.modal.querySelector('#swap-action-btn');
+        const buttonText = this.modal.querySelector('#swap-action-text');
+        
+        if (button && buttonText) {
+            if (hasAmount) {
+                button.disabled = false;
+                buttonText.textContent = 'Exchange';
+                button.classList.remove('disabled');
+            } else {
+                button.disabled = true;
+                buttonText.textContent = 'Enter amount';
+                button.classList.add('disabled');
+            }
+        }
     }
 }
 
