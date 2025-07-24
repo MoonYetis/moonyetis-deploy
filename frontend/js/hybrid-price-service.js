@@ -18,15 +18,21 @@ class HybridPriceService {
             timer: null
         };
         
+        this.pizzaswap = {
+            updateInterval: 10 * 60 * 1000, // 10 minutes
+            timer: null,
+            priority: 1 // Highest priority for price data
+        };
+        
         // Price cache with timestamps and sources
         this.prices = {
             FB: {
-                usd: 30000, // Backup price
+                usd: 0.45, // Backup price based on current market
                 lastUpdate: null,
                 source: 'backup'
             },
             MY: {
-                usd: 30, // Backup price (estimated)
+                usd: 0.00000003529, // Backup price based on real pool ratio
                 lastUpdate: null,
                 source: 'backup'
             },
@@ -41,17 +47,20 @@ class HybridPriceService {
         this.config = {
             REQUEST_TIMEOUT: 10000, // 10 seconds
             BACKUP_PRICES: {
-                FB: 30000,
-                MY: 30
+                FB: 0.45,
+                MY: 0.00000003529
             },
             POOL_PAIR: {
-                tick0: 'Moonyetis',
-                tick1: 'FB'
+                tick0: 'MoonYetis',
+                tick1: 'sFB___000'
             }
         };
         
         // Initialize
         this.init();
+        
+        // Listen for PizzaSwap ratio updates
+        this.setupPizzaSwapListener();
     }
     
     init() {
@@ -70,9 +79,13 @@ class HybridPriceService {
             this.updateMYPrice();
         }, this.unisat.updateInterval);
         
+        // Start PizzaSwap scraper if available
+        this.initializePizzaSwapScraper();
+        
         console.log('✅ Hybrid Price Service: Initialized');
         console.log(`🔄 FB updates every ${this.coinGecko.updateInterval / 60000} minutes`);
         console.log(`🔄 MY updates every ${this.unisat.updateInterval / 60000} minutes`);
+        console.log(`🍕 PizzaSwap updates every ${this.pizzaswap.updateInterval / 60000} minutes`);
     }
     
     // Update FB price from CoinGecko API
@@ -125,41 +138,6 @@ class HybridPriceService {
         }
     }
     
-    // Update MY price from UniSat BRC-20 pool ratio
-    async updateMYPrice() {
-        console.log('🔄 Updating MY price from BRC-20 pool...');
-        
-        try {
-            const poolData = await this.fetchBRC20PoolInfo('Moonyetis', 'FB');
-            
-            if (!poolData.data.existed || !poolData.data.addLiq) {
-                throw new Error('Moonyetis/FB pool does not exist or has no liquidity');
-            }
-            
-            // Calculate ratio from pool data
-            const moonyetisPerFB = this.calculatePoolRatio(poolData.data);
-            
-            // Calculate MY price in USD using current FB price
-            const fbPriceUSD = this.prices.FB.usd;
-            const myPriceUSD = fbPriceUSD / moonyetisPerFB;
-            
-            this.prices.MY = {
-                usd: myPriceUSD,
-                lastUpdate: Date.now(),
-                source: 'brc20-pool',
-                ratio: moonyetisPerFB
-            };
-            
-            console.log(`✅ MY price updated: $${myPriceUSD.toFixed(4)} (${moonyetisPerFB} MY per FB)`);
-            
-        } catch (error) {
-            console.warn('⚠️ Failed to get MY price from BRC-20 pool:', error);
-            this.handleMYPriceError(error);
-        }
-        
-        // Emit price update event
-        this.emitPriceUpdate();
-    }
     
     // Recalculate MY price when FB price changes (without fetching pool again)
     recalculateMYPrice() {
@@ -229,13 +207,13 @@ class HybridPriceService {
         if (volume24h > 0) {
             // Higher volume indicates more activity and potentially better price discovery
             if (volume24h > 10000000) {
-                return 500; // High volume: 500 MY per FB (higher value MY)
+                return 10000000; // High volume: 10M MY per FB (higher value MY)
             } else if (volume24h > 1000000) {
-                return 1000; // Medium volume: 1000 MY per FB
+                return 11000000; // Medium volume: 11M MY per FB
             } else if (volume24h > 100000) {
-                return 1500; // Lower volume: 1500 MY per FB
+                return 12000000; // Lower volume: 12M MY per FB
             } else {
-                return 2000; // Very low volume: 2000 MY per FB (lower value MY)
+                return 13000000; // Very low volume: 13M MY per FB (lower value MY)
             }
         }
         
@@ -243,13 +221,13 @@ class HybridPriceService {
         if (tvl > 0) {
             // Larger TVL typically indicates more stable pricing
             if (tvl > 10000000) {
-                return 800; // Large pool: 800 MY per FB
+                return 11500000; // Large pool: 11.5M MY per FB
             } else if (tvl > 5000000) {
-                return 1200; // Medium pool: 1200 MY per FB
+                return 12000000; // Medium pool: 12M MY per FB
             } else if (tvl > 1000000) {
-                return 1600; // Smaller pool: 1600 MY per FB
+                return 12500000; // Smaller pool: 12.5M MY per FB
             } else {
-                return 2500; // Very small pool: 2500 MY per FB
+                return 13000000; // Very small pool: 13M MY per FB
             }
         }
         
@@ -258,17 +236,17 @@ class HybridPriceService {
             // This is highly dependent on the specific pool structure
             // Without knowing the exact mechanics, we'll use a conservative estimate
             if (lp > 1000000) {
-                return 1000; // High LP: 1000 MY per FB
+                return 12000000; // High LP: 12M MY per FB
             } else if (lp > 100000) {
-                return 1500; // Medium LP: 1500 MY per FB
+                return 12500000; // Medium LP: 12.5M MY per FB
             } else {
-                return 2000; // Low LP: 2000 MY per FB
+                return 13000000; // Low LP: 13M MY per FB
             }
         }
         
         // Fallback ratio if no data is available
         console.warn('⚠️ Using fallback ratio - no pool data available');
-        return 1500; // Conservative estimate: 1500 MY per FB
+        return 12750632.31; // Real pool ratio: 12,750,632.31 MY per FB
     }
     
     // Handle FB price update errors
@@ -384,6 +362,104 @@ class HybridPriceService {
         };
     }
     
+    // Initialize PizzaSwap scraper
+    initializePizzaSwapScraper() {
+        // Wait for scraper to be available
+        const checkScraper = () => {
+            if (window.pizzaSwapScraper) {
+                console.log('🍕 Found PizzaSwap scraper, starting...');
+                window.pizzaSwapScraper.start();
+            } else {
+                console.log('⏳ Waiting for PizzaSwap scraper...');
+                setTimeout(checkScraper, 1000);
+            }
+        };
+        
+        setTimeout(checkScraper, 500);
+    }
+    
+    // Setup PizzaSwap event listener
+    setupPizzaSwapListener() {
+        window.addEventListener('pizzaswapRatioUpdated', (event) => {
+            const { ratio, timestamp, source } = event.detail;
+            this.handlePizzaSwapRatioUpdate(ratio, timestamp);
+        });
+        
+        console.log('🍕 PizzaSwap event listener setup complete');
+    }
+    
+    // Handle PizzaSwap ratio updates
+    handlePizzaSwapRatioUpdate(ratio, timestamp) {
+        console.log(`🍕 Received PizzaSwap ratio update: ${ratio.toLocaleString()}`);
+        
+        // Calculate MY price using FB price and new ratio
+        const fbPriceUSD = this.prices.FB.usd;
+        const myPriceUSD = fbPriceUSD / ratio;
+        
+        this.prices.MY = {
+            usd: myPriceUSD,
+            lastUpdate: timestamp,
+            source: 'pizzaswap',
+            ratio: ratio
+        };
+        
+        console.log(`✅ MY price updated from PizzaSwap: $${myPriceUSD.toFixed(8)} (${ratio.toLocaleString()} MY per sFB___000)`);
+        
+        // Emit price update event
+        this.emitPriceUpdate();
+    }
+    
+    // Update MY price - now with PizzaSwap priority
+    async updateMYPrice() {
+        console.log('🔄 Updating MY price...');
+        
+        // Check if we have fresh PizzaSwap data first
+        if (window.pizzaSwapScraper) {
+            const scraperStatus = window.pizzaSwapScraper.getStatus();
+            
+            if (scraperStatus.isFresh && scraperStatus.currentRatio) {
+                console.log('🍕 Using fresh PizzaSwap ratio for MY price');
+                this.handlePizzaSwapRatioUpdate(scraperStatus.currentRatio, scraperStatus.lastUpdate);
+                return;
+            }
+        }
+        
+        // Fallback to UniSat BRC-20 pool (original logic)
+        console.log('🔄 Falling back to UniSat BRC-20 pool...');
+        
+        try {
+            const poolData = await this.fetchBRC20PoolInfo('MoonYetis', 'sFB___000');
+            
+            if (!poolData.data.existed || !poolData.data.addLiq) {
+                throw new Error('MoonYetis/sFB___000 pool does not exist or has no liquidity');
+            }
+            
+            // Calculate ratio from pool data
+            const moonyetisPersFB = this.calculatePoolRatio(poolData.data);
+            
+            // Calculate MY price in USD using current FB price
+            // Note: sFB___000 represents FB in BRC-20 format with 8 decimals
+            const fbPriceUSD = this.prices.FB.usd;
+            const myPriceUSD = fbPriceUSD / moonyetisPersFB;
+            
+            this.prices.MY = {
+                usd: myPriceUSD,
+                lastUpdate: Date.now(),
+                source: 'brc20-pool',
+                ratio: moonyetisPersFB
+            };
+            
+            console.log(`✅ MY price updated from UniSat: $${myPriceUSD.toFixed(4)} (${moonyetisPersFB} MY per sFB___000)`);
+            
+        } catch (error) {
+            console.warn('⚠️ Failed to get MY price from BRC-20 pool:', error);
+            this.handleMYPriceError(error);
+        }
+        
+        // Emit price update event
+        this.emitPriceUpdate();
+    }
+    
     // Cleanup method
     destroy() {
         if (this.coinGecko.timer) {
@@ -394,6 +470,10 @@ class HybridPriceService {
         if (this.unisat.timer) {
             clearInterval(this.unisat.timer);
             this.unisat.timer = null;
+        }
+        
+        if (window.pizzaSwapScraper) {
+            window.pizzaSwapScraper.stop();
         }
         
         console.log('🛑 Hybrid Price Service destroyed');

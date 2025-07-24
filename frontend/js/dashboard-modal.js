@@ -163,94 +163,147 @@ class DashboardModal {
                             <h3>🔄 Swap</h3>
                         </div>
                         
-                        <div class="change-options">
-                            <div class="change-option">
-                                <div class="change-card">
-                                    <div class="change-header">
-                                        <h4>FB → MC</h4>
-                                        <span class="change-rate">1 FB = 67,500 MC</span>
+                        <!-- Modern Swap Interface -->
+                        <div class="modern-swap-container">
+                            <!-- You Pay Section -->
+                            <div class="swap-input-section">
+                                <div class="swap-input-header">
+                                    <span class="swap-label">You Pay</span>
+                                    <div class="swap-balance" id="swap-from-balance">
+                                        <span>Balance: 0</span>
+                                        <button class="max-btn" id="swap-max-btn">Max</button>
                                     </div>
-                                    <div class="change-form">
-                                        <div class="form-group">
-                                            <label for="fb-to-mc-amount">Amount</label>
-                                            <input type="number" id="fb-to-mc-amount" placeholder="0.00000" step="0.00001">
-                                            <span class="input-suffix">FB</span>
+                                </div>
+                                <div class="swap-input-container">
+                                    <input type="number" 
+                                           id="swap-from-amount" 
+                                           class="swap-amount-input" 
+                                           placeholder="0.0" 
+                                           step="any">
+                                    <div class="token-selector" id="swap-from-token">
+                                        <div class="token-display">
+                                            <span class="token-icon" id="swap-from-icon">₿</span>
+                                            <span class="token-symbol" id="swap-from-symbol">FB</span>
+                                            <span class="dropdown-arrow">▼</span>
                                         </div>
-                                        <div class="will-receive">
-                                            <span>You'll receive: </span>
-                                            <span id="fb-to-mc-receive">0 MC</span>
+                                        <div class="token-dropdown" id="swap-from-dropdown">
+                                            <div class="token-option" data-token="FB">
+                                                <span class="token-icon">₿</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">Fractal Bitcoin</span>
+                                                    <span class="token-symbol">FB</span>
+                                                </div>
+                                                <span class="token-balance" id="fb-balance-dropdown">0.00000</span>
+                                            </div>
+                                            <div class="token-option" data-token="MY">
+                                                <span class="token-icon">🪙</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">MoonYetis</span>
+                                                    <span class="token-symbol">MY</span>
+                                                </div>
+                                                <span class="token-balance" id="my-balance-dropdown">0</span>
+                                            </div>
+                                            <div class="token-option" data-token="MC">
+                                                <span class="token-icon">💰</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">MoonCoins</span>
+                                                    <span class="token-symbol">MC</span>
+                                                </div>
+                                                <span class="token-balance" id="mc-balance-dropdown">0</span>
+                                            </div>
                                         </div>
-                                        <button class="change-btn" id="fb-to-mc-btn">Buy MoonCoins</button>
+                                    </div>
+                                </div>
+                                <div class="swap-usd-value" id="swap-from-usd">≈ $0.00</div>
+                            </div>
+                            
+                            <!-- Swap Direction Button -->
+                            <div class="swap-direction-container">
+                                <button class="swap-direction-btn" id="swap-flip-btn">
+                                    <span class="swap-arrow">⬇️</span>
+                                </button>
+                            </div>
+                            
+                            <!-- You Receive Section -->
+                            <div class="swap-output-section">
+                                <div class="swap-output-header">
+                                    <span class="swap-label">You Receive</span>
+                                    <div class="swap-balance" id="swap-to-balance">
+                                        <span>Balance: 0</span>
+                                    </div>
+                                </div>
+                                <div class="swap-output-container">
+                                    <div class="swap-amount-output" id="swap-to-amount">0.0</div>
+                                    <div class="token-selector" id="swap-to-token">
+                                        <div class="token-display">
+                                            <span class="token-icon" id="swap-to-icon">🪙</span>
+                                            <span class="token-symbol" id="swap-to-symbol">MY</span>
+                                            <span class="dropdown-arrow">▼</span>
+                                        </div>
+                                        <div class="token-dropdown" id="swap-to-dropdown">
+                                            <div class="token-option" data-token="FB">
+                                                <span class="token-icon">₿</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">Fractal Bitcoin</span>
+                                                    <span class="token-symbol">FB</span>
+                                                </div>
+                                                <span class="token-balance" id="fb-balance-dropdown-to">0.00000</span>
+                                            </div>
+                                            <div class="token-option" data-token="MY">
+                                                <span class="token-icon">🪙</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">MoonYetis</span>
+                                                    <span class="token-symbol">MY</span>
+                                                </div>
+                                                <span class="token-balance" id="my-balance-dropdown-to">0</span>
+                                            </div>
+                                            <div class="token-option" data-token="MC">
+                                                <span class="token-icon">💰</span>
+                                                <div class="token-info">
+                                                    <span class="token-name">MoonCoins</span>
+                                                    <span class="token-symbol">MC</span>
+                                                </div>
+                                                <span class="token-balance" id="mc-balance-dropdown-to">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swap-usd-value" id="swap-to-usd">≈ $0.00</div>
+                            </div>
+                            
+                            <!-- Exchange Details -->
+                            <div class="exchange-details" id="exchange-details">
+                                <div class="exchange-header">
+                                    <span class="exchange-icon">🔄</span>
+                                    <span>Exchange Details</span>
+                                </div>
+                                <div class="exchange-info">
+                                    <div class="exchange-row">
+                                        <span class="exchange-label">Exchange Rate</span>
+                                        <span class="exchange-value" id="exchange-rate">1 FB = 12,750,632 MY</span>
+                                    </div>
+                                    <div class="exchange-row">
+                                        <span class="exchange-label">Fee</span>
+                                        <span class="exchange-value" id="exchange-fee">1.5%</span>
+                                    </div>
+                                    <div class="exchange-row">
+                                        <span class="exchange-label">Minimum output</span>
+                                        <span class="exchange-value" id="minimum-output">0 MY</span>
+                                    </div>
+                                    <div class="exchange-row">
+                                        <span class="exchange-label">Expected output</span>
+                                        <span class="exchange-value" id="expected-output">0 MY</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="change-option">
-                                <div class="change-card">
-                                    <div class="change-header">
-                                        <h4>MY → MC</h4>
-                                        <span class="change-rate">1 MY = 0.8 MC (+3% bonus)</span>
-                                    </div>
-                                    <div class="change-form">
-                                        <div class="form-group">
-                                            <label for="my-to-mc-amount">Amount</label>
-                                            <input type="number" id="my-to-mc-amount" placeholder="0" step="1">
-                                            <span class="input-suffix">MY</span>
-                                        </div>
-                                        <div class="will-receive">
-                                            <span>You'll receive: </span>
-                                            <span id="my-to-mc-receive">0 MC</span>
-                                        </div>
-                                        <button class="change-btn" id="my-to-mc-btn">Buy MoonCoins</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="change-option">
-                                <div class="change-card">
-                                    <div class="change-header">
-                                        <h4>MC → MY</h4>
-                                        <span class="change-rate">1 MC = 1.188 MY (1% fee)</span>
-                                    </div>
-                                    <div class="change-form">
-                                        <div class="form-group">
-                                            <label for="mc-to-my-amount">Amount</label>
-                                            <input type="number" id="mc-to-my-amount" placeholder="0" step="1">
-                                            <span class="input-suffix">MC</span>
-                                        </div>
-                                        <div class="will-receive">
-                                            <span>You'll receive: </span>
-                                            <span id="mc-to-my-receive">0 MY</span>
-                                        </div>
-                                        <div class="fee-notice">
-                                            <small>💡 1% transaction fee applies</small>
-                                        </div>
-                                        <button class="change-btn" id="mc-to-my-btn">Sell MoonCoins</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="change-option">
-                                <div class="change-card">
-                                    <div class="change-header">
-                                        <h4>MC → FB</h4>
-                                        <span class="change-rate">67,500 MC = 0.99 FB (1% fee)</span>
-                                    </div>
-                                    <div class="change-form">
-                                        <div class="form-group">
-                                            <label for="mc-to-fb-amount">Amount</label>
-                                            <input type="number" id="mc-to-fb-amount" placeholder="0" step="1">
-                                            <span class="input-suffix">MC</span>
-                                        </div>
-                                        <div class="will-receive">
-                                            <span>You'll receive: </span>
-                                            <span id="mc-to-fb-receive">0.00000 FB</span>
-                                        </div>
-                                        <div class="fee-notice">
-                                            <small>💡 1% transaction fee applies</small>
-                                        </div>
-                                        <button class="change-btn" id="mc-to-fb-btn">Sell MoonCoins</button>
-                                    </div>
+                            <!-- Swap Action Button -->
+                            <div class="swap-action-container">
+                                <button class="swap-action-btn" id="swap-action-btn" disabled>
+                                    <span id="swap-action-text">Select a token</span>
+                                </button>
+                                <div class="swap-help-link">
+                                    <a href="#" id="goto-deposit-link">Go to Deposit</a>
                                 </div>
                             </div>
                         </div>
@@ -342,17 +395,8 @@ class DashboardModal {
         this.modal.querySelector('#deposit-fb-btn').addEventListener('click', () => this.processDeposit('FB'));
         this.modal.querySelector('#deposit-my-btn').addEventListener('click', () => this.processDeposit('MY'));
         
-        // Change forms
-        this.modal.querySelector('#fb-to-mc-btn').addEventListener('click', () => this.processChange('FB', 'MC'));
-        this.modal.querySelector('#my-to-mc-btn').addEventListener('click', () => this.processChange('MY', 'MC'));
-        this.modal.querySelector('#mc-to-my-btn').addEventListener('click', () => this.processChange('MC', 'MY'));
-        this.modal.querySelector('#mc-to-fb-btn').addEventListener('click', () => this.processChange('MC', 'FB'));
-        
-        // Change amount calculators
-        this.modal.querySelector('#fb-to-mc-amount').addEventListener('input', () => this.updateChangePreview('FB', 'MC'));
-        this.modal.querySelector('#my-to-mc-amount').addEventListener('input', () => this.updateChangePreview('MY', 'MC'));
-        this.modal.querySelector('#mc-to-my-amount').addEventListener('input', () => this.updateChangePreview('MC', 'MY'));
-        this.modal.querySelector('#mc-to-fb-amount').addEventListener('input', () => this.updateChangePreview('MC', 'FB'));
+        // Modern Swap Interface
+        this.setupModernSwapListeners();
         
         // Withdrawal forms
         this.modal.querySelector('#withdraw-fb-btn').addEventListener('click', () => this.processWithdrawal('FB'));
@@ -1094,8 +1138,18 @@ class DashboardModal {
                 }
             });
             
-            // Update price displays
+            // Update price displays (equivalence boxes)
             this.updateAllPriceDisplays();
+        });
+        
+        // Also listen for PizzaSwap specific updates
+        window.addEventListener('pizzaswapRatioUpdated', (event) => {
+            console.log('🍕 Dashboard: Received PizzaSwap ratio update', event.detail);
+            
+            // Force update of all price displays
+            setTimeout(() => {
+                this.updateAllPriceDisplays();
+            }, 100); // Small delay to ensure price service has updated
         });
     }
     
@@ -1120,7 +1174,12 @@ class DashboardModal {
         
         if (myToMcRate && prices.MY && prices.MC) {
             const myToMcAmount = Math.floor((prices.MY / prices.MC) * 1.03); // Include 3% bonus
-            myToMcRate.textContent = `1 MY = ${myToMcAmount} MC (+3% bonus)`;
+            if (myToMcAmount > 0) {
+                myToMcRate.textContent = `1 MY = ${myToMcAmount} MC (+3% bonus)`;
+            } else {
+                const myToMcDecimal = ((prices.MY / prices.MC) * 1.03).toFixed(6);
+                myToMcRate.textContent = `1 MY = ${myToMcDecimal} MC (+3% bonus)`;
+            }
         }
         
         if (mcToMyRate && prices.MC && prices.MY) {
@@ -1357,16 +1416,29 @@ class DashboardModal {
         this.loadUserData();
         this.updateWalletDisplay();
         
-        // Initialize price displays
+        // Initialize price displays immediately and periodically
+        this.updateAllPriceDisplays();
+        
         setTimeout(() => {
             this.updateAllPriceDisplays();
-        }, 1000);
+        }, 500);
+        
+        // Set up periodic updates
+        this.priceUpdateInterval = setInterval(() => {
+            this.updateAllPriceDisplays();
+        }, 30000); // Update every 30 seconds
     }
     
     close() {
         this.modal.classList.remove('dashboard-visible');
         this.isOpen = false;
         document.body.style.overflow = '';
+        
+        // Clean up price update interval
+        if (this.priceUpdateInterval) {
+            clearInterval(this.priceUpdateInterval);
+            this.priceUpdateInterval = null;
+        }
     }
     
     isAuthenticated() {
