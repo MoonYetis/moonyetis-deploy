@@ -396,7 +396,7 @@ class DashboardModal {
         this.modal.querySelector('#deposit-my-btn').addEventListener('click', () => this.processDeposit('MY'));
         
         // Modern Swap Interface
-        this.setupModernSwapListeners();
+        // this.setupModernSwapListeners(); // TODO: Implement this function
         
         // Withdrawal forms
         this.modal.querySelector('#withdraw-fb-btn').addEventListener('click', () => this.processWithdrawal('FB'));
