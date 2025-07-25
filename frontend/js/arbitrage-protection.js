@@ -50,125 +50,43 @@ class ArbitrageProtection {
         const now = Date.now();
         const userActivity = this.getUserActivity(walletAddress);
         
-        // Check if user is blacklisted
-        if (userActivity.blacklistedUntil && now < userActivity.blacklistedUntil) {
-            const remainingMinutes = Math.ceil((userActivity.blacklistedUntil - now) / 60000);
-            return {
-                allowed: false,
-                reason: 'Temporary restriction due to suspicious activity',
-                remainingTime: remainingMinutes
-            };
-        }
-        
-        // Check daily limits
-        const dailyUsage = this.getDailyUsage(userActivity, now);
-        if (dailyUsage + amountUSD > this.config.MAX_DAILY_USD) {
-            return {
-                allowed: false,
-                reason: `Daily limit exceeded. Max: $${this.config.MAX_DAILY_USD}, Used: $${dailyUsage.toFixed(2)}`
-            };
-        }
-        
-        // Check per-swap limits
-        if (amountUSD > this.config.MAX_SWAP_USD) {
-            return {
-                allowed: false,
-                reason: `Amount too large. Max per swap: $${this.config.MAX_SWAP_USD}`
-            };
-        }
-        
-        // Check cooldown
-        const lastSwap = userActivity.lastSwapTime;
-        if (lastSwap && (now - lastSwap) < this.config.SWAP_COOLDOWN) {
-            const remainingSeconds = Math.ceil((this.config.SWAP_COOLDOWN - (now - lastSwap)) / 1000);
-            return {
-                allowed: false,
-                reason: 'Swap cooldown active',
-                remainingTime: remainingSeconds
-            };
-        }
+        // SIMPLIFICADO: Siempre permitir swaps, sin límites ni restricciones
+        // Solo calcular el fee del 3% cuando corresponda
         
         // Calculate fees
         const feeCalculation = this.calculateFees(userActivity, fromToken, toToken, amountUSD, now);
         
         return {
-            allowed: true,
+            allowed: true,  // Siempre permitido
             fees: feeCalculation
         };
     }
     
     // Calculate total fees for the swap
     calculateFees(userActivity, fromToken, toToken, amountUSD, now) {
-        // Check if this is an MC to FB/MY conversion that needs 3% fee
-        let totalFee;
-        const feeBreakdown = [];
+        // SIMPLIFICADO: Solo aplicar 3% fee para MC a FB/MY, sin fees adicionales
         
         if (fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY')) {
-            // Use 3% fee for MC conversions instead of base fee
-            totalFee = this.config.MC_CONVERSION_FEE;
-            feeBreakdown.push({
-                type: 'Anti-Arbitrage Fee',
-                percentage: this.config.MC_CONVERSION_FEE,
-                reason: 'Protection fee for MC to FB/MY conversion'
-            });
+            // Aplicar 3% fee para conversiones MC a FB/MY
+            return {
+                totalPercentage: this.config.MC_CONVERSION_FEE, // 3%
+                breakdown: [{
+                    type: 'Anti-Arbitrage Fee',
+                    percentage: this.config.MC_CONVERSION_FEE,
+                    reason: 'Protection fee for MC to FB/MY conversion'
+                }],
+                patternDetected: false,
+                patternType: null
+            };
         } else {
-            // Use standard base fee for other conversions
-            totalFee = this.config.BASE_FEE;
-            feeBreakdown.push({
-                type: 'Base Fee',
-                percentage: this.config.BASE_FEE,
-                reason: 'Standard platform fee'
-            });
+            // Sin fee para otras conversiones
+            return {
+                totalPercentage: 0,
+                breakdown: [],
+                patternDetected: false,
+                patternType: null
+            };
         }
-        
-        // Check for rapid swaps
-        if (userActivity.lastSwapTime && (now - userActivity.lastSwapTime) < this.config.RAPID_SWAP_THRESHOLD) {
-            totalFee += this.config.RAPID_SWAP_FEE;
-            feeBreakdown.push({
-                type: 'Rapid Swap Fee',
-                percentage: this.config.RAPID_SWAP_FEE,
-                reason: 'Additional fee for quick consecutive swaps'
-            });
-        }
-        
-        // Check for large amounts
-        if (amountUSD > this.config.LARGE_AMOUNT_THRESHOLD) {
-            totalFee += this.config.LARGE_AMOUNT_FEE;
-            feeBreakdown.push({
-                type: 'Large Amount Fee',
-                percentage: this.config.LARGE_AMOUNT_FEE,
-                reason: `Additional fee for amounts over $${this.config.LARGE_AMOUNT_THRESHOLD}`
-            });
-        }
-        
-        // Check for arbitrage patterns
-        const swapPath = `${fromToken}-${toToken}`;
-        userActivity.recentSwaps = userActivity.recentSwaps || [];
-        
-        // Add current swap to recent history for pattern detection
-        const recentSwaps = [...userActivity.recentSwaps, { path: swapPath, time: now }];
-        
-        // Check for suspicious patterns
-        const patternDetected = this.detectArbitragePattern(recentSwaps, now);
-        if (patternDetected.detected) {
-            totalFee += this.config.PATTERN_DETECTION_FEE;
-            feeBreakdown.push({
-                type: 'Pattern Detection Fee',
-                percentage: this.config.PATTERN_DETECTION_FEE,
-                reason: `Suspicious trading pattern detected: ${patternDetected.pattern}`
-            });
-        }
-        
-        // Cap total fee at reasonable maximum
-        const maxFee = 0.05; // 5% maximum
-        totalFee = Math.min(totalFee, maxFee);
-        
-        return {
-            totalPercentage: totalFee,
-            breakdown: feeBreakdown,
-            patternDetected: patternDetected.detected,
-            patternType: patternDetected.pattern
-        };
     }
     
     // Detect arbitrage patterns

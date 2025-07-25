@@ -1987,6 +1987,59 @@
     color: #f44336 !important;
 }
 
+/* Exchange Info Section */
+.swap-exchange-info {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.swap-exchange-info.has-fee {
+    background: rgba(251, 191, 36, 0.05);
+    border-color: rgba(251, 191, 36, 0.2);
+}
+
+.exchange-rate-display,
+.exchange-fee-display,
+.exchange-net-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.exchange-rate-display:last-child,
+.exchange-fee-display:last-child,
+.exchange-net-display:last-child {
+    margin-bottom: 0;
+}
+
+.exchange-rate-label,
+.exchange-fee-label,
+.exchange-net-label {
+    color: #a0a0b8;
+}
+
+.exchange-rate-value {
+    color: #4ade80;
+    font-weight: 500;
+}
+
+.exchange-fee-value {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.exchange-net-value {
+    color: #60a5fa;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
     .modern-swap-container {

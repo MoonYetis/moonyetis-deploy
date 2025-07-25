@@ -16,8 +16,8 @@ class DashboardModal {
             balance: { name: 'Balance', icon: '💰' },
             receive: { name: 'Receive', icon: '⬇️' },
             swap: { name: 'Swap', icon: '🔄' },
-            send: { name: 'Send', icon: '⬆️' },
-            limits: { name: 'Limits', icon: '🛡️' }
+            send: { name: 'Send', icon: '⬆️' }
+            // SIMPLIFICADO: Pestaña Limits eliminada - no hay límites
         };
         
         // Daily rewards tracking
@@ -254,6 +254,21 @@ class DashboardModal {
                                 <div class="swap-usd-value" id="swap-to-usd">≈ $0.44</div>
                             </div>
                             
+                            <!-- Exchange Info Section -->
+                            <div class="swap-exchange-info" id="swap-exchange-info" style="display: none;">
+                                <div class="exchange-rate-display">
+                                    <span class="exchange-rate-label">Exchange Rate:</span>
+                                    <span class="exchange-rate-value" id="exchange-rate-value">1 FB = 0 MC</span>
+                                </div>
+                                <div class="exchange-fee-display" id="exchange-fee-display" style="display: none;">
+                                    <span class="exchange-fee-label">Fee:</span>
+                                    <span class="exchange-fee-value" id="exchange-fee-value">3%</span>
+                                </div>
+                                <div class="exchange-net-display" id="exchange-net-display" style="display: none;">
+                                    <span class="exchange-net-label">You'll receive:</span>
+                                    <span class="exchange-net-value" id="exchange-net-value">0 MC</span>
+                                </div>
+                            </div>
                             
                             <!-- Swap Action Button -->
                             <div class="swap-action-container-clean">
@@ -440,8 +455,7 @@ class DashboardModal {
         // Balance refresh
         this.modal.querySelector('#refresh-balance').addEventListener('click', () => this.refreshBalance());
         
-        // Limits refresh
-        this.modal.querySelector('#refresh-limits').addEventListener('click', () => this.refreshLimits());
+        // SIMPLIFICADO: Sin límites que refrescar
         
         // Wallet connection
         this.modal.querySelector('#connect-wallet-btn').addEventListener('click', () => this.openWalletConnection());
@@ -1144,17 +1158,7 @@ class DashboardModal {
             const walletAddress = this.connectedWallet.address;
             const swapCheck = window.arbitrageProtection.checkSwapAllowed(walletAddress, fromToken, toToken, usdValue);
             
-            if (!swapCheck.allowed) {
-                // Return blocked swap info
-                return {
-                    blocked: true,
-                    reason: swapCheck.reason,
-                    remainingTime: swapCheck.remainingTime,
-                    grossAmount: grossAmount,
-                    netAmount: 0,
-                    usdValue: usdValue
-                };
-            }
+            // SIMPLIFICADO: Siempre permitir swaps, sin bloqueos
             
             // Use anti-arbitrage fees
             totalFeePercentage = swapCheck.fees.totalPercentage;
@@ -1202,8 +1206,7 @@ class DashboardModal {
             usdValue: usdValue,
             // Anti-arbitrage specific data
             feeBreakdown: feeBreakdown,
-            arbitrageWarning: arbitrageWarning,
-            blocked: false
+            arbitrageWarning: arbitrageWarning
         };
     }
     
@@ -1255,13 +1258,7 @@ class DashboardModal {
         // Use dynamic conversion with real-time prices
         const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
         
-        // 🛡️ Check if swap is blocked and update display accordingly
-        if (conversion.blocked) {
-            receiveSpan.textContent = '⚠️ Blocked';
-            receiveSpan.style.color = '#ff6b6b';
-            this.showWarningDisplay(fromToken, toToken, conversion.reason);
-            return;
-        }
+        // SIMPLIFICADO: Sin verificaciones de bloqueo
         
         const willReceive = conversion.netAmount;
         
@@ -1526,19 +1523,7 @@ class DashboardModal {
             // Calculate exchange with dynamic prices and anti-arbitrage fees
             const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
             
-            // 🛡️ Check if swap is blocked by anti-arbitrage protection
-            if (conversion.blocked) {
-                let alertMessage = conversion.reason;
-                if (conversion.remainingTime) {
-                    if (conversion.reason.includes('cooldown')) {
-                        alertMessage += `\nPlease wait ${conversion.remainingTime} seconds.`;
-                    } else if (conversion.reason.includes('restriction')) {
-                        alertMessage += `\nRestriction will be lifted in ${conversion.remainingTime} minutes.`;
-                    }
-                }
-                alert(alertMessage);
-                return;
-            }
+            // SIMPLIFICADO: Sin verificaciones de bloqueo
             
             const willReceive = conversion.netAmount;
             
@@ -2076,6 +2061,9 @@ class DashboardModal {
             // Update USD values displayed
             this.updateUSDValues(inputAmount, fromToken, outputAmount, toToken);
             
+            // Update exchange info display
+            this.updateExchangeInfo(inputAmount, fromToken, outputAmount, toToken);
+            
             this.updateSwapButton(inputAmount > 0);
         }
     }
@@ -2138,6 +2126,55 @@ class DashboardModal {
                 if (fromUSDElement) fromUSDElement.textContent = '≈ $0.00';
                 if (toUSDElement) toUSDElement.textContent = '≈ $0.00';
             }
+        }
+    }
+    
+    // Update exchange info display
+    updateExchangeInfo(inputAmount, fromToken, outputAmount, toToken) {
+        const exchangeInfoContainer = this.modal.querySelector('#swap-exchange-info');
+        const exchangeRateValue = this.modal.querySelector('#exchange-rate-value');
+        const exchangeFeeDisplay = this.modal.querySelector('#exchange-fee-display');
+        const exchangeFeeValue = this.modal.querySelector('#exchange-fee-value');
+        const exchangeNetDisplay = this.modal.querySelector('#exchange-net-display');
+        const exchangeNetValue = this.modal.querySelector('#exchange-net-value');
+        
+        if (!exchangeInfoContainer || inputAmount <= 0) {
+            if (exchangeInfoContainer) exchangeInfoContainer.style.display = 'none';
+            return;
+        }
+        
+        // Show the exchange info container
+        exchangeInfoContainer.style.display = 'block';
+        
+        // Calculate the exchange rate
+        const rate = outputAmount / inputAmount;
+        const formattedRate = this.formatSwapAmount(rate, toToken);
+        exchangeRateValue.textContent = `1 ${fromToken} = ${formattedRate} ${toToken}`;
+        
+        // Check if fee applies (MC to FB/MY conversions have 3% fee)
+        const hasFee = fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY');
+        
+        if (hasFee) {
+            // Add visual indicator for fee
+            exchangeInfoContainer.classList.add('has-fee');
+            
+            // Show fee information
+            exchangeFeeDisplay.style.display = 'block';
+            exchangeFeeValue.textContent = '3%';
+            
+            // Calculate and show gross amount before fee
+            const grossAmount = outputAmount / 0.97; // Since outputAmount is already after 3% fee
+            exchangeNetDisplay.style.display = 'block';
+            const formattedNet = this.formatSwapAmount(outputAmount, toToken);
+            const formattedGross = this.formatSwapAmount(grossAmount, toToken);
+            exchangeNetValue.textContent = `${formattedNet} ${toToken} (from ${formattedGross} ${toToken})`;
+        } else {
+            // Remove visual indicator for fee
+            exchangeInfoContainer.classList.remove('has-fee');
+            
+            // Hide fee information for swaps without fees
+            exchangeFeeDisplay.style.display = 'none';
+            exchangeNetDisplay.style.display = 'none';
         }
     }
     
