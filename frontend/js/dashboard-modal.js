@@ -16,7 +16,8 @@ class DashboardModal {
             balance: { name: 'Balance', icon: '💰' },
             receive: { name: 'Receive', icon: '⬇️' },
             swap: { name: 'Swap', icon: '🔄' },
-            send: { name: 'Send', icon: '⬆️' }
+            send: { name: 'Send', icon: '⬆️' },
+            limits: { name: 'Limits', icon: '🛡️' }
         };
         
         // Daily rewards tracking
@@ -314,6 +315,100 @@ class DashboardModal {
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Trading Limits Section -->
+                    <div class="dashboard-section limits-section" data-section="limits">
+                        <div class="section-header">
+                            <h3>🛡️ Trading Limits</h3>
+                            <button class="refresh-limits-btn" id="refresh-limits" title="Refresh Limits">🔄</button>
+                        </div>
+                        
+                        <div class="limits-container" id="limits-container">
+                            <div class="limits-overview">
+                                <div class="limits-card">
+                                    <div class="limits-card-header">
+                                        <h4>📊 Daily Usage</h4>
+                                    </div>
+                                    <div class="limits-stats">
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Used Today</span>
+                                            <span class="limits-stat-value" id="daily-usage">$0.00</span>
+                                        </div>
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Daily Limit</span>
+                                            <span class="limits-stat-value" id="daily-limit">$500.00</span>
+                                        </div>
+                                        <div class="limits-progress">
+                                            <div class="limits-progress-bar" id="daily-progress-bar"></div>
+                                            <span class="limits-progress-text" id="daily-progress-text">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="limits-card">
+                                    <div class="limits-card-header">
+                                        <h4>⏱️ Swap Cooldown</h4>
+                                    </div>
+                                    <div class="limits-stats">
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Status</span>
+                                            <span class="limits-stat-value" id="cooldown-status">Ready</span>
+                                        </div>
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Next Swap</span>
+                                            <span class="limits-stat-value" id="next-swap-time">Available now</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="limits-card">
+                                    <div class="limits-card-header">
+                                        <h4>🔍 Pattern Detection</h4>
+                                    </div>
+                                    <div class="limits-stats">
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Recent Swaps</span>
+                                            <span class="limits-stat-value" id="recent-swaps-count">0</span>
+                                        </div>
+                                        <div class="limits-stat">
+                                            <span class="limits-stat-label">Status</span>
+                                            <span class="limits-stat-value" id="pattern-status">Normal</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="limits-info">
+                                <h4>💡 How Trading Limits Work</h4>
+                                <div class="limits-explanation">
+                                    <div class="limit-rule">
+                                        <span class="rule-icon">💰</span>
+                                        <div class="rule-content">
+                                            <strong>Daily Limits:</strong> Maximum $500 USD equivalent per day to prevent excessive trading.
+                                        </div>
+                                    </div>
+                                    <div class="limit-rule">
+                                        <span class="rule-icon">⏱️</span>
+                                        <div class="rule-content">
+                                            <strong>Swap Cooldown:</strong> 30-second cooldown between swaps to prevent rapid automated trading.
+                                        </div>
+                                    </div>
+                                    <div class="limit-rule">
+                                        <span class="rule-icon">🛡️</span>
+                                        <div class="rule-content">
+                                            <strong>Anti-Arbitrage:</strong> Higher fees (up to 2.5%) applied for suspicious trading patterns.
+                                        </div>
+                                    </div>
+                                    <div class="limit-rule">
+                                        <span class="rule-icon">🔍</span>
+                                        <div class="rule-content">
+                                            <strong>Pattern Detection:</strong> Circular trades (FB→MC→MY→FB) trigger additional protection measures.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Loading Overlay -->
@@ -344,6 +439,9 @@ class DashboardModal {
         
         // Balance refresh
         this.modal.querySelector('#refresh-balance').addEventListener('click', () => this.refreshBalance());
+        
+        // Limits refresh
+        this.modal.querySelector('#refresh-limits').addEventListener('click', () => this.refreshLimits());
         
         // Wallet connection
         this.modal.querySelector('#connect-wallet-btn').addEventListener('click', () => this.openWalletConnection());
@@ -414,6 +512,7 @@ class DashboardModal {
         
         this.loadBalance();
         this.updateWalletDisplay();
+        this.updateLimitsDisplay();
     }
     
     loadBalance() {
@@ -750,6 +849,87 @@ class DashboardModal {
         }, 1000);
     }
     
+    refreshLimits() {
+        const refreshBtn = this.modal.querySelector('#refresh-limits');
+        refreshBtn.classList.add('spinning');
+        
+        setTimeout(() => {
+            this.updateLimitsDisplay();
+            refreshBtn.classList.remove('spinning');
+        }, 500);
+    }
+    
+    updateLimitsDisplay() {
+        if (!this.connectedWallet || !window.arbitrageProtection) {
+            // Show default/disabled state
+            this.modal.querySelector('#daily-usage').textContent = '$0.00';
+            this.modal.querySelector('#daily-progress-bar').style.width = '0%';
+            this.modal.querySelector('#daily-progress-text').textContent = '0%';
+            this.modal.querySelector('#cooldown-status').textContent = 'Not Connected';
+            this.modal.querySelector('#next-swap-time').textContent = 'Connect wallet';
+            this.modal.querySelector('#recent-swaps-count').textContent = '0';
+            this.modal.querySelector('#pattern-status').textContent = 'Not Connected';
+            return;
+        }
+        
+        const walletAddress = this.connectedWallet.address;
+        const userStatus = window.arbitrageProtection.getUserStatus(walletAddress);
+        
+        // Update daily usage
+        const dailyUsageElement = this.modal.querySelector('#daily-usage');
+        const dailyProgressBar = this.modal.querySelector('#daily-progress-bar');
+        const dailyProgressText = this.modal.querySelector('#daily-progress-text');
+        
+        dailyUsageElement.textContent = `$${userStatus.dailyUsage.toFixed(2)}`;
+        const usagePercentage = Math.min((userStatus.dailyUsage / userStatus.dailyLimit) * 100, 100);
+        dailyProgressBar.style.width = `${usagePercentage}%`;
+        dailyProgressText.textContent = `${usagePercentage.toFixed(0)}%`;
+        
+        // Color coding for progress bar
+        if (usagePercentage < 50) {
+            dailyProgressBar.style.backgroundColor = '#4caf50'; // Green
+        } else if (usagePercentage < 80) {
+            dailyProgressBar.style.backgroundColor = '#ff9800'; // Orange
+        } else {
+            dailyProgressBar.style.backgroundColor = '#f44336'; // Red
+        }
+        
+        // Update cooldown status
+        const cooldownStatusElement = this.modal.querySelector('#cooldown-status');
+        const nextSwapTimeElement = this.modal.querySelector('#next-swap-time');
+        
+        if (userStatus.isBlacklisted) {
+            cooldownStatusElement.textContent = 'Restricted';
+            cooldownStatusElement.style.color = '#f44336';
+            nextSwapTimeElement.textContent = `${userStatus.blacklistRemaining} min remaining`;
+        } else if (userStatus.cooldownRemaining > 0) {
+            cooldownStatusElement.textContent = 'Cooling Down';
+            cooldownStatusElement.style.color = '#ff9800';
+            nextSwapTimeElement.textContent = `${userStatus.cooldownRemaining}s remaining`;
+        } else {
+            cooldownStatusElement.textContent = 'Ready';
+            cooldownStatusElement.style.color = '#4caf50';
+            nextSwapTimeElement.textContent = 'Available now';
+        }
+        
+        // Update pattern detection
+        const recentSwapsElement = this.modal.querySelector('#recent-swaps-count');
+        const patternStatusElement = this.modal.querySelector('#pattern-status');
+        
+        recentSwapsElement.textContent = userStatus.recentSwaps.toString();
+        
+        if (userStatus.isBlacklisted) {
+            patternStatusElement.textContent = 'Restricted';
+            patternStatusElement.style.color = '#f44336';
+        } else if (userStatus.recentSwaps >= 3) {
+            patternStatusElement.textContent = 'Monitoring';
+            patternStatusElement.style.color = '#ff9800';
+        } else {
+            patternStatusElement.textContent = 'Normal';
+            patternStatusElement.style.color = '#4caf50';
+        }
+    }
+    
     refreshTransactionHistory() {
         const refreshBtn = this.modal.querySelector('#refresh-history');
         refreshBtn.classList.add('spinning');
@@ -928,7 +1108,7 @@ class DashboardModal {
         }
     }
     
-    // Dynamic conversion with real-time hybrid prices
+    // Dynamic conversion with real-time hybrid prices and anti-arbitrage protection
     calculateDynamicConversion(amount, fromToken, toToken) {
         // Get current prices from hybrid service (backward compatible)
         const priceService = window.hybridPriceService || window.brc20PriceService;
@@ -949,18 +1129,57 @@ class DashboardModal {
         const usdValue = amount * fromPrice;
         let grossAmount = usdValue / toPrice;
         
-        // Apply bonus for MY → MC (3% bonus)
+        // Apply bonus for MY → MC (3% bonus) - this remains unchanged
         if (fromToken === 'MY' && toToken === 'MC') {
             grossAmount *= 1.03; // 3% bonus
         }
         
-        // Apply fees for selling MC (1% fee)
-        let fee = 0;
-        if (fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY')) {
-            fee = 0.01; // 1% fee
+        // 🛡️ ANTI-ARBITRAGE PROTECTION: Calculate dynamic fees
+        let totalFeePercentage = 0;
+        let feeBreakdown = [];
+        let arbitrageWarning = null;
+        
+        // Check if arbitrage protection is available
+        if (window.arbitrageProtection && this.connectedWallet) {
+            const walletAddress = this.connectedWallet.address;
+            const swapCheck = window.arbitrageProtection.checkSwapAllowed(walletAddress, fromToken, toToken, usdValue);
+            
+            if (!swapCheck.allowed) {
+                // Return blocked swap info
+                return {
+                    blocked: true,
+                    reason: swapCheck.reason,
+                    remainingTime: swapCheck.remainingTime,
+                    grossAmount: grossAmount,
+                    netAmount: 0,
+                    usdValue: usdValue
+                };
+            }
+            
+            // Use anti-arbitrage fees
+            totalFeePercentage = swapCheck.fees.totalPercentage;
+            feeBreakdown = swapCheck.fees.breakdown;
+            
+            if (swapCheck.fees.patternDetected) {
+                arbitrageWarning = {
+                    detected: true,
+                    pattern: swapCheck.fees.patternType,
+                    message: 'Suspicious trading pattern detected. Additional fees applied.'
+                };
+            }
+        } else {
+            // Fallback to old fee system if arbitrage protection not available
+            if (fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY')) {
+                totalFeePercentage = 0.03; // 3% fee
+                feeBreakdown = [{
+                    type: 'Anti-Arbitrage Fee',
+                    percentage: 0.03,
+                    reason: 'Protection fee for MC to FB/MY conversion'
+                }];
+            }
         }
         
-        const feeAmount = grossAmount * fee;
+        const feeAmount = grossAmount * totalFeePercentage;
         let netAmount = grossAmount - feeAmount;
         
         // Round appropriately based on token type
@@ -977,10 +1196,14 @@ class DashboardModal {
             feeAmount: feeAmount,
             netAmount: netAmount,
             effectiveRate: netAmount / amount,
-            feePercentage: fee * 100,
+            feePercentage: totalFeePercentage * 100,
             fromPrice: fromPrice,
             toPrice: toPrice,
-            usdValue: usdValue
+            usdValue: usdValue,
+            // Anti-arbitrage specific data
+            feeBreakdown: feeBreakdown,
+            arbitrageWarning: arbitrageWarning,
+            blocked: false
         };
     }
     
@@ -996,10 +1219,10 @@ class DashboardModal {
             rate = 10 * 1.03; // $0.10 MY / $0.01 MC = 10 MC per MY + 3% bonus
         } else if (fromToken === 'MC' && toToken === 'MY') {
             rate = 0.1; // $0.01 MC / $0.10 MY = 0.1 MY per MC
-            fee = 0.01; // 1% fee
+            fee = 0.03; // 3% fee
         } else if (fromToken === 'MC' && toToken === 'FB') {
             rate = 1 / 3000000; // $0.01 MC / $30,000 FB = 0.00000033 FB per MC
-            fee = 0.01; // 1% fee
+            fee = 0.03; // 3% fee
         }
         
         const grossAmount = amount * rate;
@@ -1025,11 +1248,21 @@ class DashboardModal {
         
         if (amount <= 0) {
             receiveSpan.textContent = `0${toToken === 'FB' ? '.00000' : ''} ${toToken}`;
+            this.clearWarningDisplay(fromToken, toToken);
             return;
         }
         
         // Use dynamic conversion with real-time prices
         const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
+        
+        // 🛡️ Check if swap is blocked and update display accordingly
+        if (conversion.blocked) {
+            receiveSpan.textContent = '⚠️ Blocked';
+            receiveSpan.style.color = '#ff6b6b';
+            this.showWarningDisplay(fromToken, toToken, conversion.reason);
+            return;
+        }
+        
         const willReceive = conversion.netAmount;
         
         // Format the display based on token type
@@ -1041,8 +1274,86 @@ class DashboardModal {
             receiveSpan.textContent = `${willReceive.toFixed(2)} MY`;
         }
         
+        // Reset color in case it was red before
+        receiveSpan.style.color = '';
+        
+        // Show fee warning if fees are higher than normal
+        if (conversion.feePercentage > 2) { // More than 2%
+            this.showFeeWarning(fromToken, toToken, conversion);
+        } else {
+            this.clearWarningDisplay(fromToken, toToken);
+        }
+        
         // Update price display if available
         this.updatePriceDisplay(fromToken, toToken, conversion);
+    }
+    
+    // Show warning messages in swap interface
+    showWarningDisplay(fromToken, toToken, message) {
+        const cardId = `${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}`;
+        const cardElement = this.modal.querySelector(`[data-swap="${cardId}"]`);
+        
+        if (cardElement) {
+            let warningElement = cardElement.querySelector('.swap-warning');
+            if (!warningElement) {
+                warningElement = document.createElement('div');
+                warningElement.className = 'swap-warning';
+                warningElement.style.cssText = `
+                    background: #ff6b6b20;
+                    border: 1px solid #ff6b6b;
+                    border-radius: 8px;
+                    padding: 8px;
+                    margin-top: 8px;
+                    font-size: 12px;
+                    color: #ff6b6b;
+                `;
+                cardElement.appendChild(warningElement);
+            }
+            warningElement.textContent = '⚠️ ' + message;
+        }
+    }
+    
+    // Show fee warning
+    showFeeWarning(fromToken, toToken, conversion) {
+        const cardId = `${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}`;
+        const cardElement = this.modal.querySelector(`[data-swap="${cardId}"]`);
+        
+        if (cardElement && conversion.feeBreakdown && conversion.feeBreakdown.length > 1) {
+            let warningElement = cardElement.querySelector('.swap-warning');
+            if (!warningElement) {
+                warningElement = document.createElement('div');
+                warningElement.className = 'swap-warning';
+                warningElement.style.cssText = `
+                    background: #ffa50020;
+                    border: 1px solid #ffa500;
+                    border-radius: 8px;
+                    padding: 8px;
+                    margin-top: 8px;
+                    font-size: 12px;
+                    color: #ffa500;
+                `;
+                cardElement.appendChild(warningElement);
+            }
+            
+            let message = `💡 Higher fees applied (${conversion.feePercentage.toFixed(1)}%)`;
+            if (conversion.arbitrageWarning) {
+                message += ' - Suspicious pattern detected';
+            }
+            warningElement.textContent = message;
+        }
+    }
+    
+    // Clear warning display
+    clearWarningDisplay(fromToken, toToken) {
+        const cardId = `${fromToken.toLowerCase()}-to-${toToken.toLowerCase()}`;
+        const cardElement = this.modal.querySelector(`[data-swap="${cardId}"]`);
+        
+        if (cardElement) {
+            const warningElement = cardElement.querySelector('.swap-warning');
+            if (warningElement) {
+                warningElement.remove();
+            }
+        }
     }
     
     // Update price display in swap cards
@@ -1140,13 +1451,13 @@ class DashboardModal {
         }
         
         if (mcToMyRate && prices.MC && prices.MY) {
-            const mcToMyAmount = ((prices.MC / prices.MY) * 0.99).toFixed(3); // Include 1% fee
-            mcToMyRate.textContent = `1 MC = ${mcToMyAmount} MY (1% fee)`;
+            const mcToMyAmount = ((prices.MC / prices.MY) * 0.97).toFixed(3); // Include 3% fee
+            mcToMyRate.textContent = `1 MC = ${mcToMyAmount} MY (3% fee)`;
         }
         
         if (mcToFbRate && prices.MC && prices.FB) {
-            const mcToFbAmount = ((prices.MC / prices.FB) * 0.99).toFixed(8); // Include 1% fee
-            mcToFbRate.textContent = `1 MC = ${mcToFbAmount} FB (1% fee)`;
+            const mcToFbAmount = ((prices.MC / prices.FB) * 0.97).toFixed(8); // Include 3% fee
+            mcToFbRate.textContent = `1 MC = ${mcToFbAmount} FB (3% fee)`;
         }
         
         // Update last update timestamp
@@ -1212,17 +1523,51 @@ class DashboardModal {
         }
         
         try {
+            // Calculate exchange with dynamic prices and anti-arbitrage fees
+            const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
+            
+            // 🛡️ Check if swap is blocked by anti-arbitrage protection
+            if (conversion.blocked) {
+                let alertMessage = conversion.reason;
+                if (conversion.remainingTime) {
+                    if (conversion.reason.includes('cooldown')) {
+                        alertMessage += `\nPlease wait ${conversion.remainingTime} seconds.`;
+                    } else if (conversion.reason.includes('restriction')) {
+                        alertMessage += `\nRestriction will be lifted in ${conversion.remainingTime} minutes.`;
+                    }
+                }
+                alert(alertMessage);
+                return;
+            }
+            
+            const willReceive = conversion.netAmount;
+            
+            // Show fee breakdown if significant fees are applied
+            if (conversion.feeBreakdown && conversion.feeBreakdown.length > 1) {
+                let feeMessage = 'Fee Breakdown:\n';
+                conversion.feeBreakdown.forEach(fee => {
+                    feeMessage += `• ${fee.type}: ${(fee.percentage * 100).toFixed(1)}% - ${fee.reason}\n`;
+                });
+                feeMessage += `\nTotal Fee: ${conversion.feePercentage.toFixed(1)}%`;
+                
+                if (conversion.arbitrageWarning) {
+                    feeMessage += `\n\n⚠️ ${conversion.arbitrageWarning.message}`;
+                }
+                
+                const proceed = confirm(feeMessage + '\n\nDo you want to proceed with this swap?');
+                if (!proceed) return;
+            }
+            
             // Simulate change process
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Calculate exchange with dynamic prices and fees
-            const conversion = this.calculateDynamicConversion(amount, fromToken, toToken);
-            const willReceive = conversion.netAmount;
-            
             // Log fee information for transparency
             if (conversion.feePercentage > 0) {
-                console.log(`💰 Conversion fee: ${conversion.feeAmount.toFixed(5)} ${toToken} (${conversion.feePercentage}%)`);
+                console.log(`💰 Conversion fee: ${conversion.feeAmount.toFixed(5)} ${toToken} (${conversion.feePercentage.toFixed(2)}%)`);
                 console.log(`📊 Gross: ${conversion.grossAmount.toFixed(5)} ${toToken} → Net: ${willReceive.toFixed(5)} ${toToken}`);
+                if (conversion.feeBreakdown) {
+                    console.log('🛡️ Fee breakdown:', conversion.feeBreakdown);
+                }
             }
             
             // Update wallet balances
@@ -1243,14 +1588,27 @@ class DashboardModal {
                 console.log(`💱 Wallet conversion: ${amount} MC → ${willReceive} ${toToken}. Remaining MC: ${currentMC}`);
             }
             
+            // 🛡️ Record swap in arbitrage protection system
+            if (window.arbitrageProtection && this.connectedWallet) {
+                window.arbitrageProtection.recordSwap(
+                    this.connectedWallet.address,
+                    fromToken,
+                    toToken,
+                    conversion.usdValue
+                );
+            }
+            
             // Clear input
             amountInput.value = '';
             this.updateChangePreview(fromToken, toToken);
             
+            // Update limits display after successful swap
+            this.updateLimitsDisplay();
+            
             // Create success message with fee info if applicable
             let successMessage = `Successfully exchanged ${amount} ${fromToken} for ${toToken === 'FB' ? willReceive.toFixed(5) : willReceive.toFixed(2)} ${toToken}!`;
             if (conversion.feePercentage > 0) {
-                successMessage += `\n💡 Transaction fee: ${conversion.feeAmount.toFixed(toToken === 'FB' ? 5 : 2)} ${toToken} (${conversion.feePercentage}%)`;
+                successMessage += `\n💡 Transaction fee: ${conversion.feeAmount.toFixed(toToken === 'FB' ? 5 : 2)} ${toToken} (${conversion.feePercentage.toFixed(1)}%)`;
             }
             
             alert(successMessage);
@@ -1372,6 +1730,7 @@ class DashboardModal {
         // Refresh data when opening
         this.loadUserData();
         this.updateWalletDisplay();
+        this.updateLimitsDisplay();
         
         // Initialize price displays immediately and periodically
         this.updateAllPriceDisplays();
