@@ -2054,12 +2054,33 @@ class DashboardModal {
                 outputAmount = this.calculateFallbackSwap(inputAmount, fromToken, toToken);
             }
             
+            // Apply fee if this is MC → FB/MY conversion
+            let finalAmount = outputAmount;
+            let feeApplied = 0;
+            
+            if (fromToken === 'MC' && (toToken === 'FB' || toToken === 'MY')) {
+                // Check if arbitrage protection is available for consistent fee calculation
+                if (window.arbitrageProtection && this.connectedWallet) {
+                    const walletAddress = this.connectedWallet.address;
+                    const usdValue = outputAmount * (window.hybridPriceService?.getPrice(toToken) || 1);
+                    const swapCheck = window.arbitrageProtection.checkSwapAllowed(walletAddress, fromToken, toToken, usdValue);
+                    
+                    const feePercentage = swapCheck.fees.totalPercentage;
+                    feeApplied = feePercentage;
+                    finalAmount = outputAmount * (1 - feePercentage); // Aplicar fee: ej. 1 * (1 - 0.03) = 0.97
+                } else {
+                    // Fallback: aplicar 3% manualmente
+                    feeApplied = 0.03;
+                    finalAmount = outputAmount * 0.97; // 3% fee
+                }
+            }
+            
             // Format output with appropriate decimal places
-            const formattedOutput = this.formatSwapAmount(outputAmount, toToken);
+            const formattedOutput = this.formatSwapAmount(finalAmount, toToken);
             outputElement.textContent = formattedOutput;
             
-            // Update USD values displayed
-            this.updateUSDValues(inputAmount, fromToken, outputAmount, toToken);
+            // Update USD values displayed (use finalAmount to show correct USD after fee)
+            this.updateUSDValues(inputAmount, fromToken, finalAmount, toToken);
             
             // Update exchange info display
             this.updateExchangeInfo(inputAmount, fromToken, outputAmount, toToken);
