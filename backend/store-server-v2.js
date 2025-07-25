@@ -6,6 +6,7 @@ const config = require('./config');
 // Import services
 const PriceService = require('./services/price-service');
 const TransactionMonitor = require('./services/transaction-monitor');
+const HDWalletService = require('./services/hd-wallet-service');
 
 // Import authentication and database
 const MoonYetisDatabase = require('./database');
@@ -26,12 +27,28 @@ app.use(express.json());
 
 // Initialize services using config
 const priceService = new PriceService(config.unisatApiKey);
-const transactionMonitor = new TransactionMonitor(config.unisatApiKey, config.paymentAddress);
 
 // Initialize authentication system
 const database = new MoonYetisDatabase();
 const authManager = new AuthManager(database);
 const referralManager = new ReferralManager(database, authManager);
+
+// Initialize HD Wallet Service
+let hdWalletService = null;
+if (config.hdWalletSeed) {
+    hdWalletService = new HDWalletService(database, config.hdWalletSeed);
+    console.log('✅ HD Wallet Service initialized');
+} else {
+    console.error('❌ HD Wallet Service not initialized - missing seed phrase');
+}
+
+// Initialize transaction monitor with HD wallet service
+const transactionMonitor = new TransactionMonitor(
+    config.unisatApiKey, 
+    config.paymentAddress,
+    hdWalletService,
+    database
+);
 
 // Store configuration
 const STORE_CONFIG = {
@@ -357,6 +374,135 @@ app.post('/api/auth/daily-login', authenticateToken, (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Internal server error'
+        });
+    }
+});
+
+// Wallet authentication - auto register/login with wallet address
+app.post('/api/auth/wallet-login', async (req, res) => {
+    try {
+        const { walletAddress } = req.body;
+        
+        if (!walletAddress) {
+            return res.status(400).json({
+                success: false,
+                error: 'Wallet address is required'
+            });
+        }
+        
+        // Validate wallet address format (basic check)
+        if (!walletAddress.startsWith('bc1') || walletAddress.length < 20) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid wallet address format'
+            });
+        }
+        
+        const result = await authManager.walletAuth(walletAddress);
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                message: result.isNewUser ? 'Wallet account created and logged in' : 'Wallet logged in successfully',
+                token: result.token,
+                user: result.user,
+                isNewUser: result.isNewUser
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Wallet login endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// HD Wallet API Endpoints
+
+// Get or generate deposit address for authenticated user
+app.get('/api/wallet/deposit-address', authenticateToken, async (req, res) => {
+    try {
+        if (!hdWalletService) {
+            return res.status(503).json({
+                success: false,
+                error: 'HD Wallet service not available'
+            });
+        }
+        
+        const depositInfo = await hdWalletService.getOrGenerateDepositAddress(req.user.userId);
+        
+        res.json({
+            success: true,
+            address: depositInfo.address,
+            isNew: depositInfo.isNew,
+            message: depositInfo.isNew ? 'New deposit address generated' : 'Existing deposit address returned'
+        });
+    } catch (error) {
+        console.error('Deposit address endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get deposit address'
+        });
+    }
+});
+
+// Get user's deposit history
+app.get('/api/wallet/deposits', authenticateToken, async (req, res) => {
+    try {
+        if (!hdWalletService) {
+            return res.status(503).json({
+                success: false,
+                error: 'HD Wallet service not available'
+            });
+        }
+        
+        const limit = parseInt(req.query.limit) || 50;
+        const deposits = await hdWalletService.getUserDeposits(req.user.userId, limit);
+        
+        res.json({
+            success: true,
+            deposits: deposits,
+            count: deposits.length
+        });
+    } catch (error) {
+        console.error('Deposits history endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get deposit history'
+        });
+    }
+});
+
+// Get user's FB and MY balances
+app.get('/api/wallet/balances', authenticateToken, (req, res) => {
+    try {
+        const user = authManager.getUserById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            balances: {
+                mooncoins: user.mooncoins_balance || 0,
+                fb: user.fb_balance || '0',
+                my: user.my_balance || '0'
+            }
+        });
+    } catch (error) {
+        console.error('Balances endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get balances'
         });
     }
 });

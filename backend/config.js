@@ -46,6 +46,12 @@ class Config {
         this.corsOrigins = this.isDevelopment ? 
             ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:3000'] : 
             ['https://moonyetis.io'];
+            
+        // HD Wallet Configuration
+        this.hdWalletSeed = process.env.HD_WALLET_SEED;
+        if (!this.hdWalletSeed) {
+            console.warn('⚠️ HD_WALLET_SEED not found in environment variables');
+        }
     }
     
     // Get base URL for API

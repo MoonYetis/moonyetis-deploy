@@ -303,6 +303,117 @@ class AuthManager {
     getUserById(userId) {
         return this.statements.getUserById.get(userId);
     }
+    
+    // Auto-register/login with wallet address
+    async walletAuth(walletAddress) {
+        try {
+            console.log(`🔐 Wallet auth attempt for: ${walletAddress}`);
+            
+            // Check if user already exists with this wallet
+            const existingUser = this.db.db.prepare('SELECT * FROM users WHERE associated_wallet = ?').get(walletAddress);
+            
+            if (existingUser) {
+                // User exists, update last login and return token
+                this.statements.updateLastLogin.run(existingUser.id);
+                
+                const token = jwt.sign(
+                    { 
+                        userId: existingUser.id, 
+                        username: existingUser.username, 
+                        email: existingUser.email 
+                    },
+                    this.jwtSecret,
+                    { expiresIn: '7d' }
+                );
+                
+                console.log(`✅ Existing wallet user logged in: ${existingUser.username}`);
+                
+                return {
+                    success: true,
+                    token: token,
+                    user: {
+                        id: existingUser.id,
+                        username: existingUser.username,
+                        email: existingUser.email,
+                        mooncoinsBalance: existingUser.mooncoins_balance,
+                        referralCode: existingUser.referral_code,
+                        associatedWallet: existingUser.associated_wallet,
+                        fbBalance: existingUser.fb_balance || '0',
+                        myBalance: existingUser.my_balance || '0'
+                    },
+                    isNewUser: false
+                };
+            }
+            
+            // User doesn't exist, create new account
+            const username = `wallet_${walletAddress.substring(0, 8)}`;
+            const email = `${walletAddress}@wallet.moonyetis.io`;
+            const password = crypto.randomBytes(32).toString('hex'); // Random password
+            const referralCode = this.db.generateUniqueReferralCode();
+            
+            // Hash password
+            const passwordHash = await bcrypt.hash(password, this.saltRounds);
+            
+            // Create user
+            const result = this.statements.createUser.run(
+                username,
+                email, 
+                passwordHash,
+                referralCode,
+                null
+            );
+            
+            // Update with wallet association
+            this.db.db.prepare('UPDATE users SET associated_wallet = ?, wallet_type = ? WHERE id = ?').run(
+                walletAddress,
+                'unisat', 
+                result.lastInsertRowid
+            );
+            
+            // Create login streak record
+            const streakStmt = this.db.db.prepare(`
+                INSERT INTO login_streaks (user_id, current_streak, longest_streak, last_login_date)
+                VALUES (?, 1, 1, date('now'))
+            `);
+            streakStmt.run(result.lastInsertRowid);
+            
+            // Generate token
+            const token = jwt.sign(
+                { 
+                    userId: result.lastInsertRowid, 
+                    username: username, 
+                    email: email 
+                },
+                this.jwtSecret,
+                { expiresIn: '7d' }
+            );
+            
+            console.log(`✅ New wallet user created: ${username} (${walletAddress})`);
+            
+            return {
+                success: true,
+                token: token,
+                user: {
+                    id: result.lastInsertRowid,
+                    username: username,
+                    email: email,
+                    mooncoinsBalance: 0,
+                    referralCode: referralCode,
+                    associatedWallet: walletAddress,
+                    fbBalance: '0',
+                    myBalance: '0'
+                },
+                isNewUser: true
+            };
+            
+        } catch (error) {
+            console.error('❌ Wallet auth error:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
 }
 
 module.exports = AuthManager;

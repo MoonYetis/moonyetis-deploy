@@ -2,28 +2,39 @@ const UnisatAPI = require('./unisat-api');
 const EventEmitter = require('events');
 
 class TransactionMonitor extends EventEmitter {
-    constructor(apiKey, paymentAddress) {
+    constructor(apiKey, paymentAddress, hdWalletService = null, database = null) {
         super();
         this.unisat = new UnisatAPI(apiKey);
-        this.paymentAddress = paymentAddress;
+        this.paymentAddress = paymentAddress; // Main payment address for store
+        this.hdWalletService = hdWalletService;
+        this.database = database;
         this.monitoringInterval = null;
         this.lastCheckedHeight = 0;
         this.pendingTransactions = new Map();
         this.confirmedTransactions = new Set();
         this.minConfirmations = 1;
+        this.monitoredAddresses = new Map(); // userId -> address mapping
     }
 
     // Start monitoring transactions
-    startMonitoring(interval = 30000) {
-        console.log(`🔍 Starting transaction monitoring for ${this.paymentAddress}`);
+    async startMonitoring(interval = 30000) {
+        console.log(`🔍 Starting transaction monitoring`);
+        console.log(`📍 Main payment address: ${this.paymentAddress}`);
+        
+        // Load all user deposit addresses if HD wallet service is available
+        if (this.hdWalletService) {
+            await this.loadUserDepositAddresses();
+        }
         
         this.monitoringInterval = setInterval(async () => {
             await this.checkForNewTransactions();
             await this.checkPendingConfirmations();
+            await this.checkUserDepositAddresses();
         }, interval);
 
         // Initial check
         this.checkForNewTransactions();
+        this.checkUserDepositAddresses();
     }
 
     // Stop monitoring
@@ -60,9 +71,14 @@ class TransactionMonitor extends EventEmitter {
     }
 
     // Process a new transaction
-    async processNewTransaction(tx) {
-        // Find outputs sent to our address
-        const relevantOutputs = tx.outputs.filter(out => out.address === this.paymentAddress);
+    async processNewTransaction(tx, targetAddress = null) {
+        // Find outputs sent to our address(es)
+        const relevantOutputs = tx.outputs.filter(out => {
+            if (targetAddress) {
+                return out.address === targetAddress;
+            }
+            return out.address === this.paymentAddress || this.monitoredAddresses.has(out.address);
+        });
         
         if (relevantOutputs.length === 0) {
             return;
@@ -70,28 +86,39 @@ class TransactionMonitor extends EventEmitter {
 
         const totalAmount = relevantOutputs.reduce((sum, out) => sum + out.value, 0);
         const amountInBTC = totalAmount / 100000000; // Convert satoshis to BTC
+        const receivingAddress = relevantOutputs[0].address;
 
         console.log(`💰 New transaction detected: ${tx.txid}`);
+        console.log(`   To address: ${receivingAddress}`);
         console.log(`   Amount: ${amountInBTC} BTC`);
         console.log(`   Confirmations: ${tx.confirmations || 0}`);
 
-        // Add to pending transactions
-        this.pendingTransactions.set(tx.txid, {
-            txid: tx.txid,
-            amount: totalAmount,
-            amountBTC: amountInBTC,
-            height: tx.height,
-            confirmations: tx.confirmations || 0,
-            timestamp: new Date().toISOString(),
-            outputs: relevantOutputs
-        });
+        // Check if this is a user deposit
+        const userData = this.monitoredAddresses.get(receivingAddress);
+        if (userData && this.hdWalletService) {
+            // This is a deposit to a user's address
+            await this.processUserDeposit(tx, userData, amountInBTC);
+        } else {
+            // This is a store payment
+            // Add to pending transactions
+            this.pendingTransactions.set(tx.txid, {
+                txid: tx.txid,
+                amount: totalAmount,
+                amountBTC: amountInBTC,
+                height: tx.height,
+                confirmations: tx.confirmations || 0,
+                timestamp: new Date().toISOString(),
+                outputs: relevantOutputs,
+                type: 'store_payment'
+            });
 
-        // Emit event for new transaction
-        this.emit('new-transaction', {
-            txid: tx.txid,
-            amount: amountInBTC,
-            confirmations: tx.confirmations || 0
-        });
+            // Emit event for new transaction
+            this.emit('new-transaction', {
+                txid: tx.txid,
+                amount: amountInBTC,
+                confirmations: tx.confirmations || 0
+            });
+        }
 
         // Check if already confirmed
         if (tx.confirmations >= this.minConfirmations) {
@@ -217,7 +244,8 @@ class TransactionMonitor extends EventEmitter {
             lastCheckedHeight: this.lastCheckedHeight,
             pendingCount: this.pendingTransactions.size,
             confirmedCount: this.confirmedTransactions.size,
-            minConfirmations: this.minConfirmations
+            minConfirmations: this.minConfirmations,
+            monitoredUserAddresses: this.monitoredAddresses.size
         };
     }
 
@@ -225,6 +253,158 @@ class TransactionMonitor extends EventEmitter {
     setMinConfirmations(confirmations) {
         this.minConfirmations = confirmations;
         console.log(`⚙️ Minimum confirmations set to ${confirmations}`);
+    }
+    
+    // Load user deposit addresses from database
+    async loadUserDepositAddresses() {
+        if (!this.hdWalletService) return;
+        
+        try {
+            const addresses = await this.hdWalletService.getAllDepositAddresses();
+            this.monitoredAddresses.clear();
+            
+            for (const addr of addresses) {
+                this.monitoredAddresses.set(addr.deposit_address, {
+                    userId: addr.user_id,
+                    username: addr.username,
+                    email: addr.email
+                });
+            }
+            
+            console.log(`📋 Loaded ${this.monitoredAddresses.size} user deposit addresses for monitoring`);
+        } catch (error) {
+            console.error('❌ Error loading user deposit addresses:', error);
+        }
+    }
+    
+    // Check user deposit addresses for new transactions
+    async checkUserDepositAddresses() {
+        if (!this.hdWalletService || this.monitoredAddresses.size === 0) return;
+        
+        try {
+            // Check each user address for new transactions
+            for (const [address, userData] of this.monitoredAddresses) {
+                const result = await this.unisat.monitorIncomingTransactions(address, 0);
+                
+                if (result.transactions.length > 0) {
+                    for (const tx of result.transactions) {
+                        if (!this.confirmedTransactions.has(tx.txid)) {
+                            await this.processNewTransaction(tx, address);
+                        }
+                    }
+                }
+                
+                // Also check for BRC-20 MY transfers
+                await this.checkBRC20Transfers(address, userData);
+            }
+        } catch (error) {
+            console.error('❌ Error checking user deposit addresses:', error);
+        }
+    }
+    
+    // Check for BRC-20 MY transfers
+    async checkBRC20Transfers(address, userData) {
+        try {
+            const transfers = await this.unisat.getBRC20Transfers(address, 'MY', 0, 10);
+            
+            for (const transfer of transfers) {
+                if (transfer.type === 'receive' && !this.confirmedTransactions.has(transfer.txid)) {
+                    await this.processBRC20Deposit(transfer, userData);
+                }
+            }
+        } catch (error) {
+            // BRC-20 API might not be available, that's okay
+            if (!error.message.includes('404')) {
+                console.error('❌ Error checking BRC-20 transfers:', error);
+            }
+        }
+    }
+    
+    // Process user FB deposit
+    async processUserDeposit(tx, userData, amountBTC) {
+        try {
+            console.log(`💎 Processing FB deposit for user ${userData.username} (${userData.userId})`);
+            
+            // Record the deposit
+            const depositId = await this.hdWalletService.recordDeposit(
+                userData.userId,
+                tx.outputs[0].address,
+                tx.txid,
+                amountBTC.toString(),
+                'FB',
+                tx.confirmations || 0
+            );
+            
+            if (depositId) {
+                // Update user balance if confirmed
+                if (tx.confirmations >= this.minConfirmations) {
+                    await this.hdWalletService.updateUserBalance(userData.userId, amountBTC, 'FB');
+                    
+                    // Emit event for confirmed user deposit
+                    this.emit('user-deposit-confirmed', {
+                        userId: userData.userId,
+                        username: userData.username,
+                        amount: amountBTC,
+                        tokenType: 'FB',
+                        txid: tx.txid
+                    });
+                }
+                
+                // Add to pending if not confirmed
+                if (tx.confirmations < this.minConfirmations) {
+                    this.pendingTransactions.set(tx.txid, {
+                        txid: tx.txid,
+                        userId: userData.userId,
+                        amount: amountBTC,
+                        tokenType: 'FB',
+                        confirmations: tx.confirmations || 0,
+                        type: 'user_deposit'
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error processing user deposit:', error);
+        }
+    }
+    
+    // Process BRC-20 MY deposit
+    async processBRC20Deposit(transfer, userData) {
+        try {
+            console.log(`🪙 Processing MY deposit for user ${userData.username} (${userData.userId})`);
+            
+            const amount = parseFloat(transfer.amount);
+            
+            // Record the deposit
+            const depositId = await this.hdWalletService.recordDeposit(
+                userData.userId,
+                transfer.address,
+                transfer.txid,
+                amount.toString(),
+                'MY',
+                transfer.confirmations || 0
+            );
+            
+            if (depositId) {
+                // Update user balance if confirmed
+                if (transfer.confirmations >= this.minConfirmations) {
+                    await this.hdWalletService.updateUserBalance(userData.userId, amount, 'MY');
+                    
+                    // Emit event for confirmed user deposit
+                    this.emit('user-deposit-confirmed', {
+                        userId: userData.userId,
+                        username: userData.username,
+                        amount: amount,
+                        tokenType: 'MY',
+                        txid: transfer.txid
+                    });
+                }
+                
+                // Mark as confirmed
+                this.confirmedTransactions.add(transfer.txid);
+            }
+        } catch (error) {
+            console.error('❌ Error processing BRC-20 deposit:', error);
+        }
     }
 }
 

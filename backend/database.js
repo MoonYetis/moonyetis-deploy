@@ -103,6 +103,58 @@ class MoonYetisDatabase {
             )
         `);
         
+        // User deposit addresses table - HD wallet derived addresses
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS user_deposit_addresses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                deposit_address TEXT UNIQUE NOT NULL,
+                derivation_path TEXT NOT NULL,
+                derivation_index INTEGER NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                UNIQUE(user_id)
+            )
+        `);
+        
+        // User deposits table - Track all incoming deposits
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS user_deposits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                deposit_address TEXT NOT NULL,
+                tx_hash TEXT UNIQUE NOT NULL,
+                amount TEXT NOT NULL,
+                token_type TEXT NOT NULL CHECK(token_type IN ('FB', 'MY')),
+                confirmations INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'confirmed', 'failed')),
+                detected_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                confirmed_at DATETIME,
+                metadata TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `);
+        
+        // Add FB and MY balance columns to users table if they don't exist
+        try {
+            // Check if columns exist
+            const stmt = this.db.prepare("PRAGMA table_info(users)");
+            const columns = stmt.all();
+            const columnNames = columns.map(col => col.name);
+            
+            if (!columnNames.includes('fb_balance')) {
+                this.db.exec(`ALTER TABLE users ADD COLUMN fb_balance TEXT DEFAULT '0'`);
+                console.log('✅ Added fb_balance column to users table');
+            }
+            
+            if (!columnNames.includes('my_balance')) {
+                this.db.exec(`ALTER TABLE users ADD COLUMN my_balance TEXT DEFAULT '0'`);
+                console.log('✅ Added my_balance column to users table');
+            }
+        } catch (error) {
+            console.log('ℹ️ FB/MY balance columns already exist or error adding them:', error.message);
+        }
+        
         // Indexes for performance
         this.db.exec(`
             CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
@@ -112,6 +164,11 @@ class MoonYetisDatabase {
             CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON referrals(referrer_id);
             CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
             CREATE INDEX IF NOT EXISTS idx_reward_logs_user_id ON reward_logs(user_id);
+            CREATE INDEX IF NOT EXISTS idx_user_deposit_addresses_user_id ON user_deposit_addresses(user_id);
+            CREATE INDEX IF NOT EXISTS idx_user_deposit_addresses_address ON user_deposit_addresses(deposit_address);
+            CREATE INDEX IF NOT EXISTS idx_user_deposits_user_id ON user_deposits(user_id);
+            CREATE INDEX IF NOT EXISTS idx_user_deposits_address ON user_deposits(deposit_address);
+            CREATE INDEX IF NOT EXISTS idx_user_deposits_tx_hash ON user_deposits(tx_hash);
         `);
         
         console.log('✅ Database tables initialized');
