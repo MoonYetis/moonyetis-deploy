@@ -1,6 +1,8 @@
 // Wallet Connection Hub - Centralized wallet connection management
 // Extracts wallet connection logic from wallet-hub-modal.js
 
+console.log('🚀 Wallet Connection Hub Fixed Version Loaded - Cache Broken Successfully!');
+
 class WalletConnectionHub {
     constructor() {
         this.isOpen = false;
@@ -281,6 +283,9 @@ class WalletConnectionHub {
                 name: wallet.name
             }));
             
+            // Auto-authenticate with backend to get JWT token
+            await this.authenticateWalletWithBackend(address);
+            
             // Create user session with wallet data
             const user = this.createUserSession({
                 address: address,
@@ -445,6 +450,11 @@ class WalletConnectionHub {
                     
                     // Re-establish connection
                     this.refreshConnection();
+                    
+                    // Re-authenticate with backend if no token exists
+                    if (!localStorage.getItem('auth_token')) {
+                        this.authenticateWalletWithBackend(walletData.address);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading connection state:', error);
@@ -663,7 +673,48 @@ class WalletConnectionHub {
     destroyUserSession() {
         localStorage.removeItem('wallet_user_session');
         localStorage.removeItem('wallet_connection_data');
+        localStorage.removeItem('auth_token'); // Also remove JWT token
         console.log('✅ User session destroyed');
+    }
+    
+    // Auto-authenticate wallet with backend to get JWT token
+    async authenticateWalletWithBackend(walletAddress) {
+        try {
+            console.log('🔐 Authenticating wallet with backend:', walletAddress);
+            
+            const response = await fetch('https://moonyetis.io/api/auth/wallet-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    walletAddress: walletAddress
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store JWT token for API authentication
+                localStorage.setItem('auth_token', data.token);
+                localStorage.setItem('auth_user', JSON.stringify(data.user));
+                
+                console.log('✅ Wallet authenticated with backend, JWT token saved');
+                console.log('🆔 User:', data.user.username, '| New user:', data.isNewUser);
+                console.log('🔑 Token stored in localStorage:', data.token.substring(0, 20) + '...');
+                console.log('📄 User data stored:', data.user);
+                
+                return data;
+            } else {
+                console.error('❌ Wallet authentication failed:', data.error);
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            console.error('❌ Error authenticating wallet with backend:', error);
+            // Don't throw - allow wallet connection to continue without backend auth
+            console.warn('⚠️ Continuing without backend authentication...');
+            return null;
+        }
     }
 }
 

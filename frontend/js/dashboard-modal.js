@@ -1,6 +1,8 @@
 // Dashboard Modal - Personal Account Hub for MoonYetis
 // Handles user balance, deposits, withdrawals, transactions, and daily rewards
 
+console.log('🚀 Dashboard Modal Fixed Version Loaded - Cache Broken Successfully!');
+
 class DashboardModal {
     constructor() {
         this.isOpen = false;
@@ -42,6 +44,32 @@ class DashboardModal {
         this.checkAuthState();
         this.loadUserData();
         console.log('✅ Dashboard: Initialization complete');
+        
+        // MÉTODO DE VERIFICACIÓN PARA DEBUGGING
+        this.debugAuthState = () => {
+            console.log('🔍 === ESTADO DE AUTENTICACIÓN DEBUG ===');
+            console.log('🔑 this.user.token:', this.user?.token ? 'PRESENTE (' + this.user.token.substring(0, 20) + '...)' : 'AUSENTE');
+            console.log('📄 this.user.backendData:', this.user?.backendData ? 'PRESENTE' : 'AUSENTE');
+            console.log('💾 localStorage auth_token:', localStorage.getItem('auth_token') ? 'PRESENTE' : 'AUSENTE');
+            console.log('👤 localStorage auth_user:', localStorage.getItem('auth_user') ? 'PRESENTE' : 'AUSENTE');
+            console.log('🔗 Wallet conectada:', window.walletConnectionModal?.isConnected() ? 'SÍ' : 'NO');
+            
+            if (this.user?.backendData) {
+                console.log('🆔 Usuario backend:', this.user.backendData.username || 'Sin username');
+                console.log('📧 Email backend:', this.user.backendData.email || 'Sin email');
+            }
+            
+            return {
+                hasToken: !!(this.user?.token),
+                hasBackendData: !!(this.user?.backendData),
+                hasLocalStorageToken: !!localStorage.getItem('auth_token'),
+                hasLocalStorageUser: !!localStorage.getItem('auth_user'),
+                walletConnected: window.walletConnectionModal?.isConnected() || false
+            };
+        };
+        
+        // Exponer globalmente para debugging
+        window.debugDashboardAuth = this.debugAuthState;
     }
     
     createModal() {
@@ -120,39 +148,65 @@ class DashboardModal {
                             <h3>⬇️ Receive</h3>
                         </div>
                         
-                        <div class="deposit-options">
-                            <div class="deposit-option wallet-connect" id="wallet-connect-option">
-                                <div class="option-icon">🔗</div>
-                                <div class="option-content">
-                                    <h4>Connect Wallet</h4>
-                                    <p>Connect your Fractal Bitcoin wallet to deposit funds</p>
-                                    <div class="wallet-status" id="wallet-status">
-                                        <span class="status-indicator disconnected" id="wallet-indicator">●</span>
-                                        <span class="status-text" id="wallet-text">No wallet connected</span>
-                                    </div>
-                                </div>
-                                <button class="connect-wallet-btn" id="connect-wallet-btn">Connect Wallet</button>
+                        <!-- Deposit Address Section -->
+                        <div class="deposit-address-section">
+                            <div class="deposit-address-header">
+                                <h4>Your Unique Deposit Address</h4>
+                                <p class="deposit-instructions">Send FB or MY tokens to this address</p>
                             </div>
                             
-                            <div class="deposit-forms" id="deposit-forms" style="display: none;">
-                                <div class="deposit-form">
-                                    <h4>Deposit Fractal Bitcoin</h4>
-                                    <div class="form-group">
-                                        <label for="deposit-fb-amount">Amount</label>
-                                        <input type="number" id="deposit-fb-amount" placeholder="0.00000" step="0.00001">
-                                        <span class="input-suffix">FB</span>
+                            <div class="deposit-address-container">
+                                <div class="address-qr-container" id="deposit-qr-container">
+                                    <div class="qr-placeholder" id="deposit-qr-placeholder">
+                                        <div class="loading-spinner">⏳</div>
+                                        <p>Loading QR Code...</p>
                                     </div>
-                                    <button class="deposit-btn" id="deposit-fb-btn">Deposit FB</button>
                                 </div>
                                 
-                                <div class="deposit-form">
-                                    <h4>Deposit MoonYetis</h4>
-                                    <div class="form-group">
-                                        <label for="deposit-my-amount">Amount</label>
-                                        <input type="number" id="deposit-my-amount" placeholder="0" step="1">
-                                        <span class="input-suffix">MY</span>
+                                <div class="address-info">
+                                    <div class="address-display">
+                                        <input type="text" id="deposit-address" class="address-input" readonly 
+                                               value="Loading..." />
+                                        <button class="copy-btn" id="copy-address-btn" title="Copy address">
+                                            <span class="copy-icon">📋</span>
+                                        </button>
                                     </div>
-                                    <button class="deposit-btn" id="deposit-my-btn">Deposit MY</button>
+                                    
+                                    <div class="deposit-features">
+                                        <div class="feature-item">
+                                            <span class="feature-icon">₿</span>
+                                            <span class="feature-text">Fractal Bitcoin (FB)</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <span class="feature-icon">🪙</span>
+                                            <span class="feature-text">MoonYetis (MY)</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <span class="feature-icon">✅</span>
+                                            <span class="feature-text">Auto-credited to balance</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <span class="feature-icon">🔒</span>
+                                            <span class="feature-text">Secure HD Wallet</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Deposit History Section -->
+                        <div class="deposit-history-section">
+                            <div class="history-header">
+                                <h4>Recent Deposits</h4>
+                                <button class="refresh-btn" id="refresh-deposits-btn" title="Refresh">
+                                    <span class="refresh-icon">🔄</span>
+                                </button>
+                            </div>
+                            
+                            <div class="deposits-list" id="deposits-list">
+                                <div class="no-deposits">
+                                    <p>No deposits yet</p>
+                                    <p class="hint">Send FB or MY to your address above</p>
                                 </div>
                             </div>
                         </div>
@@ -457,12 +511,20 @@ class DashboardModal {
         
         // SIMPLIFICADO: Sin límites que refrescar
         
-        // Wallet connection
-        this.modal.querySelector('#connect-wallet-btn').addEventListener('click', () => this.openWalletConnection());
+        // Wallet connection (kept for compatibility)
+        const connectBtn = this.modal.querySelector('#connect-wallet-btn');
+        if (connectBtn) {
+            connectBtn.addEventListener('click', () => this.openWalletConnection());
+        }
         
-        // Deposit forms
-        this.modal.querySelector('#deposit-fb-btn').addEventListener('click', () => this.processDeposit('FB'));
-        this.modal.querySelector('#deposit-my-btn').addEventListener('click', () => this.processDeposit('MY'));
+        // Copy address button
+        this.setupCopyAddress();
+        
+        // Refresh deposits button
+        const refreshDepositsBtn = this.modal.querySelector('#refresh-deposits-btn');
+        if (refreshDepositsBtn) {
+            refreshDepositsBtn.addEventListener('click', () => this.loadDepositHistory());
+        }
         
         // Modern Swap Interface
         this.setupModernSwapListeners();
@@ -501,6 +563,22 @@ class DashboardModal {
             const sectionId = section.dataset.section;
             if (sectionId === tabId) {
                 section.style.display = 'block';
+                
+                // Load deposit address when switching to receive tab
+                if (tabId === 'receive' && this.user) {
+                    console.log('🔄 Switching to receive tab - verifying authentication...');
+                    // Ensure auth state is current before loading deposit address
+                    this.checkAuthState();
+                    
+                    // Double check that we have a valid token
+                    if (this.user && this.user.token) {
+                        console.log('✅ Token verified, loading deposit address...');
+                        this.loadDepositAddress();
+                    } else {
+                        console.warn('⚠️ No valid token found after auth check');
+                        this.showAddressError('Authentication required - please refresh and reconnect wallet');
+                    }
+                }
                 section.classList.add('section-active');
             } else {
                 section.style.display = 'none';
@@ -517,6 +595,33 @@ class DashboardModal {
         if (walletHub && walletHub.isUserAuthenticated()) {
             this.user = walletHub.getCurrentUser();
             this.connectedWallet = walletHub.getConnectedWallet();
+            
+            // Load JWT token from localStorage for API authentication
+            const authToken = localStorage.getItem('auth_token');
+            const authUser = localStorage.getItem('auth_user');
+            
+            console.log('🔍 Dashboard checking auth state:');
+            console.log('🔑 Auth token from localStorage:', authToken ? authToken.substring(0, 20) + '...' : 'NULL');
+            console.log('👤 Auth user from localStorage:', authUser ? 'FOUND' : 'NULL');
+            
+            if (authToken && authUser) {
+                this.user.token = authToken;
+                try {
+                    const backendUser = JSON.parse(authUser);
+                    // Merge backend user data with wallet user
+                    this.user.backendData = backendUser;
+                    console.log('✅ JWT token loaded for API authentication');
+                    console.log('🔗 User object now has token:', !!this.user.token);
+                    console.log('🔑 Token assigned to user:', this.user.token.substring(0, 30) + '...');
+                    console.log('👤 Complete user object:', this.user);
+                } catch (error) {
+                    console.error('❌ Error parsing auth user data:', error);
+                }
+            } else {
+                console.warn('⚠️ No JWT token found - deposit address may not work');
+                console.log('🛠️ localStorage keys available:', Object.keys(localStorage));
+            }
+            
             this.updateUserDisplay();
         }
     }
@@ -527,6 +632,11 @@ class DashboardModal {
         this.loadBalance();
         this.updateWalletDisplay();
         this.updateLimitsDisplay();
+        
+        // Load deposit address when on receive tab
+        if (this.activeTab === 'receive') {
+            this.loadDepositAddress();
+        }
     }
     
     loadBalance() {
@@ -1062,7 +1172,13 @@ class DashboardModal {
         this.user = detail.user;
         this.connectedWallet = detail.wallet;
         this.updateUserDisplay();
-        this.loadUserData();
+        
+        // Force check auth state to load JWT token
+        setTimeout(() => {
+            console.log('🔄 Force re-checking auth state after user authenticated...');
+            this.checkAuthState();
+            this.loadUserData();
+        }, 500);
     }
     
     handleUserDisconnected(detail) {
@@ -1664,6 +1780,14 @@ class DashboardModal {
     handleWalletStateChange(walletState) {
         this.connectedWallet = walletState.isConnected ? walletState.wallet : null;
         this.updateWalletDisplay();
+        
+        // If wallet connected, force re-check auth state after a delay
+        if (walletState.isConnected) {
+            setTimeout(() => {
+                console.log('🔄 Force re-checking auth state after wallet state change...');
+                this.checkAuthState();
+            }, 1000);
+        }
     }
     
     updateWalletDisplay() {
@@ -1674,16 +1798,16 @@ class DashboardModal {
         const withdrawalDisabled = this.modal.querySelector('#withdrawal-disabled');
         
         if (this.connectedWallet) {
-            walletIndicator.className = 'status-indicator connected';
-            walletText.textContent = `${this.connectedWallet.name} connected`;
+            if (walletIndicator) walletIndicator.className = 'status-indicator connected';
+            if (walletText) walletText.textContent = `${this.connectedWallet.name} connected`;
             
             // Show deposit and withdrawal forms
             if (depositForms) depositForms.style.display = 'block';
             if (withdrawalForms) withdrawalForms.style.display = 'block';
             if (withdrawalDisabled) withdrawalDisabled.style.display = 'none';
         } else {
-            walletIndicator.className = 'status-indicator disconnected';
-            walletText.textContent = 'No wallet connected';
+            if (walletIndicator) walletIndicator.className = 'status-indicator disconnected';
+            if (walletText) walletText.textContent = 'No wallet connected';
             
             // Hide deposit and withdrawal forms
             if (depositForms) depositForms.style.display = 'none';
@@ -2214,6 +2338,289 @@ class DashboardModal {
                 button.classList.add('disabled');
             }
         }
+    }
+    
+    // Load and display user's deposit address
+    // Recover authentication token from localStorage
+    recoverAuthToken() {
+        console.log('🔄 Attempting to recover auth token from localStorage...');
+        
+        const authToken = localStorage.getItem('auth_token');
+        const authUser = localStorage.getItem('auth_user');
+        
+        if (authToken && authUser && this.user) {
+            console.log('✅ Auth token found in localStorage, restoring...');
+            this.user.token = authToken;
+            
+            try {
+                const backendUser = JSON.parse(authUser);
+                this.user.backendData = backendUser;
+                console.log('✅ Auth token successfully recovered');
+                return true;
+            } catch (error) {
+                console.error('❌ Error parsing stored auth user data:', error);
+                return false;
+            }
+        } else {
+            console.warn('⚠️ No auth data found in localStorage');
+            return false;
+        }
+    }
+
+    async loadDepositAddress() {
+        console.log('🔄 Loading deposit address...');
+        console.log('🔍 Debug - this.user:', this.user);
+        console.log('🔍 Debug - this.user.token:', this.user ? this.user.token : 'user is null');
+        console.log('🔍 Debug - localStorage auth_token:', localStorage.getItem('auth_token'));
+        
+        // First attempt: check if we have valid auth
+        if (!this.user || !this.user.token) {
+            console.log('🔧 No token found, attempting recovery...');
+            
+            // Try to recover from localStorage
+            if (this.user && this.recoverAuthToken()) {
+                console.log('✅ Token recovered successfully');
+            } else {
+                console.warn('❌ Cannot load deposit address - user not authenticated');
+                console.log('❌ Debug - Authentication check failed:');
+                console.log('   - User exists:', !!this.user);
+                console.log('   - User has token:', !!(this.user && this.user.token));
+                console.log('   - localStorage has auth_token:', !!localStorage.getItem('auth_token'));
+                this.showAddressError('Please login to view deposit address');
+                return;
+            }
+        }
+        
+        // Show loading state
+        const addressInput = this.modal.querySelector('#deposit-address');
+        const qrContainer = this.modal.querySelector('#deposit-qr-container');
+        
+        if (addressInput) {
+            addressInput.value = 'Loading...';
+        }
+        
+        try {
+            console.log(`🌐 Making request to: ${this.getApiUrl()}/api/wallet/deposit-address`);
+            console.log(`🔑 Using token: ${this.user.token.substring(0, 20)}...`);
+            
+            const response = await fetch(`${this.getApiUrl()}/api/wallet/deposit-address`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.user.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log(`📡 Response status: ${response.status} ${response.statusText}`);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Response error:', errorText);
+                
+                // If we get 403, try to recover token and retry once
+                if (response.status === 403 && this.user) {
+                    console.log('🔧 Got 403 error, attempting token recovery and retry...');
+                    if (this.recoverAuthToken()) {
+                        console.log('🔄 Token recovered, retrying request...');
+                        // Retry the request with recovered token
+                        const retryResponse = await fetch(`${this.getApiUrl()}/api/wallet/deposit-address`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${this.user.token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (retryResponse.ok) {
+                            console.log('✅ Retry successful with recovered token');
+                            const retryData = await retryResponse.json();
+                            if (retryData.success && retryData.address) {
+                                // Update address display
+                                if (addressInput) {
+                                    addressInput.value = retryData.address;
+                                }
+                                
+                                // Generate QR code
+                                this.generateDepositQR(retryData.address);
+                                
+                                // Load deposit history
+                                this.loadDepositHistory();
+                                
+                                console.log(`✅ Deposit address loaded after retry: ${retryData.address}`);
+                                return; // Success, exit function
+                            }
+                        } else {
+                            console.error('❌ Retry also failed:', await retryResponse.text());
+                        }
+                    }
+                }
+                
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('📦 Response data:', data);
+            
+            if (data.success && data.address) {
+                // Update address display
+                if (addressInput) {
+                    addressInput.value = data.address;
+                }
+                
+                // Generate QR code
+                this.generateDepositQR(data.address);
+                
+                // Load deposit history
+                this.loadDepositHistory();
+                
+                console.log(`✅ Deposit address loaded: ${data.address}`);
+            } else {
+                throw new Error(data.error || 'Invalid response from server');
+            }
+        } catch (error) {
+            console.error('❌ Error loading deposit address:', error);
+            this.showAddressError(error.message);
+        }
+    }
+    
+    // Show error in address section
+    showAddressError(message) {
+        const addressInput = this.modal.querySelector('#deposit-address');
+        const qrContainer = this.modal.querySelector('#deposit-qr-container');
+        
+        if (addressInput) {
+            addressInput.value = `Error: ${message}`;
+            addressInput.style.color = '#ef4444';
+        }
+        
+        if (qrContainer) {
+            qrContainer.innerHTML = `
+                <div class="qr-error">
+                    <div class="error-icon">⚠️</div>
+                    <p>Failed to load</p>
+                    <small>${message}</small>
+                </div>
+            `;
+        }
+    }
+    
+    // Generate QR code for deposit address
+    generateDepositQR(address) {
+        const qrContainer = this.modal.querySelector('#deposit-qr-container');
+        if (!qrContainer) return;
+        
+        // Clear existing content
+        qrContainer.innerHTML = '';
+        
+        // Create QR code using a simple library or API
+        // For now, we'll use a placeholder
+        const qrImg = document.createElement('img');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(address)}`;
+        qrImg.alt = 'Deposit Address QR Code';
+        qrImg.style.width = '200px';
+        qrImg.style.height = '200px';
+        
+        qrContainer.appendChild(qrImg);
+    }
+    
+    // Load user's deposit history
+    async loadDepositHistory() {
+        if (!this.user || !this.user.token) return;
+        
+        try {
+            const response = await fetch(`${this.getApiUrl()}/api/wallet/deposits?limit=10`, {
+                headers: {
+                    'Authorization': `Bearer ${this.user.token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to get deposit history: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && data.deposits) {
+                this.displayDepositHistory(data.deposits);
+            }
+        } catch (error) {
+            console.error('❌ Error loading deposit history:', error);
+        }
+    }
+    
+    // Display deposit history in the UI
+    displayDepositHistory(deposits) {
+        const depositsList = this.modal.querySelector('#deposits-list');
+        if (!depositsList) return;
+        
+        if (deposits.length === 0) {
+            depositsList.innerHTML = `
+                <div class="no-deposits">
+                    <p>No deposits yet</p>
+                    <p class="hint">Send FB or MY to your address above</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create deposit items
+        const depositsHTML = deposits.map(deposit => {
+            const date = new Date(deposit.detected_at);
+            const dateStr = date.toLocaleDateString();
+            const timeStr = date.toLocaleTimeString();
+            const statusClass = deposit.status === 'confirmed' ? 'confirmed' : 'pending';
+            const statusText = deposit.status === 'confirmed' ? 'Confirmed' : `Pending (${deposit.confirmations}/1)`;
+            
+            return `
+                <div class="deposit-item ${statusClass}">
+                    <div class="deposit-header">
+                        <span class="deposit-amount">${deposit.amount} ${deposit.token_type}</span>
+                        <span class="deposit-status">${statusText}</span>
+                    </div>
+                    <div class="deposit-details">
+                        <span class="deposit-date">${dateStr} ${timeStr}</span>
+                        <a href="https://fractal.unisat.io/tx/${deposit.tx_hash}" 
+                           target="_blank" class="tx-link">View TX →</a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        depositsList.innerHTML = depositsHTML;
+    }
+    
+    // Copy address to clipboard
+    setupCopyAddress() {
+        const copyBtn = this.modal.querySelector('#copy-address-btn');
+        const addressInput = this.modal.querySelector('#deposit-address');
+        
+        if (!copyBtn || !addressInput) return;
+        
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(addressInput.value);
+                
+                // Show feedback
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span class="copy-icon">✓</span>';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (error) {
+                console.error('Failed to copy address:', error);
+                alert('Failed to copy address');
+            }
+        });
+    }
+    
+    // Get API URL based on environment
+    getApiUrl() {
+        return this.isDevelopmentMode ? 
+            'http://localhost:3002' : 
+            'https://moonyetis.io/api';
     }
 }
 
