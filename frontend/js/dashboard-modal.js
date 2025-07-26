@@ -2579,7 +2579,7 @@ class DashboardModal {
                     </div>
                     <div class="deposit-details">
                         <span class="deposit-date">${dateStr} ${timeStr}</span>
-                        <a href="https://fractal.unisat.io/tx/${deposit.tx_hash}" 
+                        <a href="https://fractal.uniscan.cc/tx/${deposit.tx_hash}" 
                            target="_blank" class="tx-link">View TX →</a>
                     </div>
                 </div>
@@ -2620,7 +2620,7 @@ class DashboardModal {
     getApiUrl() {
         return this.isDevelopmentMode ? 
             'http://localhost:3002' : 
-            'https://moonyetis.io/api';
+            'https://moonyetis.io';
     }
 }
 

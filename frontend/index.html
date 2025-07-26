@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoonYetis Ecosystem | Revolutionary Crypto Gaming on Fractal Bitcoin</title>
     <meta name="description" content="MoonYetis Ecosystem - Revolutionary crypto gaming platform with multiple products including slots, all powered by MoonYetis BRC-20 tokens and Fractal Bitcoin network.">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <meta name="robots" content="noarchive">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -457,8 +458,8 @@
     <script type="module" src="js/pizzaswap-scraper.js"></script>
     <script type="module" src="js/hybrid-price-service.js"></script>
     <script src="js/arbitrage-protection.js"></script>
-    <script src="js/dashboard-modal.js?v=fix-url-1732533000"></script>
-    <script type="module" src="js/wallet-connection-hub.js"></script>
+    <script src="js/dashboard-modal.js?v=1753485000"></script>
+    <script type="module" src="js/wallet-connection-hub.js?v=1753490000"></script>
     <script type="module" src="js/modular-integration.js"></script>
     
     
@@ -488,8 +489,6 @@
         });
     </script>
     
-    <!-- New Modular Wallet System -->
-    <script type="module" src="js/wallets.ts"></script>
     
     <!-- Coin Flip Game -->
     <script type="module" src="js/coin-flip.js"></script>
@@ -552,114 +551,62 @@
         });
     </script>
 
-    <!-- Modern Ecosystem Initialization - FALLBACK VERSION -->
+    <!-- SIMPLE WALLET INITIALIZATION - NO MORE COMPLEXITY -->
     <script>
-        // Direct initialization without module dependencies
+        console.log('🚀 Starting SIMPLE wallet initialization...');
+        
+        // Setup legacy compatibility
+        window.gameState = window.gameState || {
+            balance: 0,
+            connectedWallet: null,
+            demoMode: false,
+            isSpinning: false
+        };
+        
+        // SIMPLE initialization - wait for both DOM and wallet modal
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 DOM loaded, starting Connect Wallet initialization...');
+            console.log('📋 DOM loaded, setting up wallet button...');
             
-            // Setup legacy compatibility immediately
-            setupLegacyCompatibility();
-            
-            // Initialize authentication system with delay to allow module loading
-            setTimeout(() => {
-                console.log('🎯 Starting Connect Wallet authentication system...');
-                initializeAuthentication();
-            }, 2000); // Increased delay to ensure wallet-connection-hub.js loads
-        });
-        
-        function setupLegacyCompatibility() {
-            // Maintain compatibility with existing slot machine code
-            window.gameState = window.gameState || {
-                balance: 0,
-                connectedWallet: null,
-                demoMode: false,
-                isSpinning: false
-            };
-        }
-        
-        function setupWalletEventListeners() {
-            console.log('🔧 Setting up wallet event listeners...');
-            
-            // Connect the ecosystem wallet button
-            const ecosystemWalletBtn = document.getElementById('ecosystemWalletBtn');
-            const ecosystemWalletBtnText = document.getElementById('ecosystemWalletBtnText');
-            const ecosystemDashboardBtn = document.getElementById('ecosystemDashboardBtn');
-            
-            if (ecosystemWalletBtn && ecosystemWalletBtnText) {
-                // Add click event listener
-                ecosystemWalletBtn.addEventListener('click', function() {
-                    console.log('🔗 Ecosystem wallet button clicked');
-                    if (window.walletConnectionModal) {
-                        window.walletConnectionModal.open();
-                    } else {
-                        console.error('❌ walletConnectionModal not available at click time');
-                    }
-                });
-                
-                // Listen for wallet state changes to update buttons
-                window.addEventListener('walletStateChanged', function(event) {
-                    const { isConnected, wallet } = event.detail;
-                    
-                    if (isConnected && wallet) {
-                        // Hide connect wallet button, show dashboard button
-                        ecosystemWalletBtn.style.display = 'none';
-                        ecosystemDashboardBtn.style.display = 'block';
-                    } else {
-                        // Show connect wallet button, hide dashboard button
-                        ecosystemWalletBtn.style.display = 'block';
-                        ecosystemDashboardBtn.style.display = 'none';
-                        
-                        ecosystemWalletBtnText.textContent = '🔗 Connect Wallet';
-                        ecosystemWalletBtn.title = 'Connect your Fractal Bitcoin wallet';
-                    }
-                });
-                
-                console.log('✅ Ecosystem wallet button connected successfully');
-            } else {
-                console.warn('⚠️ Ecosystem wallet button elements not found');
-            }
-            
-            // Connect dashboard button
-            if (ecosystemDashboardBtn) {
-                ecosystemDashboardBtn.addEventListener('click', function() {
-                    console.log('🏠 Dashboard button clicked');
-                    if (window.dashboardModal) {
-                        window.dashboardModal.open();
-                    } else {
-                        console.warn('⚠️ Dashboard modal not available');
-                    }
-                });
-                console.log('✅ Ecosystem dashboard button connected successfully');
-            }
-        }
-        
-        function initializeAuthentication() {
-            console.log('🔗 Initializing wallet connection system...');
-            
-            let attempts = 0;
-            const maxAttempts = 25; // 25 attempts x 200ms = 5 seconds max
-            const interval = 200; // Check every 200ms
-            
-            const checkWalletModal = () => {
-                attempts++;
-                console.log(`🔄 Attempt ${attempts}/${maxAttempts} - Checking for walletConnectionModal...`);
-                
+            // Simple direct approach - try every 200ms until modal is available
+            const setupWallet = () => {
                 if (window.walletConnectionModal) {
-                    console.log('✅ walletConnectionModal found! Setting up event listeners...');
-                    setupWalletEventListeners();
-                } else if (attempts < maxAttempts) {
-                    console.log('⏳ walletConnectionModal not ready yet, retrying in', interval, 'ms...');
-                    setTimeout(checkWalletModal, interval);
+                    console.log('✅ Wallet modal found! Connecting button...');
+                    
+                    const btn = document.getElementById('ecosystemWalletBtn');
+                    const dashBtn = document.getElementById('ecosystemDashboardBtn');
+                    
+                    if (btn) {
+                        btn.addEventListener('click', () => {
+                            console.log('🔗 Connect Wallet button clicked!');
+                            window.walletConnectionModal.open();
+                        });
+                        
+                        // Handle wallet state changes
+                        window.addEventListener('walletStateChanged', (event) => {
+                            const { isConnected } = event.detail;
+                            btn.style.display = isConnected ? 'none' : 'block';
+                            if (dashBtn) dashBtn.style.display = isConnected ? 'block' : 'none';
+                        });
+                        
+                        // Handle dashboard button
+                        if (dashBtn) {
+                            dashBtn.addEventListener('click', () => {
+                                console.log('🏠 Dashboard clicked');
+                                if (window.dashboardModal) window.dashboardModal.open();
+                            });
+                        }
+                        
+                        console.log('✅ WALLET BUTTON READY!');
+                    }
                 } else {
-                    console.error('❌ walletConnectionModal not available after', maxAttempts, 'attempts (', maxAttempts * interval, 'ms)');
-                    console.error('💡 This likely means wallet-connection-hub.js failed to load or initialize');
+                    console.log('⏳ Waiting for wallet modal...');
+                    setTimeout(setupWallet, 200);
                 }
             };
             
-            // Start checking immediately
-            checkWalletModal();
-        }
+            // Start setup
+            setupWallet();
+        });
     </script>
         
         // === SCROLL ANIMATIONS & INTERACTIVITY ===

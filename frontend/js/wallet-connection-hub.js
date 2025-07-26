@@ -1,7 +1,9 @@
 // Wallet Connection Hub - Centralized wallet connection management
 // Extracts wallet connection logic from wallet-hub-modal.js
+// Version: 1753490000 - DEFINITIVE FIX
 
-console.log('🚀 Wallet Connection Hub Fixed Version Loaded - Cache Broken Successfully!');
+console.log('🚀 wallet-connection-hub.js LOADED - Version: 1753490000 - DEFINITIVE FIX');
+console.log('✅ This is the MODERN wallet system with PNG logo support');
 
 class WalletConnectionHub {
     constructor() {
@@ -26,11 +28,14 @@ class WalletConnectionHub {
     
     init() {
         console.log('🔗 Wallet Connection Hub: Initializing...');
+        console.log('📍 Current URL:', window.location.href);
+        console.log('🏷️ Version Check: wallet-connection-hub.js v1753490000 - DEFINITIVE FIX');
         this.createModal();
         this.setupEventListeners();
         this.detectWallets();
         this.loadConnectionState();
         console.log('✅ Wallet Connection Hub: Initialization complete');
+        console.log('🎯 Available wallets:', this.availableWallets.length);
     }
     
     createModal() {
@@ -42,7 +47,7 @@ class WalletConnectionHub {
                 <div class="wallet-connection-header">
                     <div class="connection-title">
                         <h2>🔗 Connect Wallet</h2>
-                        <span class="connection-subtitle">Connect with UniSat Wallet</span>
+                        <span class="connection-subtitle">Choose your Fractal Bitcoin wallet</span>
                     </div>
                     <button class="connection-close" id="connection-close">×</button>
                 </div>
@@ -183,13 +188,13 @@ class WalletConnectionHub {
     detectWallets() {
         this.availableWallets = [];
         
-        // Only UniSat Wallet is supported
+        // Check for UniSat Wallet
         if (window.unisat) {
             this.availableWallets.push({
                 id: 'unisat',
                 name: 'UniSat Wallet',
-                icon: '<img src="images/Unisat-wallet.png" alt="UniSat Wallet" style="width: 48px; height: 48px; border-radius: 8px;">',
-                description: 'Connect with UniSat - The most popular Bitcoin wallet',
+                icon: '<img src="images/Unisat-wallet.png" alt="UniSat" style="width: 24px; height: 24px;">',
+                description: 'The most popular Bitcoin wallet',
                 installed: true,
                 provider: window.unisat
             });
@@ -197,12 +202,14 @@ class WalletConnectionHub {
             this.availableWallets.push({
                 id: 'unisat',
                 name: 'UniSat Wallet',
-                icon: '<img src="images/Unisat-wallet.png" alt="UniSat Wallet" style="width: 48px; height: 48px; border-radius: 8px; opacity: 0.5;">',
-                description: 'Install UniSat extension to connect your Bitcoin wallet',
+                icon: '<img src="images/Unisat-wallet.png" alt="UniSat" style="width: 24px; height: 24px;">',
+                description: 'The most popular Bitcoin wallet',
                 installed: false,
                 downloadUrl: 'https://unisat.io/'
             });
         }
+        
+        
         
         this.renderWallets();
     }
@@ -252,13 +259,10 @@ class WalletConnectionHub {
             
             let address, balance;
             
-            // Only UniSat wallet is supported
             if (walletId === 'unisat') {
                 const accounts = await window.unisat.requestAccounts();
                 address = accounts[0];
                 balance = await window.unisat.getBalance();
-            } else {
-                throw new Error(`Unsupported wallet: ${walletId}. Only UniSat wallet is supported.`);
             }
             
             this.updateConnectionStep(2);
@@ -283,9 +287,6 @@ class WalletConnectionHub {
                 name: wallet.name
             }));
             
-            // Auto-authenticate with backend to get JWT token
-            await this.authenticateWalletWithBackend(address);
-            
             // Create user session with wallet data
             const user = this.createUserSession({
                 address: address,
@@ -294,7 +295,10 @@ class WalletConnectionHub {
             });
             
             // Show connected wallet
-            setTimeout(() => {
+            setTimeout(async () => {
+                // Authenticate with backend to get JWT token
+                await this.authenticateWithBackend(user);
+                
                 this.showConnectedWallet();
                 this.emitWalletStateChange();
                 
@@ -336,7 +340,7 @@ class WalletConnectionHub {
         nameElement.textContent = this.connectionState.wallet.name;
         addressElement.textContent = this.formatAddress(this.connectionState.address);
         balanceElement.textContent = this.formatBalance(this.connectionState.balance);
-        iconElement.textContent = this.connectionState.wallet.icon;
+        iconElement.innerHTML = this.connectionState.wallet.icon;
     }
     
     showWalletSelection() {
@@ -450,11 +454,6 @@ class WalletConnectionHub {
                     
                     // Re-establish connection
                     this.refreshConnection();
-                    
-                    // Re-authenticate with backend if no token exists
-                    if (!localStorage.getItem('auth_token')) {
-                        this.authenticateWalletWithBackend(walletData.address);
-                    }
                 }
             } catch (error) {
                 console.error('Error loading connection state:', error);
@@ -470,12 +469,8 @@ class WalletConnectionHub {
             const walletId = this.connectionState.wallet.id;
             let balance;
             
-            // Only UniSat wallet is supported
             if (walletId === 'unisat' && window.unisat) {
                 balance = await window.unisat.getBalance();
-            } else {
-                console.warn(`Unsupported wallet for refresh: ${walletId}`);
-                return;
             }
             
             this.connectionState.balance = balance;
@@ -542,36 +537,6 @@ class WalletConnectionHub {
         return this.connectionState.balance;
     }
     
-    // Helper method to safely serialize wallet data (avoid circular references)
-    createSafeWalletData(walletData) {
-        try {
-            // Create a clean object with only the necessary properties
-            const safeWalletData = {
-                address: walletData.address,
-                balance: walletData.balance,
-                walletType: walletData.wallet ? walletData.wallet.name : 'Unknown',
-                connectedAt: walletData.connectedAt || new Date().toISOString(),
-                // Only include serializable wallet properties
-                wallet: {
-                    name: walletData.wallet ? walletData.wallet.name : 'Unknown',
-                    version: walletData.wallet ? walletData.wallet.version : null
-                }
-            };
-            
-            return safeWalletData;
-        } catch (error) {
-            console.warn('⚠️ Error creating safe wallet data:', error);
-            // Return minimal safe data as fallback
-            return {
-                address: walletData.address || 'Unknown',
-                balance: walletData.balance || 0,
-                walletType: 'Unknown',
-                connectedAt: new Date().toISOString(),
-                wallet: { name: 'Unknown', version: null }
-            };
-        }
-    }
-
     // User session management methods
     createUserSession(walletData) {
         const user = {
@@ -586,18 +551,9 @@ class WalletConnectionHub {
             }
         };
         
-        // Create safe wallet data without circular references
-        const safeWalletData = this.createSafeWalletData(walletData);
-        
-        // Store user session with safe serialization
-        try {
-            localStorage.setItem('wallet_user_session', JSON.stringify(user));
-            localStorage.setItem('wallet_connection_data', JSON.stringify(safeWalletData));
-            console.log('✅ Wallet data safely stored in localStorage');
-        } catch (error) {
-            console.error('❌ Failed to store wallet data:', error);
-            console.warn('⚠️ Continuing without localStorage storage...');
-        }
+        // Store user session
+        localStorage.setItem('wallet_user_session', JSON.stringify(user));
+        localStorage.setItem('wallet_connection_data', JSON.stringify(walletData));
         
         // Load user balances
         this.loadUserBalances(user);
@@ -625,30 +581,61 @@ class WalletConnectionHub {
     saveUserBalances(user) {
         localStorage.setItem(`user_balances_${user.address}`, JSON.stringify(user.balances));
     }
+
+    // Authenticate with backend to get JWT token
+    async authenticateWithBackend(user) {
+        try {
+            console.log('🔐 Authenticating with backend for address:', user.address);
+            
+            const response = await fetch('/api/auth/wallet-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    walletAddress: user.address
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success && result.token) {
+                // Save JWT token and user data to localStorage
+                localStorage.setItem('auth_token', result.token);
+                localStorage.setItem('auth_user', JSON.stringify(result.user));
+                
+                console.log('✅ JWT authentication successful');
+                console.log('🔑 Token saved to localStorage');
+                console.log('👤 User data saved:', result.user?.username);
+            } else {
+                console.error('❌ Backend authentication failed:', result.error || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('❌ Failed to authenticate with backend:', error);
+        }
+    }
     
     getCurrentUser() {
         const sessionData = localStorage.getItem('wallet_user_session');
         return sessionData ? JSON.parse(sessionData) : null;
     }
     
+    isUserAuthenticated() {
+        const user = this.getCurrentUser();
+        return user && this.connectionState.isConnected;
+    }
+
     getConnectedWallet() {
         if (!this.connectionState.isConnected) {
             return null;
         }
         
         return {
-            id: this.connectionState.wallet?.id || 'unknown',
-            name: this.connectionState.wallet?.name || 'Unknown Wallet',
+            id: this.connectionState.walletId,
+            name: this.connectionState.walletName,
             address: this.connectionState.address,
-            balance: this.connectionState.balance,
-            isConnected: true,
-            type: this.connectionState.wallet?.id || 'unisat'
+            balance: this.connectionState.balance
         };
-    }
-    
-    isUserAuthenticated() {
-        const user = this.getCurrentUser();
-        return user && this.connectionState.isConnected;
     }
     
     getUserBalance(tokenType = 'MC') {
@@ -673,52 +660,17 @@ class WalletConnectionHub {
     destroyUserSession() {
         localStorage.removeItem('wallet_user_session');
         localStorage.removeItem('wallet_connection_data');
-        localStorage.removeItem('auth_token'); // Also remove JWT token
         console.log('✅ User session destroyed');
-    }
-    
-    // Auto-authenticate wallet with backend to get JWT token
-    async authenticateWalletWithBackend(walletAddress) {
-        try {
-            console.log('🔐 Authenticating wallet with backend:', walletAddress);
-            
-            const response = await fetch('https://moonyetis.io/api/auth/wallet-login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    walletAddress: walletAddress
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                // Store JWT token for API authentication
-                localStorage.setItem('auth_token', data.token);
-                localStorage.setItem('auth_user', JSON.stringify(data.user));
-                
-                console.log('✅ Wallet authenticated with backend, JWT token saved');
-                console.log('🆔 User:', data.user.username, '| New user:', data.isNewUser);
-                console.log('🔑 Token stored in localStorage:', data.token.substring(0, 20) + '...');
-                console.log('📄 User data stored:', data.user);
-                
-                return data;
-            } else {
-                console.error('❌ Wallet authentication failed:', data.error);
-                throw new Error(data.error);
-            }
-        } catch (error) {
-            console.error('❌ Error authenticating wallet with backend:', error);
-            // Don't throw - allow wallet connection to continue without backend auth
-            console.warn('⚠️ Continuing without backend authentication...');
-            return null;
-        }
     }
 }
 
-// Initialize wallet connection hub when DOM is loaded
+// SIMPLE initialization - no more complex events
 document.addEventListener('DOMContentLoaded', () => {
-    window.walletConnectionModal = new WalletConnectionHub();
+    console.log('🔧 SIMPLE wallet-connection-hub.js: DOM ready');
+    try {
+        window.walletConnectionModal = new WalletConnectionHub();
+        console.log('✅ SIMPLE: WalletConnectionHub ready and available');
+    } catch (error) {
+        console.error('❌ SIMPLE: Failed to initialize wallet modal:', error);
+    }
 });
