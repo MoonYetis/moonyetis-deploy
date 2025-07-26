@@ -204,6 +204,19 @@ class UnisatAPI {
         }
     }
 
+    // Get transaction outputs specifically
+    async getTransactionOutputs(txid) {
+        try {
+            const path = `/v1/indexer/tx/${txid}/outputs`;
+            console.log(`🔍 Getting transaction outputs: ${txid.substring(0, 16)}...`);
+            const response = await this.makeRequest(path);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to get transaction outputs ${txid}:`, error);
+            throw error;
+        }
+    }
+
     // Get BRC-20 transfer events for address
     async getBRC20Transfers(address, ticker, start = 0, limit = 10) {
         try {
@@ -264,20 +277,78 @@ class UnisatAPI {
                 // For Fractal Bitcoin API, we assume transactions in the address history are incoming
                 // since the API only returns transactions where the address was involved
                 if (balanceInfo && balanceInfo.satoshi > 0) {
-                    // For HD wallet addresses (unique per user), the current balance IS the amount received
-                    // since these addresses only receive, never send
-                    const actualReceived = balanceInfo.satoshi;
+                    // For HD wallet addresses (unique per user), get the exact amount from transaction outputs
+                    let actualReceived;
+                    let outputFound = false;
                     
-                    console.log(`💰 Found incoming transaction: ${tx.txid.substring(0, 16)}... (actual received: ${actualReceived} sats)`);
-                    console.log(`📊 Transaction details: inSats=${tx.inSatoshi}, outSats=${tx.outSatoshi}, address balance=${actualReceived}`);
-                    console.log(`💡 Using address balance as received amount (HD wallet = receive-only)`);
+                    try {
+                        // First try to get outputs using dedicated endpoint
+                        console.log(`🎯 Attempting to get outputs for ${tx.txid.substring(0, 16)}... using dedicated endpoint`);
+                        const outputs = await this.getTransactionOutputs(tx.txid);
+                        
+                        console.log(`📊 Raw outputs response:`, JSON.stringify(outputs, null, 2));
+                        
+                        if (outputs && Array.isArray(outputs)) {
+                            // Find the output that sends to our specific address
+                            const receivingOutput = outputs.find(output => 
+                                output && output.address === address && output.value > 0
+                            );
+                            
+                            if (receivingOutput) {
+                                actualReceived = receivingOutput.value;
+                                outputFound = true;
+                                console.log(`💰 Found incoming transaction: ${tx.txid.substring(0, 16)}... (output amount: ${actualReceived} sats)`);
+                                console.log(`📊 Output details: address=${address.substring(0, 20)}..., value=${actualReceived} sats`);
+                                console.log(`💡 Using specific output value from dedicated endpoint`);
+                            } else {
+                                console.log(`⚠️ No output found for address ${address.substring(0, 20)}... in outputs:`, outputs.map(o => ({ addr: o.address?.substring(0, 20) + '...', value: o.value })));
+                            }
+                        } else {
+                            console.log(`⚠️ Outputs not in expected format:`, typeof outputs, Array.isArray(outputs));
+                        }
+                        
+                        // Fallback to original method if dedicated endpoint didn't work
+                        if (!outputFound) {
+                            console.log(`🔄 Falling back to getTransaction method for ${tx.txid.substring(0, 16)}...`);
+                            const txDetails = await this.getTransaction(tx.txid);
+                            console.log(`📊 Full txDetails structure:`, {
+                                hasOutputs: !!txDetails.outputs,
+                                outputsType: Array.isArray(txDetails.outputs) ? 'array' : typeof txDetails.outputs,
+                                outputsLength: txDetails.outputs?.length || 0,
+                                hasVout: !!txDetails.vout,
+                                keys: Object.keys(txDetails || {})
+                            });
+                            
+                            const fallbackOutputs = txDetails.outputs || txDetails.vout;
+                            if (fallbackOutputs && Array.isArray(fallbackOutputs)) {
+                                const receivingOutput = fallbackOutputs.find(output => 
+                                    output && output.address === address && output.value > 0
+                                );
+                                
+                                if (receivingOutput) {
+                                    actualReceived = receivingOutput.value;
+                                    outputFound = true;
+                                    console.log(`💰 Found via fallback: ${actualReceived} sats to ${address.substring(0, 20)}...`);
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`❌ Failed to get transaction outputs for ${tx.txid.substring(0, 16)}...:`, error.message);
+                    }
+                    
+                    if (!outputFound) {
+                        // Fallback to address balance if outputs unavailable
+                        actualReceived = balanceInfo.satoshi;
+                        console.log(`💰 Found incoming transaction: ${tx.txid.substring(0, 16)}... (fallback to balance: ${actualReceived} sats)`);
+                        console.log(`⚠️ Using address balance as fallback (outputs unavailable)`);
+                    }
                     
                     newTransactions.push({
                         ...tx,
                         estimatedReceived: actualReceived,
                         addressBalance: balanceInfo.satoshi,
                         receivingAddress: address,
-                        balanceBased: true
+                        balanceBased: !outputFound
                     });
                 } else {
                     // No balance info available, skip transaction as we can't determine amount accurately

@@ -277,28 +277,86 @@ class TransactionMonitor extends EventEmitter {
         }
     }
     
-    // Check user deposit addresses for new transactions
+    // Check user deposit addresses for new transactions using balance difference
     async checkUserDepositAddresses() {
         if (!this.hdWalletService || this.monitoredAddresses.size === 0) return;
         
         try {
-            // Check each user address for new transactions
+            // Check each user address using balance difference method
             for (const [address, userData] of this.monitoredAddresses) {
-                const result = await this.unisat.monitorIncomingTransactions(address, 0);
-                
-                if (result.transactions.length > 0) {
-                    for (const tx of result.transactions) {
-                        if (!this.confirmedTransactions.has(tx.txid)) {
-                            await this.processNewTransaction(tx, address);
-                        }
-                    }
-                }
+                await this.checkAddressWithBalanceDifference(address, userData);
                 
                 // Also check for BRC-20 MY transfers
                 await this.checkBRC20Transfers(address, userData);
             }
         } catch (error) {
             console.error('❌ Error checking user deposit addresses:', error);
+        }
+    }
+    
+    // Check address using balance difference method
+    async checkAddressWithBalanceDifference(address, userData) {
+        try {
+            // Get current balance
+            const currentBalance = await this.unisat.getAddressBalance(address);
+            
+            // Get last known balance from database
+            const lastKnownBalance = await this.hdWalletService.getLastKnownBalance(address);
+            
+            // Calculate difference
+            const balanceDiff = currentBalance - lastKnownBalance;
+            
+            if (balanceDiff > 0) {
+                // New deposit detected!
+                const amountInBTC = balanceDiff / 100000000;
+                
+                console.log(`💰 New deposit detected via balance difference:`);
+                console.log(`   Address: ${address}`);
+                console.log(`   User: ${userData.username} (${userData.userId})`);
+                console.log(`   Previous balance: ${lastKnownBalance} sats`);
+                console.log(`   Current balance: ${currentBalance} sats`);
+                console.log(`   Deposit amount: ${balanceDiff} sats (${amountInBTC} FB)`);
+                
+                // Generate a unique tx hash for this deposit (since we don't have the actual tx)
+                const txHash = `balance_diff_${address}_${Date.now()}`;
+                
+                // Record the deposit
+                const depositId = await this.hdWalletService.recordDeposit(
+                    userData.userId,
+                    address,
+                    txHash,
+                    amountInBTC.toString(),
+                    'FB',
+                    1 // Mark as confirmed since balance has already changed
+                );
+                
+                if (depositId) {
+                    // Update user balance
+                    await this.hdWalletService.updateUserBalance(userData.userId, amountInBTC, 'FB');
+                    
+                    // Update last known balance
+                    await this.hdWalletService.updateLastKnownBalance(address, currentBalance);
+                    
+                    // Emit event for confirmed user deposit
+                    this.emit('user-deposit-confirmed', {
+                        userId: userData.userId,
+                        username: userData.username,
+                        amount: amountInBTC,
+                        tokenType: 'FB',
+                        txid: txHash
+                    });
+                }
+            } else if (balanceDiff === 0) {
+                // No change in balance
+                console.log(`ℹ️ No balance change for ${address} (${currentBalance} sats)`);
+            } else {
+                // Balance decreased (withdrawal or fee)
+                console.log(`⚠️ Balance decreased for ${address}: ${balanceDiff} sats`);
+                // Update last known balance anyway
+                await this.hdWalletService.updateLastKnownBalance(address, currentBalance);
+            }
+        } catch (error) {
+            console.error(`❌ Error checking balance for ${address}:`, error);
         }
     }
     

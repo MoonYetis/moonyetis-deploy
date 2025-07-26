@@ -292,6 +292,38 @@ class HDWalletService {
             throw error;
         }
     }
+    
+    // Get last known balance for an address
+    async getLastKnownBalance(address) {
+        try {
+            const stmt = this.db.db.prepare(`
+                SELECT last_known_balance FROM user_deposit_addresses 
+                WHERE deposit_address = ?
+            `);
+            
+            const result = stmt.get(address);
+            return result ? parseInt(result.last_known_balance) : 0;
+        } catch (error) {
+            console.error('❌ Error getting last known balance:', error);
+            return 0;
+        }
+    }
+    
+    // Update last known balance for an address
+    async updateLastKnownBalance(address, newBalance) {
+        try {
+            const stmt = this.db.db.prepare(`
+                UPDATE user_deposit_addresses 
+                SET last_known_balance = ? 
+                WHERE deposit_address = ?
+            `);
+            
+            stmt.run(newBalance.toString(), address);
+            console.log(`✅ Updated last known balance for ${address}: ${newBalance} sats`);
+        } catch (error) {
+            console.error('❌ Error updating last known balance:', error);
+        }
+    }
 }
 
 module.exports = HDWalletService;
